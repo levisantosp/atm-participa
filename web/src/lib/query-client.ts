@@ -24,5 +24,14 @@ export const queryClient = new QueryClient({
         toast.error(err.message)
       }
     }
-  })
+  }),
+  defaultOptions: {
+    queries: {
+      staleTime: 60_000,
+      retry: false
+    },
+    mutations: {
+      retry: false
+    }
+  }
 })
