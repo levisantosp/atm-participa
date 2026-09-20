@@ -15,7 +15,8 @@
     "builtin": true
   },
   "options": {
-    "typeAware": true
+    "typeAware": true,
+    "typeCheck": true
   },
   "overrides": [
     {
