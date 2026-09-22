@@ -4,11 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/danielgtaylor/huma/v2/humatest"
-	"github.com/levisantosp/atm-participa/api/db"
 	"github.com/levisantosp/atm-participa/api/dtos"
 	"github.com/levisantosp/atm-participa/api/tests"
 	"github.com/levisantosp/atm-participa/api/utils"
@@ -24,11 +22,7 @@ func TestUpvoteIssue(t *testing.T) {
 	user := tests.CreateUser(t)
 	session := tests.CreateSession(user, t)
 
-	issue, err := db.Client.Issue.Create().
-		SetTitle(strings.Repeat("a", 20)).
-		SetDescription(strings.Repeat("a", 20)).
-		SetUserID(user.ID).
-		Save(t.Context())
+	issue, err := tests.CreateIssue(t, user)
 	if err != nil {
 		t.Fatal(err)
 	}
