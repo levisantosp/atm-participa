@@ -15,15 +15,5 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()]
   },
-  css: ['~/assets/css/main.css'],
-  typescript: {
-    tsConfig: {
-      compilerOptions: {
-        paths: {
-          ui: ['../../ui/src/index.ts'],
-          'ui/*': ['../../ui/src/*']
-        }
-      }
-    }
-  }
+  css: ['~/assets/css/main.css']
 })
