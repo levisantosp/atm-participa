@@ -19,8 +19,6 @@
     "build": "node scripts/build.js"
   },
   "dependencies": {
-    "@hugeicons/core-free-icons": "catalog:",
-    "@hugeicons/vue": "catalog:",
     "@lucide/vue": "catalog:",
     "@vueuse/core": "catalog:",
     "class-variance-authority": "catalog:",

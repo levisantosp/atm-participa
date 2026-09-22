@@ -12,11 +12,11 @@
     "start:web": "turbo run start -F web"
   },
   "devDependencies": {
-    "@types/node": "^26.5.1",
-    "oxfmt": "^0.64.0",
-    "oxlint": "^1.79.0",
-    "oxlint-tsgolint": "^7.0.2001",
-    "turbo": "^2.10.12",
+    "@types/node": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "turbo": "catalog:",
     "typescript": "^6.0.3"
   },
   "devEngines": {

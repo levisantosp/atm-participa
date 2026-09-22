@@ -17,11 +17,11 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@kubb/plugin-axios": "^5.3.0",
-    "@kubb/plugin-ts": "^5.0.1",
+    "@kubb/plugin-axios": "catalog:",
+    "@kubb/plugin-ts": "catalog:",
     "@kubb/plugin-vue-query": "catalog:",
-    "@kubb/plugin-zod": "^5.1.4",
-    "kubb": "^5.2.0",
+    "@kubb/plugin-zod": "catalog:",
+    "kubb": "catalog:",
     "vue": "catalog:"
   }
 }
