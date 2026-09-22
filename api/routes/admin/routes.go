@@ -11,4 +11,5 @@ func Routes(api huma.API) {
 
 	huma.Get(group, "/issues", GetIssues)
 	huma.Delete(group, "/issues/{id}", DeleteIssue)
+	huma.Patch(group, "/issues/{id}", UpdateIssueStatus)
 }
