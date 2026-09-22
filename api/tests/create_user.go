@@ -15,3 +15,13 @@ func CreateUser(t *testing.T) *generated.User {
 		SetEmail("testuser@email.com").
 		SaveX(t.Context())
 }
+
+func CreateAdminUser(t *testing.T) *generated.User {
+	return db.Client.User.
+		Create().
+		SetUsername("test-admin-user").
+		SetDisplayName("Test Admin User").
+		SetEmail("testadminuser@email.com").
+		SetIsAdmin(true).
+		SaveX(t.Context())
+}
