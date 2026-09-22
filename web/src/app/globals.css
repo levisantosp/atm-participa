@@ -1,5 +1,0 @@
-@import 'ui/styles';
-
-@theme inline {
-  --font-mono: var(--font-geist-mono);
-}

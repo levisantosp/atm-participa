@@ -10,11 +10,14 @@
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "rewriteRelativeImportExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
     "moduleResolution": "bundler",
     "resolvePackageJsonImports": true,
-    "jsx": "react-jsx"
+    "paths": {
+      "ui": ["./src/index.ts"],
+      "ui/*": ["./src/*"],
+      "@/*": ["./src/*"]
+    }
   }
 }

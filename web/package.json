@@ -1,34 +1,31 @@
 {
   "name": "web",
-  "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev --port 5174",
-    "build": "oxlint && next build",
-    "start": "next start --port 5174",
+    "build": "oxlint && nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "check": "nuxt typecheck",
     "fmt": "oxfmt",
-    "lint": "oxlint",
-    "check": "tsc"
+    "lint": "oxlint"
   },
   "dependencies": {
-    "@hookform/resolvers": "catalog:",
-    "@tanstack/react-query": "catalog:",
+    "@lucide/vue": "catalog:",
+    "@tailwindcss/vite": "catalog:",
+    "@tanstack/vue-query": "catalog:",
+    "@vee-validate/zod": "catalog:",
     "api-client": "workspace:*",
-    "axios": "catalog:",
-    "lucide-react": "catalog:",
-    "next": "^16.3.4",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "react-hook-form": "catalog:",
-    "sonner": "catalog:",
+    "nuxt": "catalog:",
+    "shadcn-vue": "catalog:",
+    "tailwindcss": "catalog:",
     "ui": "workspace:*",
+    "vee-validate": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "vue-sonner": "catalog:",
     "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "babel-plugin-react-compiler": "catalog:",
-    "tailwindcss": "catalog:"
   }
 }

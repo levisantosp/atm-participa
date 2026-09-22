@@ -1,34 +1,19 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "ignorePatterns": ["ui/**", "api-client/**"],
-  "plugins": ["typescript", "unicorn", "oxc", "nextjs", "react"],
+  "plugins": ["typescript", "unicorn", "oxc", "vue"],
   "categories": {
     "correctness": "error",
     "perf": "warn"
   },
   "rules": {
     "typescript/no-floating-promises": "error",
-    "eqeqeq": "error",
-    "react/jsx-no-constructed-context-values": "off"
+    "eqeqeq": "error"
   },
   "env": {
     "builtin": true
   },
   "options": {
     "typeAware": true
-  },
-  "overrides": [
-    {
-      "files": ["./admin/**"],
-      "rules": {
-        "nextjs/no-img-element": "off"
-      }
-    },
-    {
-      "files": ["./admin/**", "./web/**"],
-      "rules": {
-        "typescript/no-redundant-type-constituents": "off"
-      }
-    }
-  ]
+  }
 }

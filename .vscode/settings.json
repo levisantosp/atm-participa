@@ -34,6 +34,9 @@
   "[yaml]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
+  "[vue]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
   "js/ts.preferences.importModuleSpecifier": "shortest",
   "js/ts.preferences.importModuleSpecifierEnding": "minimal"
 }
