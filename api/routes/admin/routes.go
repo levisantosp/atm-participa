@@ -10,4 +10,5 @@ func Routes(api huma.API) {
 	group.UseMiddleware(middlewares.Auth(api, true))
 
 	huma.Get(group, "/issues", GetIssues)
+	huma.Delete(group, "/issues/{id}", DeleteIssue)
 }
