@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/levisantosp/altamira-participa/api/db"
 	"github.com/levisantosp/altamira-participa/api/redis"
+	"github.com/levisantosp/altamira-participa/api/routes/admin"
 	"github.com/levisantosp/altamira-participa/api/routes/auth"
 	"github.com/levisantosp/altamira-participa/api/routes/issues"
 	"github.com/levisantosp/altamira-participa/api/routes/users"
@@ -50,6 +51,7 @@ func main() {
 	auth.Routes(api)
 	users.Routes(api)
 	issues.Routes(api)
+	admin.Routes(api)
 
 	log.Println("HTTP server running at http://localhost:3333")
 	if err := http.ListenAndServe(":3333", r); err != nil {
