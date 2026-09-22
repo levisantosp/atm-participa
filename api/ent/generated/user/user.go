@@ -74,7 +74,7 @@ func ValidColumn(column string) bool {
 // package on the initialization of the application. Therefore,
 // it should be imported in the main as follows:
 //
-//	import _ "github.com/levisantosp/altamira-participa/api/ent/generated/runtime"
+//	import _ "github.com/levisantosp/atm-participa/api/ent/generated/runtime"
 var (
 	Hooks [1]ent.Hook
 	// DefaultIsAdmin holds the default value on creation for the "is_admin" field.

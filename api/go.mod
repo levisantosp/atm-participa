@@ -1,4 +1,4 @@
-module github.com/levisantosp/altamira-participa/api
+module github.com/levisantosp/atm-participa/api
 
 go 1.27.0
 

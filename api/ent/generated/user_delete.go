@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/predicate"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/user"
+	"github.com/levisantosp/atm-participa/api/ent/generated/predicate"
+	"github.com/levisantosp/atm-participa/api/ent/generated/user"
 )
 
 // UserDelete is the builder for deleting a User entity.

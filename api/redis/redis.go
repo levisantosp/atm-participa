@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"github.com/levisantosp/altamira-participa/api/utils"
+	"github.com/levisantosp/atm-participa/api/utils"
 	"github.com/redis/go-redis/v9"
 )
 

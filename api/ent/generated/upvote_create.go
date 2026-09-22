@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/issue"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/upvote"
+	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/api/ent/generated/upvote"
 )
 
 // UpvoteCreate is the builder for creating a Upvote entity.

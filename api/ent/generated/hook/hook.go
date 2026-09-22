@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/levisantosp/altamira-participa/api/ent/generated"
+	"github.com/levisantosp/atm-participa/api/ent/generated"
 )
 
 // The AccountFunc type is an adapter to allow the use of ordinary

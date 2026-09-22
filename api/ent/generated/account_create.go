@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/account"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/user"
+	"github.com/levisantosp/atm-participa/api/ent/generated/account"
+	"github.com/levisantosp/atm-participa/api/ent/generated/user"
 )
 
 // AccountCreate is the builder for creating a Account entity.

@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/file"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/predicate"
+	"github.com/levisantosp/atm-participa/api/ent/generated/file"
+	"github.com/levisantosp/atm-participa/api/ent/generated/predicate"
 )
 
 // FileDelete is the builder for deleting a File entity.

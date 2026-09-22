@@ -7,12 +7,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/danielgtaylor/huma/v2"
-	"github.com/levisantosp/altamira-participa/api/db"
-	"github.com/levisantosp/altamira-participa/api/dtos"
-	"github.com/levisantosp/altamira-participa/api/ent/generated"
-	"github.com/levisantosp/altamira-participa/api/middlewares"
-	"github.com/levisantosp/altamira-participa/api/r2"
-	"github.com/levisantosp/altamira-participa/api/utils"
+	"github.com/levisantosp/atm-participa/api/db"
+	"github.com/levisantosp/atm-participa/api/dtos"
+	"github.com/levisantosp/atm-participa/api/ent/generated"
+	"github.com/levisantosp/atm-participa/api/middlewares"
+	"github.com/levisantosp/atm-participa/api/r2"
+	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 type CreateIssueOutput struct {

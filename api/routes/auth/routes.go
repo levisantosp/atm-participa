@@ -2,7 +2,7 @@ package auth
 
 import (
 	"github.com/danielgtaylor/huma/v2"
-	"github.com/levisantosp/altamira-participa/api/middlewares"
+	"github.com/levisantosp/atm-participa/api/middlewares"
 )
 
 func Routes(api huma.API) {

@@ -3,8 +3,8 @@ package tests
 import (
 	"testing"
 
-	"github.com/levisantosp/altamira-participa/api/db"
-	"github.com/levisantosp/altamira-participa/api/ent/generated"
+	"github.com/levisantosp/atm-participa/api/db"
+	"github.com/levisantosp/atm-participa/api/ent/generated"
 )
 
 func CreateUser(t *testing.T) *generated.User {

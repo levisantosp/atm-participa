@@ -9,15 +9,15 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/levisantosp/altamira-participa/api/db"
-	"github.com/levisantosp/altamira-participa/api/redis"
-	"github.com/levisantosp/altamira-participa/api/routes/admin"
-	"github.com/levisantosp/altamira-participa/api/routes/auth"
-	"github.com/levisantosp/altamira-participa/api/routes/issues"
-	"github.com/levisantosp/altamira-participa/api/routes/users"
-	"github.com/levisantosp/altamira-participa/api/utils"
+	"github.com/levisantosp/atm-participa/api/db"
+	"github.com/levisantosp/atm-participa/api/redis"
+	"github.com/levisantosp/atm-participa/api/routes/admin"
+	"github.com/levisantosp/atm-participa/api/routes/auth"
+	"github.com/levisantosp/atm-participa/api/routes/issues"
+	"github.com/levisantosp/atm-participa/api/routes/users"
+	"github.com/levisantosp/atm-participa/api/utils"
 
-	_ "github.com/levisantosp/altamira-participa/api/ent/generated/runtime"
+	_ "github.com/levisantosp/atm-participa/api/ent/generated/runtime"
 )
 
 func main() {

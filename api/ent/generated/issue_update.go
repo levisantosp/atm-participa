@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/file"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/issue"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/predicate"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/upvote"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/user"
+	"github.com/levisantosp/atm-participa/api/ent/generated/file"
+	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/api/ent/generated/predicate"
+	"github.com/levisantosp/atm-participa/api/ent/generated/upvote"
+	"github.com/levisantosp/atm-participa/api/ent/generated/user"
 )
 
 // IssueUpdate is the builder for updating Issue entities.

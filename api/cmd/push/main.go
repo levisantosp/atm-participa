@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/levisantosp/altamira-participa/api/db"
-	"github.com/levisantosp/altamira-participa/api/utils"
+	"github.com/levisantosp/atm-participa/api/db"
+	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 func main() {

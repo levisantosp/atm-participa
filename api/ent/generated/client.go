@@ -9,17 +9,17 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/levisantosp/altamira-participa/api/ent/generated/migrate"
+	"github.com/levisantosp/atm-participa/api/ent/generated/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/account"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/file"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/issue"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/upvote"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/user"
+	"github.com/levisantosp/atm-participa/api/ent/generated/account"
+	"github.com/levisantosp/atm-participa/api/ent/generated/file"
+	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/api/ent/generated/upvote"
+	"github.com/levisantosp/atm-participa/api/ent/generated/user"
 )
 
 // Client is the client that holds all ent builders.

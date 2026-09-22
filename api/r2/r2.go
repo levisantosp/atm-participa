@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/levisantosp/altamira-participa/api/utils"
+	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 type Client struct {

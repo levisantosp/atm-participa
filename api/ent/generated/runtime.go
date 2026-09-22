@@ -2,4 +2,4 @@
 
 package generated
 
-// The schema-stitching logic is generated in github.com/levisantosp/altamira-participa/api/ent/generated/runtime/runtime.go
+// The schema-stitching logic is generated in github.com/levisantosp/atm-participa/api/ent/generated/runtime/runtime.go

@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/danielgtaylor/huma/v2"
-	"github.com/levisantosp/altamira-participa/api/middlewares"
-	"github.com/levisantosp/altamira-participa/api/redis"
-	"github.com/levisantosp/altamira-participa/api/utils"
+	"github.com/levisantosp/atm-participa/api/middlewares"
+	"github.com/levisantosp/atm-participa/api/redis"
+	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 func SignOut(ctx context.Context, input *struct{}) (*SignInOutput, error) {

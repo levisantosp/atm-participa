@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/levisantosp/altamira-participa/api/ent/generated"
+	"github.com/levisantosp/atm-participa/api/ent/generated"
 	// required by schema hooks.
-	_ "github.com/levisantosp/altamira-participa/api/ent/generated/runtime"
+	_ "github.com/levisantosp/atm-participa/api/ent/generated/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/migrate"
+	"github.com/levisantosp/atm-participa/api/ent/generated/migrate"
 )
 
 type (

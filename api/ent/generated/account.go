@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/account"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/user"
+	"github.com/levisantosp/atm-participa/api/ent/generated/account"
+	"github.com/levisantosp/atm-participa/api/ent/generated/user"
 )
 
 // Account is the model entity for the Account schema.

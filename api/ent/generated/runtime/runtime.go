@@ -5,12 +5,12 @@ package runtime
 import (
 	"time"
 
-	"github.com/levisantosp/altamira-participa/api/ent/generated/account"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/file"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/issue"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/upvote"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/user"
-	"github.com/levisantosp/altamira-participa/api/ent/schema"
+	"github.com/levisantosp/atm-participa/api/ent/generated/account"
+	"github.com/levisantosp/atm-participa/api/ent/generated/file"
+	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/api/ent/generated/upvote"
+	"github.com/levisantosp/atm-participa/api/ent/generated/user"
+	"github.com/levisantosp/atm-participa/api/ent/schema"
 )
 
 // The init function reads all schema descriptors with runtime code

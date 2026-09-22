@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/levisantosp/altamira-participa/api/ent/generated"
-	"github.com/levisantosp/altamira-participa/api/middlewares"
-	"github.com/levisantosp/altamira-participa/api/redis"
+	"github.com/levisantosp/atm-participa/api/ent/generated"
+	"github.com/levisantosp/atm-participa/api/middlewares"
+	"github.com/levisantosp/atm-participa/api/redis"
 )
 
 func CreateSession(user *generated.User, t *testing.T) middlewares.Session {

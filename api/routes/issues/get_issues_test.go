@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/danielgtaylor/huma/v2/humatest"
-	"github.com/levisantosp/altamira-participa/api/dtos"
-	"github.com/levisantosp/altamira-participa/api/tests"
-	"github.com/levisantosp/altamira-participa/api/utils"
+	"github.com/levisantosp/atm-participa/api/dtos"
+	"github.com/levisantosp/atm-participa/api/tests"
+	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 func TestGetIssues(t *testing.T) {

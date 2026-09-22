@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/file"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/api/ent/generated/file"
+	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
 )
 
 // File is the model entity for the File schema.

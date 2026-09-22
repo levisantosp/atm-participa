@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/predicate"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/upvote"
+	"github.com/levisantosp/atm-participa/api/ent/generated/predicate"
+	"github.com/levisantosp/atm-participa/api/ent/generated/upvote"
 )
 
 // UpvoteDelete is the builder for deleting a Upvote entity.

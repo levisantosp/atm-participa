@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
-	"github.com/levisantosp/altamira-participa/api/ent/generated"
-	"github.com/levisantosp/altamira-participa/api/utils"
+	"github.com/levisantosp/atm-participa/api/ent/generated"
+	"github.com/levisantosp/atm-participa/api/utils"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )

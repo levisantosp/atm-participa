@@ -15,11 +15,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/danielgtaylor/huma/v2/humatest"
-	"github.com/levisantosp/altamira-participa/api/dtos"
-	"github.com/levisantosp/altamira-participa/api/r2"
-	"github.com/levisantosp/altamira-participa/api/tests"
+	"github.com/levisantosp/atm-participa/api/dtos"
+	"github.com/levisantosp/atm-participa/api/r2"
+	"github.com/levisantosp/atm-participa/api/tests"
 
-	_ "github.com/levisantosp/altamira-participa/api/ent/generated/runtime"
+	_ "github.com/levisantosp/atm-participa/api/ent/generated/runtime"
 )
 
 func createMultipartBody(

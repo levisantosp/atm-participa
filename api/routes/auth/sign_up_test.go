@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/danielgtaylor/huma/v2/humatest"
-	"github.com/levisantosp/altamira-participa/api/tests"
+	"github.com/levisantosp/atm-participa/api/tests"
 )
 
 func TestSignUp(t *testing.T) {

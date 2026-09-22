@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/levisantosp/altamira-participa/api/ent/generated"
-	"github.com/levisantosp/altamira-participa/api/ent/generated/hook"
+	"github.com/levisantosp/atm-participa/api/ent/generated"
+	"github.com/levisantosp/atm-participa/api/ent/generated/hook"
 )
 
 // User holds the schema definition for the User entity.
