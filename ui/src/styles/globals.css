@@ -1,4 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@font-face {
+  font-family: 'Amazon Ember';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://m.media-amazon.com/images/G/01/AUIClients/AmazonUIBaseCSS-amazonember_rg-fd81bacb6a659a8c8c95828226b74594ab985060._V299195749_.woff2')
+    format('woff2');
+}
 
 @import 'tailwindcss';
 @import 'tw-animate-css';
@@ -6,6 +13,10 @@
 
 @custom-variant dark (&:is(.dark *));
 @source '../components';
+
+html {
+  font-size: clamp(0.1rem, calc(0.9rem + 0.22vw), 1.25rem);
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -48,7 +59,8 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-heading: var(--font-sans);
-  --font-sans: 'Inter Variable', sans-serif;
+  --font-sans: 'Amazon Ember', sans-serif;
+  --text-base: 1.625rem;
 }
 
 :root {
@@ -93,6 +105,9 @@
   body {
     @apply bg-background text-foreground;
     @apply font-sans;
+
+    /*font-size: 27px;
+    line-height: 1.5;*/
   }
   html {
     @apply font-sans;
