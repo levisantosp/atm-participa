@@ -92,7 +92,7 @@ const signIn = handleSubmit(async (data) => {
             </div>
             <div class="grid gap-2">
               <div class="flex items-center">
-                <Label for="password">Password</Label>
+                <Label for="password">Senha</Label>
                 <a
                   href="#"
                   class="ml-auto inline-block text-sm underline-offset-4 hover:underline"
