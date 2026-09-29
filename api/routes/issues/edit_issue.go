@@ -20,8 +20,8 @@ type EditIssueOutput struct {
 func EditIssue(ctx context.Context, input *struct {
 	ID   int64 `path:"id"`
 	Body struct {
-		Title       string `json:"title" maxLength:"72" minLength:"3" required:"true"`
-		Description string `json:"description" maxLength:"65000" minLength:"10" required:"true"`
+		Title       string `json:"title" maxLength:"72" minLength:"3"`
+		Description string `json:"description" maxLength:"65000" minLength:"10"`
 	}
 },
 ) (*EditIssueOutput, error) {

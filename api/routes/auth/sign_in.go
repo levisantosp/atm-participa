@@ -26,8 +26,8 @@ func SignInWithEmail(
 	ctx context.Context,
 	input *struct {
 		Body struct {
-			Email    string `json:"email" format:"email" required:"true"`
-			Password string `json:"password" minLength:"8" maxLength:"72" required:"true"`
+			Email    string `json:"email" format:"email"`
+			Password string `json:"password" minLength:"8" maxLength:"72"`
 		}
 	},
 ) (*SignInOutput, error) {
