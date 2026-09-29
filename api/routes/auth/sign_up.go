@@ -30,18 +30,12 @@ func SignUpWithEmail(
 ) (*SignInOutput, error) {
 	hash, err := utils.GeneratePasswordHash(input.Body.Password)
 	if err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	tx, err := db.Client.Tx(ctx)
 	if err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	defer func() {
@@ -60,10 +54,7 @@ func SignUpWithEmail(
 			)
 		}
 
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	_, err = tx.Account.Create().
@@ -72,26 +63,17 @@ func SignUpWithEmail(
 		SetUser(user).
 		Save(ctx)
 	if err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	if err := tx.Commit(); err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	sessionHash := make([]byte, 32)
 	_, err = rand.Read(sessionHash)
 	if err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	sessionId := hex.EncodeToString(sessionHash)
@@ -104,19 +86,13 @@ func SignUpWithEmail(
 		IsAdmin:     user.IsAdmin,
 	})
 	if err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	ttl := 7 * 24 * time.Hour
 	err = redis.Client.Set(ctx, "session:"+sessionId, session, ttl).Err()
 	if err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	sessionCookie := http.Cookie{

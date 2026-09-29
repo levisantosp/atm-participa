@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/danielgtaylor/huma/v2"
 	"github.com/levisantosp/atm-participa/api/db"
 	"github.com/levisantosp/atm-participa/api/dtos"
 	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
@@ -30,10 +29,7 @@ func GetIssues(
 		Limit(input.Limit + 1).
 		All(ctx)
 	if err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	items := make([]dtos.Issue, 0, len(issues))

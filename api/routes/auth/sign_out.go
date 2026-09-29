@@ -4,10 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/danielgtaylor/huma/v2"
 	"github.com/levisantosp/atm-participa/api/middlewares"
 	"github.com/levisantosp/atm-participa/api/redis"
-	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 func SignOut(ctx context.Context, input *struct{}) (*SignInOutput, error) {
@@ -15,10 +13,7 @@ func SignOut(ctx context.Context, input *struct{}) (*SignInOutput, error) {
 
 	if err := redis.Client.Unlink(ctx, "session:"+session.ID).
 		Err(); err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	return &SignInOutput{

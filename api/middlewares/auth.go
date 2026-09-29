@@ -9,8 +9,8 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/levisantosp/atm-participa/api/db"
 	"github.com/levisantosp/atm-participa/api/ent/generated"
+	"github.com/levisantosp/atm-participa/api/errors"
 	"github.com/levisantosp/atm-participa/api/redis"
-	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 type Session struct {
@@ -35,7 +35,12 @@ func Auth(
 	return func(ctx huma.Context, next func(huma.Context)) {
 		cookie, err := huma.ReadCookie(ctx, "session")
 		if err != nil {
-			huma.WriteErr(api, ctx, http.StatusUnauthorized, "Unauthorized")
+			huma.WriteErr(
+				api,
+				ctx,
+				http.StatusUnauthorized,
+				errors.Unauthorized,
+			)
 			return
 		}
 
@@ -43,48 +48,44 @@ func Auth(
 			Result()
 		if err != nil {
 			if err == redis.Nil {
-				huma.WriteErr(api, ctx, http.StatusUnauthorized, "Unauthorized")
+				huma.WriteErr(
+					api,
+					ctx,
+					http.StatusUnauthorized,
+					errors.Unauthorized,
+				)
 				return
 			}
-			utils.LogErr(
-				huma.Error500InternalServerError("Internal Server Error"),
-				err,
-			)
 			huma.WriteErr(
 				api,
 				ctx,
 				http.StatusInternalServerError,
-				"Internal Server Error",
+				errors.InternalServerError,
+				err,
 			)
 			return
 		}
 
 		var session Session
 		if err := json.Unmarshal([]byte(raw), &session); err != nil {
-			utils.LogErr(
-				huma.Error500InternalServerError("Internal Server Error"),
-				err,
-			)
 			huma.WriteErr(
 				api,
 				ctx,
 				http.StatusInternalServerError,
-				"Internal Server Error",
+				errors.InternalServerError,
+				err,
 			)
 			return
 		}
 
 		userId, err := strconv.ParseInt(session.UserId, 10, 64)
 		if err != nil {
-			utils.LogErr(
-				huma.Error500InternalServerError("Internal Server Error"),
-				err,
-			)
 			huma.WriteErr(
 				api,
 				ctx,
 				http.StatusInternalServerError,
-				"Internal Server Error",
+				errors.InternalServerError,
+				err,
 			)
 			return
 		}
@@ -92,20 +93,21 @@ func Auth(
 		user, err := db.Client.User.Get(ctx.Context(), userId)
 		if err != nil {
 			if generated.IsNotFound(err) {
-				huma.WriteErr(api, ctx, http.StatusUnauthorized, "Unauthorized")
+				huma.WriteErr(
+					api,
+					ctx,
+					http.StatusUnauthorized,
+					errors.Unauthorized,
+				)
 				return
 			}
-
-			utils.LogErr(
-				huma.Error500InternalServerError("Internal Server Error"),
-				err,
-			)
 
 			huma.WriteErr(
 				api,
 				ctx,
 				http.StatusInternalServerError,
-				"Internal Server Error",
+				errors.InternalServerError,
+				err,
 			)
 			return
 		}
@@ -115,7 +117,7 @@ func Auth(
 				api,
 				ctx,
 				http.StatusForbidden,
-				"Forbidden",
+				errors.Forbidden,
 			)
 			return
 		}

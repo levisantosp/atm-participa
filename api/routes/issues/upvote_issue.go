@@ -8,7 +8,6 @@ import (
 	"github.com/levisantosp/atm-participa/api/dtos"
 	"github.com/levisantosp/atm-participa/api/ent/generated"
 	"github.com/levisantosp/atm-participa/api/middlewares"
-	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 func UpvoteIssue(
@@ -54,10 +53,7 @@ func UpvoteIssue(
 			)
 		}
 
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	return &CreateIssueOutput{

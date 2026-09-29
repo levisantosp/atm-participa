@@ -4,12 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/danielgtaylor/huma/v2"
 	"github.com/levisantosp/atm-participa/api/db"
 	"github.com/levisantosp/atm-participa/api/middlewares"
 	"github.com/levisantosp/atm-participa/api/redis"
 	"github.com/levisantosp/atm-participa/api/routes/auth"
-	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 func DeleteAccount(
@@ -20,18 +18,12 @@ func DeleteAccount(
 	session := middlewares.MustGetSessionFromContext(ctx)
 
 	if err := db.Client.User.DeleteOneID(user.ID).Exec(ctx); err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	if err := redis.Client.Unlink(ctx, "session:"+session.ID).
 		Err(); err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	return &auth.SignInOutput{

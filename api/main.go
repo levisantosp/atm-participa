@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/levisantosp/atm-participa/api/db"
+	"github.com/levisantosp/atm-participa/api/errors"
 	"github.com/levisantosp/atm-participa/api/redis"
 	"github.com/levisantosp/atm-participa/api/routes/admin"
 	"github.com/levisantosp/atm-participa/api/routes/auth"
@@ -45,6 +46,20 @@ func main() {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("Hello, world!"))
 	})
+
+	huma.NewErrorWithContext = func(_ huma.Context, status int, msg string, errs ...error) huma.StatusError {
+		if status >= http.StatusInternalServerError {
+			for _, err := range errs {
+				if err != nil {
+					log.Println(err)
+				}
+			}
+
+			return huma.NewError(status, errors.InternalServerError)
+		}
+
+		return huma.NewError(status, msg, errs...)
+	}
 
 	api := humachi.New(r, huma.DefaultConfig("api docs", "0.0.0"))
 

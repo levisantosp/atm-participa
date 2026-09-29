@@ -12,7 +12,6 @@ import (
 	"github.com/levisantosp/atm-participa/api/ent/generated"
 	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
 	"github.com/levisantosp/atm-participa/api/r2"
-	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 func DeleteIssue(
@@ -70,10 +69,7 @@ func DeleteIssue(
 			return nil, huma.Error404NotFound("Demanda não encontrada")
 		}
 
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	return nil, nil

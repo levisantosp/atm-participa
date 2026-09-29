@@ -8,7 +8,6 @@ import (
 	"github.com/levisantosp/atm-participa/api/dtos"
 	"github.com/levisantosp/atm-participa/api/ent/generated"
 	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
-	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 type UpdateIssueOutput struct {
@@ -32,10 +31,7 @@ func UpdateIssueStatus(
 			return nil, huma.Error404NotFound("Demanda não encontrada")
 		}
 
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	return &UpdateIssueOutput{

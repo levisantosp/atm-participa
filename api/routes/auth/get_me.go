@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"github.com/danielgtaylor/huma/v2"
+	"github.com/levisantosp/atm-participa/api/errors"
 	"github.com/levisantosp/atm-participa/api/middlewares"
 	"github.com/levisantosp/atm-participa/api/redis"
-	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 type GetMeOutput struct {
@@ -20,26 +20,20 @@ func GetMe(ctx context.Context, input *struct {
 },
 ) (*GetMeOutput, error) {
 	if input.Session.Name == "" {
-		return nil, huma.Error404NotFound("Not Found")
+		return nil, huma.Error404NotFound(errors.NotFound)
 	}
 
 	raw, err := redis.Client.Get(ctx, "session:"+input.Session.Value).Result()
 	if err != nil {
 		if err == redis.Nil {
-			return nil, huma.Error404NotFound("Not Found")
+			return nil, huma.Error404NotFound(errors.NotFound)
 		}
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	var session middlewares.Session
 	if err := json.Unmarshal([]byte(raw), &session); err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	return &GetMeOutput{

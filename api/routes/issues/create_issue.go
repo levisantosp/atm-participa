@@ -12,7 +12,6 @@ import (
 	"github.com/levisantosp/atm-participa/api/ent/generated"
 	"github.com/levisantosp/atm-participa/api/middlewares"
 	"github.com/levisantosp/atm-participa/api/r2"
-	"github.com/levisantosp/atm-participa/api/utils"
 )
 
 type CreateIssueOutput struct {
@@ -79,10 +78,7 @@ func CreateIssue(
 		},
 	)
 	if err != nil {
-		return nil, utils.LogErr(
-			huma.Error500InternalServerError("Internal Server Error"),
-			err,
-		)
+		return nil, err
 	}
 
 	return &CreateIssueOutput{
