@@ -9,11 +9,11 @@ const route = useRoute()
 const router = useRouter()
 
 watch(
-  [() => session.isPending.value, () => session.data.value],
-  ([isPending, session]) => {
+  [() => session.isPending.value, () => session.data.value, () => route.path],
+  ([isPending, session, path]) => {
     if (isPending) return
 
-    const publicRoute = publicRoutes.get(route.path)
+    const publicRoute = publicRoutes.get(path)
 
     if (!session && publicRoute) return
 
