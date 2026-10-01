@@ -18,7 +18,8 @@ export default defineConfig({
       baseURL: process.env.API_URL
     }),
     pluginVueQuery({
-      client: 'axios'
+      client: 'axios',
+      hooks: true
     }),
     pluginZod()
   ]
