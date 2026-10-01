@@ -19,7 +19,11 @@ export default defineConfig({
     }),
     pluginVueQuery({
       client: 'axios',
-      hooks: true
+      hooks: true,
+      infinite: {
+        queryParam: 'cursor',
+        nextParam: 'nextCursor'
+      }
     }),
     pluginZod()
   ]

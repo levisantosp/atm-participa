@@ -2,6 +2,7 @@ package admin
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -68,7 +69,7 @@ func TestGetIssues(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if body.HasNextPage {
+		if body.NextCursor != nil {
 			t.Fatal("expected no next page")
 		}
 
@@ -96,12 +97,39 @@ func TestGetIssues(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if !body.HasNextPage {
+		if body.NextCursor == nil {
 			t.Fatal("expected next page")
 		}
 
 		if len(body.Items) != 2 {
 			t.Fatalf("expected %d items got %d", 2, len(body.Items))
+		}
+
+		if *body.NextCursor != body.Items[1].ID {
+			t.Fatal("expected cursor to match the last returned item")
+		}
+
+		path := fmt.Sprintf("/admin/issues?limit=2&cursor=%d", *body.NextCursor)
+		res = api.Get(path, tests.GetCookie(adminSession.ID))
+		if res.Code != http.StatusOK {
+			t.Fatalf("expected status %d got %d", http.StatusOK, res.Code)
+		}
+
+		var nextBody utils.CursorPaginatedResponse[dtos.Issue]
+		if err := json.NewDecoder(res.Body).Decode(&nextBody); err != nil {
+			t.Fatal(err)
+		}
+
+		if nextBody.NextCursor != nil {
+			t.Fatal("expected no next page")
+		}
+
+		if len(nextBody.Items) != 1 {
+			t.Fatalf("expected 1 item got %d", len(nextBody.Items))
+		}
+
+		if nextBody.Items[0].ID >= *body.NextCursor {
+			t.Fatal("expected the next page to contain older issues")
 		}
 	})
 

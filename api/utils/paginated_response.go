@@ -7,8 +7,8 @@ type PaginatedResponse[T any] struct {
 }
 
 type CursorPaginatedResponse[T any] struct {
-	HasNextPage bool `json:"hasNextPage"`
-	Items       []T  `json:"items"`
+	NextCursor *int64 `json:"nextCursor"`
+	Items      []T    `json:"items"`
 }
 
 func PaginatedResponseFrom[T any](
@@ -32,15 +32,18 @@ func PaginatedResponseFrom[T any](
 func CursorPaginatedResponseFrom[T any](
 	items []T,
 	limit int,
+	getCursor func(T) int64,
 ) CursorPaginatedResponse[T] {
-	hasNextPage := len(items) > limit
+	var nextCursor *int64
 
-	if hasNextPage {
+	if len(items) > limit {
 		items = items[:limit]
+		cursor := getCursor(items[len(items)-1])
+		nextCursor = &cursor
 	}
 
 	return CursorPaginatedResponse[T]{
-		HasNextPage: hasNextPage,
-		Items:       items,
+		NextCursor: nextCursor,
+		Items:      items,
 	}
 }

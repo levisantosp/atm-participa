@@ -23,11 +23,15 @@ func GetIssues(
 		Cursor int64 `query:"cursor" minimum:"1"`
 	},
 ) (*GetIssuesOutput, error) {
-	issues, err := db.Client.Issue.Query().
-		Where(issue.IDGT(input.Cursor)).
+	query := db.Client.Issue.Query().
 		Order(issue.ByID(sql.OrderDesc())).
-		Limit(input.Limit + 1).
-		All(ctx)
+		Limit(input.Limit + 1)
+
+	if input.Cursor > 0 {
+		query = query.Where(issue.IDLT(input.Cursor))
+	}
+
+	issues, err := query.All(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -38,6 +42,10 @@ func GetIssues(
 	}
 
 	return &GetIssuesOutput{
-		Body: utils.CursorPaginatedResponseFrom(items, input.Limit),
+		Body: utils.CursorPaginatedResponseFrom(
+			items,
+			input.Limit,
+			func(item dtos.Issue) int64 { return item.ID },
+		),
 	}, nil
 }
