@@ -7,6 +7,8 @@ import (
 	"github.com/levisantosp/atm-participa/api/db"
 	"github.com/levisantosp/atm-participa/api/dtos"
 	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/api/r2"
+	"github.com/levisantosp/atm-participa/api/routes"
 	"github.com/levisantosp/atm-participa/api/utils"
 )
 
@@ -24,6 +26,7 @@ func GetIssues(
 	},
 ) (*GetIssuesOutput, error) {
 	query := db.Client.Issue.Query().
+		WithIssueFiles().
 		Order(issue.ByID(sql.OrderDesc())).
 		Limit(input.Limit + 1)
 
@@ -36,9 +39,14 @@ func GetIssues(
 		return nil, err
 	}
 
-	items := make([]dtos.Issue, 0, len(issues))
-	for _, item := range issues {
-		items = append(items, dtos.IssueFrom(item))
+	client, err := r2.New(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	items, err := routes.IssueResponsesFrom(ctx, issues, client)
+	if err != nil {
+		return nil, err
 	}
 
 	return &GetIssuesOutput{

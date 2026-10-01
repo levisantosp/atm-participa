@@ -2,6 +2,7 @@ package r2
 
 import (
 	"context"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -39,4 +40,23 @@ func New(ctx context.Context) (*Client, error) {
 		S3:     client,
 		Bucket: utils.Env.CloudflareR2Bucket,
 	}, nil
+}
+
+func (c *Client) PresignGetObject(
+	ctx context.Context,
+	key string,
+) (string, error) {
+	presigned, err := s3.NewPresignClient(c.S3).PresignGetObject(
+		ctx,
+		&s3.GetObjectInput{
+			Bucket: aws.String(c.Bucket),
+			Key:    aws.String(key),
+		},
+		s3.WithPresignExpires(15*time.Minute),
+	)
+	if err != nil {
+		return "", err
+	}
+
+	return presigned.URL, nil
 }
