@@ -17,6 +17,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@kubb/adapter-oas": "catalog:",
     "@kubb/plugin-axios": "catalog:",
     "@kubb/plugin-ts": "catalog:",
     "@kubb/plugin-vue-query": "catalog:",

@@ -1,3 +1,4 @@
+import { adapterOas } from '@kubb/adapter-oas'
 import { pluginAxios } from '@kubb/plugin-axios'
 import { pluginTs } from '@kubb/plugin-ts'
 import { pluginVueQuery } from '@kubb/plugin-vue-query'
@@ -22,9 +23,13 @@ export default defineConfig({
       hooks: true,
       infinite: {
         queryParam: 'cursor',
-        nextParam: 'nextCursor'
+        nextParam: 'nextCursor',
+        initialPageParam: undefined
       }
     }),
     pluginZod()
-  ]
+  ],
+  adapter: adapterOas({
+    integerType: 'number'
+  })
 })
