@@ -2,7 +2,6 @@ package issues
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -44,9 +43,16 @@ func DeleteIssue(
 			len(issue.Edges.IssueFiles),
 		)
 		for _, file := range issue.Edges.IssueFiles {
-			objects = append(objects, types.ObjectIdentifier{
-				Key: aws.String(fmt.Sprintf("issues/%d/%s", issue.ID, file.ID)),
-			})
+			keys, err := client.IssueFileObjectKeys(ctx, issue.ID, file.ID)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, key := range keys {
+				objects = append(objects, types.ObjectIdentifier{
+					Key: aws.String(key),
+				})
+			}
 		}
 
 		if len(objects) > 0 {

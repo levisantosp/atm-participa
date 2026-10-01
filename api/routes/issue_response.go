@@ -2,7 +2,6 @@ package routes
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/levisantosp/atm-participa/api/dtos"
 	"github.com/levisantosp/atm-participa/api/ent/generated"
@@ -20,14 +19,18 @@ func IssueResponsesFrom(
 		response := dtos.IssueFrom(item)
 		if len(item.Edges.IssueFiles) > 0 {
 			file := item.Edges.IssueFiles[0]
-			imageURL, err := client.PresignGetObject(
-				ctx,
-				fmt.Sprintf("issues/%d/%s", item.ID, file.ID),
-			)
+			keys, err := client.IssueFileObjectKeys(ctx, item.ID, file.ID)
 			if err != nil {
 				return nil, err
 			}
-			response.ImageURL = imageURL
+
+			if len(keys) > 0 {
+				imageURL, err := client.PresignGetObject(ctx, keys[0])
+				if err != nil {
+					return nil, err
+				}
+				response.ImageURL = imageURL
+			}
 		}
 
 		responses = append(responses, response)
