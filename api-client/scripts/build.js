@@ -1,6 +1,8 @@
 import { readdirSync, writeFileSync } from 'node:fs'
 
-let content = `import { client } from './gen/.kubb/client'
+let content = `// @ts-nocheck
+
+import { client } from './gen/.kubb/client'
 
 client.interceptors.request.use(async (req) => {
   req.withCredentials = true
