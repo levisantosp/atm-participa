@@ -44,12 +44,12 @@ func UpvoteIssue(
 	)
 	if err != nil {
 		if generated.IsNotFound(err) {
-			return nil, huma.Error404NotFound("Demanda não encontrada")
+			return nil, huma.Error404NotFound("Ocorrência não encontrada")
 		}
 
 		if generated.IsConstraintError(err) {
 			return nil, huma.Error409Conflict(
-				"Você só pode apoiar uma demanda uma unica vez.",
+				"Você só pode apoiar uma ocorrência uma unica vez.",
 			)
 		}
 

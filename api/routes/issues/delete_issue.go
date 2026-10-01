@@ -69,7 +69,7 @@ func DeleteIssue(
 	})
 	if err != nil {
 		if generated.IsNotFound(err) {
-			return nil, huma.Error404NotFound("Demanda não encontrada")
+			return nil, huma.Error404NotFound("Ocorrência não encontrada")
 		}
 
 		return nil, err
