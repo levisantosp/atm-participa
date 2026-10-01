@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@lucide/vue": "catalog:",
+    "@nuxt/image": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/vue-query": "catalog:",
     "@vee-validate/zod": "catalog:",
