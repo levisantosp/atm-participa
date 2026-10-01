@@ -1,0 +1,266 @@
+name: deploy apps
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - 'README*'
+      - 'LICENSE'
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy to production
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+
+      - name: detect changed apps
+        uses: dorny/paths-filter@master
+        id: changes
+        with:
+          # Use the previous push as the base; initial pushes include every file.
+          base: ${{ github.ref }}
+          filters: |
+            admin:
+              - 'admin/**'
+            web:
+              - 'web/**'
+            frontend:
+              - 'ui/**'
+              - 'api-client/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - '.oxfmtrc.json'
+              - '.oxlintrc.json'
+            api:
+              - 'api/**'
+              - 'go.work'
+              - 'go.work.sum'
+              - 'Makefile'
+              - '.golangci.yml'
+            global:
+              - 'docker-compose.yml'
+              - '.dockerignore'
+              - '.github/workflows/deploy.yml'
+
+      - name: wait for validation workflows
+        id: checks
+        uses: actions/github-script@main
+        with:
+          script: |
+            const workflows = ['oxc.yml', 'go-format-and-lint.yml', 'go-tests.yml']
+            const conclusions = {}
+            const registrationDeadline = Date.now() + 60_000
+            const deadline = Date.now() + 30 * 60_000
+
+            // Allow push workflows to register before treating an absent run as skipped.
+            while (Object.keys(conclusions).length < workflows.length) {
+              await Promise.all(workflows.map(async (workflow) => {
+                if (conclusions[workflow]) return
+
+                const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+                  ...context.repo,
+                  workflow_id: workflow,
+                  branch: 'main',
+                  event: 'push',
+                  head_sha: context.sha,
+                  per_page: 100
+                })
+                const run = runs
+                  .filter((run) => run.head_sha === context.sha &&
+                    run.head_branch === 'main' && run.event === 'push')
+                  .sort((a, b) => b.id - a.id)[0]
+
+                if (!run) {
+                  if (Date.now() >= registrationDeadline) {
+                    conclusions[workflow] = 'not_run'
+                    core.info(workflow + ': not run for this commit')
+                  }
+                } else if (run.status === 'completed' && run.conclusion) {
+                  conclusions[workflow] = run.conclusion
+                  core.info(workflow + ': ' + run.conclusion)
+                } else if (Date.now() >= deadline) {
+                  conclusions[workflow] = 'timed_out'
+                  core.warning(workflow + ': timed out waiting for validation')
+                } else {
+                  core.info(workflow + ': waiting (' + run.status + ')')
+                }
+              }))
+
+              if (Object.keys(conclusions).length < workflows.length) {
+                await new Promise((resolve) => setTimeout(resolve, 10_000))
+              }
+            }
+
+            const allowed = (workflow) =>
+              ['success', 'skipped', 'not_run'].includes(conclusions[workflow])
+            const frontendAllowed = allowed('oxc.yml')
+            const apiAllowed = allowed('go-format-and-lint.yml') && allowed('go-tests.yml')
+
+            core.setOutput('frontend_allowed', frontendAllowed)
+            core.setOutput('api_allowed', apiAllowed)
+            core.setOutput('oxc_conclusion', conclusions['oxc.yml'])
+            core.setOutput('go_lint_conclusion', conclusions['go-format-and-lint.yml'])
+
+            if (!frontendAllowed) core.warning('OXC did not pass. Skipping admin and web deploys.')
+            if (!apiAllowed) core.warning('Go validation did not pass. Skipping api deploy.')
+
+            await core.summary
+              .addTable([
+                [{ data: 'Workflow', header: true }, { data: 'Conclusion', header: true }],
+                ...workflows.map((workflow) => [workflow, conclusions[workflow]])
+              ])
+              .addRaw('Frontend deploy allowed: ' + frontendAllowed + '\n\n')
+              .addRaw('API deploy allowed: ' + apiAllowed + '\n')
+              .write()
+
+      - name: calculate services to deploy
+        id: services
+        env:
+          CHANGED_ADMIN: ${{ steps.changes.outputs.admin }}
+          CHANGED_WEB: ${{ steps.changes.outputs.web }}
+          CHANGED_FRONTEND: ${{ steps.changes.outputs.frontend }}
+          CHANGED_API: ${{ steps.changes.outputs.api }}
+          CHANGED_GLOBAL: ${{ steps.changes.outputs.global }}
+          FRONTEND_ALLOWED: ${{ steps.checks.outputs.frontend_allowed }}
+          API_ALLOWED: ${{ steps.checks.outputs.api_allowed }}
+        run: |
+          SERVICES_TO_DEPLOY=()
+
+          if [ "$API_ALLOWED" = "true" ] &&
+            { [ "$CHANGED_API" = "true" ] || [ "$CHANGED_GLOBAL" = "true" ]; }; then
+            SERVICES_TO_DEPLOY+=(api)
+          fi
+
+          if [ "$FRONTEND_ALLOWED" = "true" ]; then
+            if [ "$CHANGED_WEB" = "true" ] || [ "$CHANGED_FRONTEND" = "true" ] || [ "$CHANGED_GLOBAL" = "true" ]; then
+              SERVICES_TO_DEPLOY+=(web)
+            fi
+
+            if [ "$CHANGED_ADMIN" = "true" ] || [ "$CHANGED_FRONTEND" = "true" ] || [ "$CHANGED_GLOBAL" = "true" ]; then
+              SERVICES_TO_DEPLOY+=(admin)
+            fi
+          fi
+
+          echo "services=${SERVICES_TO_DEPLOY[*]}" >> "$GITHUB_OUTPUT"
+
+          if [ "${#SERVICES_TO_DEPLOY[@]}" -eq 0 ]; then
+            echo "No deployable changes or all changed apps were blocked by validation."
+          else
+            echo "Deploying: ${SERVICES_TO_DEPLOY[*]}"
+          fi
+
+      - name: resolve deploy sha
+        if: steps.services.outputs.services != ''
+        id: resolve
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          OXC_CONCLUSION: ${{ steps.checks.outputs.oxc_conclusion }}
+          GO_LINT_CONCLUSION: ${{ steps.checks.outputs.go_lint_conclusion }}
+        run: |
+          git fetch origin refs/heads/main:refs/remotes/origin/main --force
+          git merge-base --is-ancestor "$SOURCE_SHA" origin/main
+
+          DEPLOY_SHA="$SOURCE_SHA"
+
+          # Include only the successful formatters' auto-commits after this push.
+          # Stop before any unrelated commit so another push cannot bypass its checks.
+          while IFS= read -r commit; do
+            [ "$(git show -s --format=%P "$commit")" = "$DEPLOY_SHA" ] || break
+            [ "$(git show -s --format=%ae "$commit")" = "41898282+github-actions[bot]@users.noreply.github.com" ] || break
+
+            case "$(git show -s --format=%s "$commit")" in
+              "style: run oxc autofix")
+                [ "$OXC_CONCLUSION" = "success" ] || break
+                ;;
+              "style: run go fmt and golangci-lint autofix")
+                [ "$GO_LINT_CONCLUSION" = "success" ] || break
+                ;;
+              *) break ;;
+            esac
+
+            DEPLOY_SHA="$commit"
+          done < <(git rev-list --reverse --ancestry-path "$SOURCE_SHA..origin/main")
+
+          echo "deploy_sha=$DEPLOY_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: setup ssh
+        if: steps.services.outputs.services != ''
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/key
+          chmod 600 ~/.ssh/key
+          cat >>~/.ssh/config << END
+          Host prod
+            HostName $SSH_HOST
+            User $SSH_USERNAME
+            Port $SSH_PORT
+            IdentityFile ~/.ssh/key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USERNAME: ${{ secrets.USERNAME }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.HOST }}
+          SSH_PORT: 22
+
+      - name: deploy changed apps
+        if: steps.services.outputs.services != ''
+        env:
+          DEPLOY_SHA: ${{ steps.resolve.outputs.deploy_sha }}
+          SERVICES_TO_DEPLOY: ${{ steps.services.outputs.services }}
+        run: |
+          # Expand these values on the runner to pass them as remote script arguments.
+          # shellcheck disable=SC2029
+          ssh prod "bash -s -- '$DEPLOY_SHA' '$SERVICES_TO_DEPLOY'" <<'REMOTE'
+            set -euo pipefail
+
+            DEPLOY_SHA="$1"
+            read -r -a SERVICES <<< "$2"
+
+            cd "$HOME/atm-participa"
+            git fetch origin main
+            git merge-base --is-ancestor "$DEPLOY_SHA" origin/main
+            git switch -C main "$DEPLOY_SHA"
+            git branch --set-upstream-to=origin/main main
+
+            for service in "${SERVICES[@]}"; do
+              if [ "$service" = "web" ]; then
+                echo "Waiting for the API OpenAPI endpoint before building web..."
+                API_READY_DEADLINE=$((SECONDS + 60))
+
+                until docker compose exec -T api wget -q -T 5 -O /dev/null http://127.0.0.1:3333/openapi.json; do
+                  if [ "$SECONDS" -ge "$API_READY_DEADLINE" ]; then
+                    echo "API did not become ready within 60 seconds. Refusing to build web." >&2
+                    exit 1
+                  fi
+
+                  sleep 2
+                done
+              fi
+
+              echo "Rebuilding $service..."
+
+              if [ "$service" = "api" ]; then
+                docker compose up -d --build "$service"
+              else
+                # Keep frontend deploys from recreating an API blocked by Go validation.
+                docker compose up -d --build --no-deps "$service"
+              fi
+            done
+          REMOTE
