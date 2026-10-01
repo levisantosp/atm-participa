@@ -40,7 +40,6 @@ const router = useRouter()
 const signIn = handleSubmit(async (data) => {
   try {
     await auth.signIn.email(data.email, data.password)
-    console.log('logado')
     router.push('/')
   } catch (err) {
     console.error(err)
