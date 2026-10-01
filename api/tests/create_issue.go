@@ -2,7 +2,6 @@ package tests
 
 import (
 	"bytes"
-	"fmt"
 	"strings"
 	"testing"
 
@@ -51,9 +50,11 @@ func CreateIssueWithImage(
 
 			_, err = client.S3.PutObject(t.Context(), &s3.PutObjectInput{
 				Bucket: aws.String(client.Bucket),
-				Key: aws.String(
-					fmt.Sprintf("issues/%d/%s", issue.ID, file.ID),
-				),
+				Key: aws.String(r2.IssueFileObjectKey(
+					issue.ID,
+					file.ID,
+					"png",
+				)),
 				Body: bytes.NewReader(
 					[]byte{
 						0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,

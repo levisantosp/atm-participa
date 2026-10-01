@@ -9,6 +9,8 @@ import (
 	"github.com/levisantosp/atm-participa/api/dtos"
 	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
 	"github.com/levisantosp/atm-participa/api/ent/generated/user"
+	"github.com/levisantosp/atm-participa/api/r2"
+	"github.com/levisantosp/atm-participa/api/routes"
 	"github.com/levisantosp/atm-participa/api/utils"
 )
 
@@ -29,9 +31,13 @@ func GetIssues(
 ) (*GetUserIssuesOutput, error) {
 	query := db.Client.Issue.Query().
 		Where(issue.HasUserWith(user.IDEQ(input.UserID))).
-		Where(issue.IDGT(input.Cursor)).
+		WithIssueFiles().
 		Order(issue.ByID(sql.OrderDesc())).
 		Limit(input.Limit + 1)
+
+	if input.Cursor > 0 {
+		query = query.Where(issue.IDLT(input.Cursor))
+	}
 
 	if input.Status != "" {
 		query = query.Where(issue.StatusEQ(issue.Status(input.Status)))
@@ -42,13 +48,21 @@ func GetIssues(
 		return nil, err
 	}
 
-	items := make([]dtos.Issue, 0, len(issues))
+	client, err := r2.New(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-	for _, item := range issues {
-		items = append(items, dtos.IssueFrom(item))
+	items, err := routes.IssueResponsesFrom(ctx, issues, client)
+	if err != nil {
+		return nil, err
 	}
 
 	return &GetUserIssuesOutput{
-		Body: utils.CursorPaginatedResponseFrom(items, input.Limit),
+		Body: utils.CursorPaginatedResponseFrom(
+			items,
+			input.Limit,
+			func(item dtos.Issue) int64 { return item.ID },
+		),
 	}, nil
 }

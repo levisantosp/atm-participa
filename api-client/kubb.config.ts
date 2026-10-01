@@ -1,3 +1,4 @@
+import { adapterOas } from '@kubb/adapter-oas'
 import { pluginAxios } from '@kubb/plugin-axios'
 import { pluginTs } from '@kubb/plugin-ts'
 import { pluginVueQuery } from '@kubb/plugin-vue-query'
@@ -18,8 +19,17 @@ export default defineConfig({
       baseURL: process.env.API_URL
     }),
     pluginVueQuery({
-      client: 'axios'
+      client: 'axios',
+      hooks: true,
+      infinite: {
+        queryParam: 'cursor',
+        nextParam: 'nextCursor',
+        initialPageParam: undefined
+      }
     }),
     pluginZod()
-  ]
+  ],
+  adapter: adapterOas({
+    integerType: 'number'
+  })
 })

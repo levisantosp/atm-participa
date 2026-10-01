@@ -38,7 +38,9 @@ catalog:
   oxlint: ^1.85.0
   oxlint-tsgolint: ^7.0.2002
   turbo: ^2.11.2
-
+  dayjs: ^1.11.23
+  '@kubb/adapter-oas': ^5.4.1
+  '@nuxt/image': ^2.1.0
 cleanupUnusedCatalogs: true
 
 catalogMode: prefer

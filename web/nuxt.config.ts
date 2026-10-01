@@ -18,5 +18,6 @@ export default defineNuxtConfig({
       dedupe: ['vue-sonner']
     }
   },
-  css: ['~/assets/css/main.css']
+  css: ['~/assets/css/main.css'],
+  modules: ['@nuxt/image']
 })

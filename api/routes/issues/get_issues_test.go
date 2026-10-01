@@ -2,6 +2,7 @@ package issues
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -30,6 +31,59 @@ func TestGetIssues(t *testing.T) {
 		var body utils.CursorPaginatedResponse[dtos.Issue]
 		if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
 			t.Fatal(err)
+		}
+
+		if body.NextCursor != nil {
+			t.Fatal("expected no next page")
+		}
+	})
+
+	t.Run("should paginate with cursor", func(t *testing.T) {
+		var issueIDs []int64
+		for range 3 {
+			item, err := tests.CreateIssue(t, user)
+			if err != nil {
+				t.Fatal(err)
+			}
+			issueIDs = append(issueIDs, item.ID)
+		}
+
+		path := "/issues?limit=1"
+		for i := len(issueIDs) - 1; i >= 0; i-- {
+			res := api.Get(path, tests.GetCookie(session.ID))
+			if res.Code != http.StatusOK {
+				t.Fatalf("expected status %d got %d", http.StatusOK, res.Code)
+			}
+
+			var body utils.CursorPaginatedResponse[dtos.Issue]
+			if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+				t.Fatal(err)
+			}
+
+			if len(body.Items) != 1 {
+				t.Fatalf("expected 1 item got %d", len(body.Items))
+			}
+
+			if body.Items[0].ID != issueIDs[i] {
+				t.Fatalf(
+					"expected issue %d got %d",
+					issueIDs[i],
+					body.Items[0].ID,
+				)
+			}
+
+			if i == 0 {
+				if body.NextCursor != nil {
+					t.Fatal("expected no next page")
+				}
+				continue
+			}
+
+			if body.NextCursor == nil || *body.NextCursor != issueIDs[i] {
+				t.Fatal("expected cursor to match the last returned item")
+			}
+
+			path = fmt.Sprintf("/issues?limit=1&cursor=%d", *body.NextCursor)
 		}
 	})
 
