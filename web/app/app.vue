@@ -4,6 +4,16 @@ import { Spinner, Toaster } from 'ui'
 import { publicRoutes } from './config'
 import { auth } from './lib/auth'
 
+const title = 'Altamira Participa'
+const description = 'Reporte problemas na cidade de Altamira'
+
+useSeoMeta({
+  title,
+  ogTitle: title,
+  description,
+  ogDescription: description
+})
+
 const session = auth.useSession()
 const route = useRoute()
 const router = useRouter()

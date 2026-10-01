@@ -1,15 +1,5 @@
 <script setup lang="ts">
 import NavBar from '~/components/nav-bar.vue'
-
-const title = 'Altamira Participa'
-const description = 'Reporte problemas na cidade de Altamira'
-
-useSeoMeta({
-  title,
-  ogTitle: title,
-  description,
-  ogDescription: description
-})
 </script>
 
 <template>
