@@ -5,7 +5,7 @@ let content = `import { client } from './gen/.kubb/client'
 client.interceptors.request.use(async (req) => {
   req.withCredentials = true
 
-  if (process.env.NUXT_PUBLIC_ENABLE_API_DELAY || process.env.VITE_ENABLE_API_DELAY) {
+  if (import.meta.env.VITE_ENABLE_API_DELAY) {
     await new Promise((r) => setTimeout(r, Math.round(Math.random() * 4000)))
   }
 
