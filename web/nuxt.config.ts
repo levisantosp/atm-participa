@@ -13,7 +13,10 @@ export default defineNuxtConfig({
     port: 5174
   },
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    resolve: {
+      dedupe: ['vue-sonner']
+    }
   },
   css: ['~/assets/css/main.css']
 })
