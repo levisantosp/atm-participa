@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { PlusIcon } from '@lucide/vue'
+import type { InfiniteData } from '@tanstack/vue-query'
 import { toTypedSchema } from '@vee-validate/zod'
-import { useCreateIssue } from 'api-client'
-import type { Issue } from 'api-client'
+import { getIssuesInfiniteQueryKey, useCreateIssue } from 'api-client'
+import type { GetIssuesStatus200 } from 'api-client'
 import {
   Button,
   Dialog,
@@ -14,15 +15,13 @@ import {
   DialogTrigger,
   Input,
   Label,
-  Spinner
+  Spinner,
+  Textarea
 } from 'ui'
 import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
-
-const emit = defineEmits<{
-  (event: 'created', issue: Issue): void
-}>()
+import { queryClient } from '~/lib/query-client'
 
 const allowedImageTypes = new Set([
   'image/png',
@@ -67,7 +66,31 @@ const isCreateIssueDialogOpen = ref(false)
 const createIssueMutation = useCreateIssue({
   mutation: {
     onSuccess(issue) {
-      emit('created', issue)
+      queryClient.setQueryData<InfiniteData<GetIssuesStatus200>>(
+        getIssuesInfiniteQueryKey({ query: { limit: 100 } }),
+        (currentData) => {
+          if (!currentData?.pages.length) {
+            return currentData
+          }
+
+          return {
+            ...currentData,
+            pages: currentData.pages.map((page, index) => {
+              const items = page.items?.filter((item) => item.id !== issue.id)
+
+              if (index === 0) {
+                return {
+                  ...page,
+                  items: [issue, ...(items ?? [])]
+                }
+              }
+
+              return items ? { ...page, items } : page
+            })
+          }
+        }
+      )
+
       toast.success('Ocorrência criada com sucesso')
       isCreateIssueDialogOpen.value = false
     }
@@ -142,13 +165,12 @@ watch(isCreateIssueDialogOpen, (isOpen) => {
 
           <div class="grid gap-2">
             <Label for="issue-description">Descrição</Label>
-            <textarea
+            <Textarea
               id="issue-description"
               v-model="description"
               v-bind="descriptionAttrs"
               maxlength="65000"
               placeholder="Conte mais detalhes sobre o problema"
-              class="bg-input/50 border-transparent focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 min-h-32 w-full min-w-0 resize-y rounded-3xl border px-3 py-2 text-base outline-none transition-[color,box-shadow,background-color] placeholder:text-muted-foreground focus-visible:ring-3 md:text-sm"
               :aria-invalid="!!errors.description"
             />
             <span v-if="errors.description" class="text-sm text-red-400">
@@ -158,12 +180,11 @@ watch(isCreateIssueDialogOpen, (isOpen) => {
 
           <div class="grid gap-2">
             <Label for="issue-image">Imagem (opcional)</Label>
-            <input
+            <Input
               id="issue-image"
               ref="imageInput"
               type="file"
               accept="image/png,image/jpeg,image/webp,image/gif"
-              class="bg-input/50 border-transparent focus-visible:border-ring focus-visible:ring-ring/30 file:text-foreground w-full min-w-0 rounded-3xl border px-3 py-2 text-sm outline-none transition-[color,box-shadow,background-color] file:mr-3 file:border-0 file:bg-transparent file:font-medium focus-visible:ring-3"
               :aria-invalid="!!errors.file"
               @change="setImage"
             />

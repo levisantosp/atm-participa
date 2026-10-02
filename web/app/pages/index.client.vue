@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { PlusIcon } from '@lucide/vue'
-import type { InfiniteData } from '@tanstack/vue-query'
-import { useQueryClient } from '@tanstack/vue-query'
-import { getIssuesInfiniteQueryKey, useGetIssuesInfinite } from 'api-client'
-import type { GetIssuesStatus200, Issue } from 'api-client'
+import { useGetIssuesInfinite } from 'api-client'
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
@@ -21,35 +16,6 @@ const { isFetching, error, data } = useGetIssuesInfinite({
   }
 })
 
-const queryClient = useQueryClient()
-
-function addIssueToFirstPage(issue: Issue) {
-  queryClient.setQueryData<InfiniteData<GetIssuesStatus200>>(
-    getIssuesInfiniteQueryKey({ query: { limit: 100 } }),
-    (currentData) => {
-      if (!currentData?.pages.length) {
-        return currentData
-      }
-
-      return {
-        ...currentData,
-        pages: currentData.pages.map((page, index) => {
-          const items = page.items?.filter((item) => item.id !== issue.id)
-
-          if (index === 0) {
-            return {
-              ...page,
-              items: [issue, ...(items ?? [])]
-            }
-          }
-
-          return items ? { ...page, items } : page
-        })
-      }
-    }
-  )
-}
-
 const issues = computed(
   () => data.value?.pages.flatMap((page) => page.items ?? []) ?? []
 )
@@ -64,7 +30,7 @@ const issues = computed(
     </span>
 
     <div v-else class="flex w-full flex-col gap-5">
-      <CreateIssueDialog @created="addIssueToFirstPage" />
+      <CreateIssueDialog />
 
       <Card v-for="issue in issues" :key="issue.id" class="w-full">
         <CardHeader>
