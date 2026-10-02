@@ -64,7 +64,7 @@ func CreateIssue(
 				}
 				issue.Edges.IssueFiles = append(issue.Edges.IssueFiles, file)
 
-				client, err := r2.New(ctx)
+				client, err = r2.New(ctx)
 				if err != nil {
 					return nil, err
 				}
