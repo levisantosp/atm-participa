@@ -11,6 +11,7 @@ import (
 	"github.com/levisantosp/atm-participa/api/ent/generated"
 	"github.com/levisantosp/atm-participa/api/middlewares"
 	"github.com/levisantosp/atm-participa/api/r2"
+	"github.com/levisantosp/atm-participa/api/routes"
 )
 
 type CreateIssueOutput struct {
@@ -37,6 +38,8 @@ func CreateIssue(
 		)
 	}
 
+	var client *r2.Client
+
 	issue, err := db.WithTx(
 		ctx,
 		func(tx *generated.Tx) (*generated.Issue, error) {
@@ -59,6 +62,7 @@ func CreateIssue(
 				if err != nil {
 					return nil, err
 				}
+				issue.Edges.IssueFiles = append(issue.Edges.IssueFiles, file)
 
 				client, err := r2.New(ctx)
 				if err != nil {
@@ -87,7 +91,21 @@ func CreateIssue(
 		return nil, err
 	}
 
+	response := dtos.IssueFrom(issue)
+	if body.File.IsSet {
+		responses, err := routes.IssueResponsesFrom(
+			ctx,
+			[]*generated.Issue{issue},
+			client,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		response = responses[0]
+	}
+
 	return &CreateIssueOutput{
-		Body: dtos.IssueFrom(issue),
+		Body: response,
 	}, nil
 }
