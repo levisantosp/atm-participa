@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Spinner } from 'ui'
+import 'vue-sonner/style.css'
+import { Spinner, Toaster } from 'ui'
 import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { publicRoutes } from './config'
@@ -27,6 +28,9 @@ watch(
     if (!session && !publicRoute) {
       router.push('/sign-in')
     }
+  },
+  {
+    immediate: true
   }
 )
 
@@ -54,4 +58,6 @@ const layout = computed(() => {
       <component :is="Component" />
     </component>
   </RouterView>
+
+  <Toaster position="top-center" theme="dark" />
 </template>
