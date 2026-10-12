@@ -11,14 +11,20 @@
     "fmt": "oxfmt"
   },
   "dependencies": {
-    "vue": "^3.5.42"
+    "@tailwindcss/vite": "catalog:",
+    "@tanstack/vue-query": "catalog:",
+    "api-client": "catalog:",
+    "ui": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "vue-sonner": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@vitejs/plugin-vue": "^6.0.8",
-    "@vue/tsconfig": "^0.9.1",
-    "typescript": "~6.0.2",
-    "vite": "^8.3.0",
-    "vue-tsc": "^3.3.11"
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/tsconfig": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vue-tsc": "catalog:"
   }
 }

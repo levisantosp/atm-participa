@@ -41,6 +41,11 @@ catalog:
   dayjs: ^1.11.23
   '@kubb/adapter-oas': ^5.4.1
   '@nuxt/image': ^2.1.0
+  '@vitejs/plugin-vue': ^6.0.10
+  '@vue/tsconfig': ^0.9.1
+  vite: ^8.3.4
+  api-client: workspace:*
+  ui: workspace:*
 cleanupUnusedCatalogs: true
 
 catalogMode: prefer
