@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "ignorePatterns": ["ui/**", "api-client/**"],
+  "ignorePatterns": ["ui/**", "api-client/**", "typed-router.d.ts"],
   "plugins": ["typescript", "unicorn", "oxc", "vue"],
   "categories": {
     "correctness": "error",
