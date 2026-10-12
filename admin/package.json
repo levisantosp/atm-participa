@@ -13,8 +13,10 @@
   "dependencies": {
     "@tailwindcss/vite": "catalog:",
     "@tanstack/vue-query": "catalog:",
+    "@vee-validate/zod": "catalog:",
     "api-client": "catalog:",
     "ui": "catalog:",
+    "vee-validate": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:",
     "vue-sonner": "catalog:",

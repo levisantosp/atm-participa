@@ -316,12 +316,18 @@ importers:
       '@tanstack/vue-query':
         specifier: 'catalog:'
         version: 5.103.2(vue@3.5.43(typescript@6.0.3))
+      '@vee-validate/zod':
+        specifier: 'catalog:'
+        version: 4.15.1(vue@3.5.43(typescript@6.0.3))(zod@4.6.5)
       api-client:
         specifier: 'catalog:'
         version: link:../api-client
       ui:
         specifier: 'catalog:'
         version: link:../ui
+      vee-validate:
+        specifier: 'catalog:'
+        version: 4.15.1(vue@3.5.43(typescript@6.0.3))
       vue:
         specifier: 'catalog:'
         version: 3.5.43(typescript@6.0.3)
