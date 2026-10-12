@@ -11,5 +11,8 @@ export default defineConfig({
     router({
       filePatterns: ['**/index']
     })
-  ]
+  ],
+  resolve: {
+    tsconfigPaths: true
+  }
 })
