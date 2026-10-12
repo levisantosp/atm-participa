@@ -1,1 +1,1 @@
-export const publicRoutes = new Set(['/sign-in', '/'])
+export const publicRoutes = new Set(['/sign-in'])
