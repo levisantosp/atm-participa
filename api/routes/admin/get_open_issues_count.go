@@ -15,7 +15,9 @@ func GetOpenIssuesCount(
 	ctx context.Context,
 	_ *struct{},
 ) (*GetOpenIssuesCountOutput, error) {
-	count, err := db.Client.Issue.Query().Where(issue.StatusEQ(issue.StatusOpen)).Count(ctx)
+	count, err := db.Client.Issue.Query().
+		Where(issue.StatusEQ(issue.StatusOpen)).
+		Count(ctx)
 	if err != nil {
 		return nil, err
 	}
