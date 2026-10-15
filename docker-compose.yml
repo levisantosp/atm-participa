@@ -92,8 +92,6 @@ services:
     build:
       context: .
       dockerfile: ./admin/Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL}
     container_name: admin-atm-participa
     restart: unless-stopped
     env_file: admin/.env
