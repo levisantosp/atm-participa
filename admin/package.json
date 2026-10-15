@@ -11,6 +11,7 @@
     "fmt": "oxfmt"
   },
   "dependencies": {
+    "@lucide/vue": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/vue-query": "catalog:",
     "@vee-validate/zod": "catalog:",
