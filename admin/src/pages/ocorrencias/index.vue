@@ -26,12 +26,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { z } from 'zod'
 
 const schema = z.object({
-  search: z
-    .string()
-    .refine(
-      (search) => search.length === 0 || search.length >= 2,
-      'Mínimo 2 caracteres'
-    ),
+  search: z.string().min(2, 'Mínimo 2 caracteres'),
   status: z.enum(['open', 'in_review', 'closed'])
 })
 
