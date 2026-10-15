@@ -30,6 +30,13 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "account_user_accounts",
+				Unique:  false,
+				Columns: []*schema.Column{AccountsColumns[5]},
+			},
+		},
 	}
 	// FilesColumns holds the columns for the "files" table.
 	FilesColumns = []*schema.Column{
@@ -49,6 +56,13 @@ var (
 				Columns:    []*schema.Column{FilesColumns[3]},
 				RefColumns: []*schema.Column{IssuesColumns[0]},
 				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "file_issue_id",
+				Unique:  false,
+				Columns: []*schema.Column{FilesColumns[3]},
 			},
 		},
 	}
@@ -74,6 +88,13 @@ var (
 				Columns:    []*schema.Column{IssuesColumns[7]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "issue_user_issues",
+				Unique:  false,
+				Columns: []*schema.Column{IssuesColumns[7]},
 			},
 		},
 	}
@@ -103,6 +124,11 @@ var (
 				Name:    "upvote_user_id_issue_id",
 				Unique:  true,
 				Columns: []*schema.Column{UpvotesColumns[1], UpvotesColumns[4]},
+			},
+			{
+				Name:    "upvote_issue_id",
+				Unique:  false,
+				Columns: []*schema.Column{UpvotesColumns[4]},
 			},
 		},
 	}

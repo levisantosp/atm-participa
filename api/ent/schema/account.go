@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // Account holds the schema definition for the Account entity.
@@ -33,5 +34,11 @@ func (Account) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Annotations(entsql.OnDelete(entsql.Cascade)),
+	}
+}
+
+func (Account) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Edges("user"),
 	}
 }

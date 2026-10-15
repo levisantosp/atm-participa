@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /*---break---*/
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn-vue/tailwind.css';
 
 @font-face {
   font-family: 'Amazon Ember';
@@ -11,9 +14,32 @@
     format('woff2');
 }
 
-@import 'tailwindcss';
-@import 'tw-animate-css';
-@import 'shadcn-vue/tailwind.css';
+@font-face {
+  font-family: 'Amazon Ember';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('https://m.media-amazon.com/images/G/01/amazonservices/fonts/amazonember_md_base-webfont._V525237381_.woff2')
+    format('woff2');
+}
+
+@font-face {
+  font-family: 'Amazon Ember';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://m.media-amazon.com/images/G/01/AUIClients/AmazonUIBaseCSS-amazonember_bd-46b91bda68161c14e554a779643ef4957431987b._V2_.woff2')
+    format('woff2');
+}
+
+@font-face {
+  font-family: 'Amazon Ember';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('https://m.media-amazon.com/images/G/01/acs/fonts/amazonember_he-webfont._V278446113_.woff2')
+    format('woff2');
+}
 
 @custom-variant dark (&:is(.dark *));
 @source '../components';
@@ -64,7 +90,7 @@ html {
   --color-sidebar-ring: var(--sidebar-ring);
   --font-heading: var(--font-sans);
   --font-sans: 'Amazon Ember', sans-serif;
-  --text-base: 1.625rem;
+  --text-base: 1rem;
 }
 
 :root {

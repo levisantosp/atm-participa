@@ -1,7 +1,7 @@
 services:
   redis:
     image: redis:latest
-    container_name: redis-altamira-participa
+    container_name: redis-atm-participa
     restart: unless-stopped
     ports:
       - '6380:6379'
@@ -20,7 +20,7 @@ services:
 
   pg:
     image: postgres:18
-    container_name: pg-altamira-participa
+    container_name: pg-atm-participa
     restart: always
     ports:
       - '5434:5432'
@@ -61,7 +61,7 @@ services:
     build:
       context: .
       dockerfile: ./api/Dockerfile
-    container_name: api-altamira-participa
+    container_name: api-atm-participa
     restart: unless-stopped
     env_file:
       - .env
@@ -78,12 +78,27 @@ services:
     build:
       context: .
       dockerfile: ./web/Dockerfile
-    container_name: web-altamira-participa
+    container_name: web-atm-participa
     restart: unless-stopped
     env_file:
       - ./web/.env
     ports:
       - '5174:5174'
+
+  admin:
+    depends_on:
+      api:
+        condition: service_started
+    build:
+      context: .
+      dockerfile: ./admin/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    container_name: admin-atm-participa
+    restart: unless-stopped
+    env_file: admin/.env
+    ports:
+      - '5176:80'
 
 volumes:
   redis_data:

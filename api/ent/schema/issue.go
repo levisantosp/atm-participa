@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // Issue holds the schema definition for the Issue entity.
@@ -39,5 +40,11 @@ func (Issue) Edges() []ent.Edge {
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.From("issue_upvotes", Upvote.Type).Ref("issue"),
 		edge.From("issue_files", File.Type).Ref("issue"),
+	}
+}
+
+func (Issue) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Edges("user"),
 	}
 }

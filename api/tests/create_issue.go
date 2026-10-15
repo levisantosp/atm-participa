@@ -9,13 +9,23 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/levisantosp/atm-participa/api/db"
 	"github.com/levisantosp/atm-participa/api/ent/generated"
+	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
 	"github.com/levisantosp/atm-participa/api/r2"
 )
 
 func CreateIssue(t *testing.T, user *generated.User) (*generated.Issue, error) {
+	return CreateIssueWithStatus(t, user, issue.StatusOpen)
+}
+
+func CreateIssueWithStatus(
+	t *testing.T,
+	user *generated.User,
+	status issue.Status,
+) (*generated.Issue, error) {
 	return db.Client.Issue.Create().
 		SetTitle(strings.Repeat("a", 20)).
 		SetDescription(strings.Repeat("a", 20)).
+		SetStatus(status).
 		SetUserID(user.ID).
 		Save(t.Context())
 }
