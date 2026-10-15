@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Home } from '@lucide/vue'
+import { ClipboardList, Home } from '@lucide/vue'
 import {
   Sidebar,
   SidebarContent,
@@ -17,9 +17,14 @@ import {
 
 const navItems = [
   {
-    label: 'Home',
+    label: 'Página principal',
     href: '/',
     icon: Home
+  },
+  {
+    label: 'Ocorrências',
+    href: '/ocorrencias',
+    icon: ClipboardList
   }
 ] as const
 </script>
@@ -30,7 +35,9 @@ const navItems = [
       <Sidebar>
         <SidebarHeader>
           <RouterLink to="/">
-            <h1 class="text-center font-bold md:text-xl">Sabine Dashboard</h1>
+            <h1 class="text-center font-bold md:text-xl">
+              Painel Administrativo
+            </h1>
           </RouterLink>
         </SidebarHeader>
 
