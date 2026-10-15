@@ -325,6 +325,9 @@ importers:
       api-client:
         specifier: 'catalog:'
         version: link:../api-client
+      dayjs:
+        specifier: 'catalog:'
+        version: 1.11.23
       ui:
         specifier: 'catalog:'
         version: link:../ui
