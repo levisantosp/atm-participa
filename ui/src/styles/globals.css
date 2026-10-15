@@ -87,7 +87,7 @@ html {
   --color-sidebar-ring: var(--sidebar-ring);
   --font-heading: var(--font-sans);
   --font-sans: 'Amazon Ember', sans-serif;
-  --text-base: 1.625rem;
+  --text-base: 1rem;
 }
 
 :root {
