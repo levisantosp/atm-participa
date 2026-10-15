@@ -40,5 +40,6 @@ func (Upvote) Edges() []ent.Edge {
 func (Upvote) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("user_id", "issue_id").Unique(),
+		index.Fields("issue_id"),
 	}
 }
