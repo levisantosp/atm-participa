@@ -11,7 +11,9 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "ui": ["../ui/src/index.ts"],
+      "ui/*": ["../ui/src/*"]
     }
   },
   "include": [
