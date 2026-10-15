@@ -59,7 +59,9 @@ const navItems = [
           <SidebarTrigger />
         </header>
 
-        <main class="flex flex-col mt-5 mb-30 ml-30 mr-30">
+        <main
+          class="flex flex-col justify-center items-center mt-5 mb-30 ml-30 mr-30"
+        >
           <slot />
         </main>
       </SidebarInset>
