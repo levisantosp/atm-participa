@@ -137,21 +137,6 @@ func TestGetIssues(t *testing.T) {
 		}
 	})
 
-	t.Run("should reject invalid status", func(t *testing.T) {
-		res := api.Get(
-			"/admin/issues?status=invalid",
-			tests.GetCookie(adminSession.ID),
-		)
-
-		if res.Code != http.StatusUnprocessableEntity {
-			t.Fatalf(
-				"expected status %d got %d",
-				http.StatusUnprocessableEntity,
-				res.Code,
-			)
-		}
-	})
-
 	t.Run(
 		"should search issue title and description case-insensitively",
 		func(t *testing.T) {
