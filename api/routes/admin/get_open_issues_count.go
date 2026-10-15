@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/levisantosp/atm-participa/api/db"
+	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
 )
 
 type GetOpenIssuesCountOutput struct {
@@ -14,7 +15,7 @@ func GetOpenIssuesCount(
 	ctx context.Context,
 	_ *struct{},
 ) (*GetOpenIssuesCountOutput, error) {
-	count, err := db.Client.Issue.Query().Count(ctx)
+	count, err := db.Client.Issue.Query().Where(issue.StatusEQ(issue.StatusOpen)).Count(ctx)
 	if err != nil {
 		return nil, err
 	}
