@@ -14,18 +14,19 @@ const session = auth.useSession()
 
 watch(
   [() => session.isFetching.value, () => session.data.value, () => route.path],
-  ([isFetching, session, path]) => {
+  async ([isFetching, session, path]) => {
     if (isFetching) return
 
     const publicRoute = publicRoutes.has(path)
 
     if (!session && publicRoute) return
 
-    if (session && publicRoute) {
+    if (session?.isAdmin && publicRoute) {
       return router.push('/')
     }
 
-    if (!session && !publicRoute) {
+    if (!session?.isAdmin && !publicRoute) {
+      await auth.signOut()
       router.push('/sign-in')
     }
   },
