@@ -71,6 +71,17 @@ services:
     ports:
       - '3335:3333'
 
+  cdn:
+    build:
+      context: .
+      dockerfile: ./cdn/Dockerfile
+    container_name: cdn-atm-participa
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - '3336:3336'
+
   web:
     depends_on:
       api:
