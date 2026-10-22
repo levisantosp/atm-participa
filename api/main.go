@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-	utils.LoadEnv("../.env")
+	utils.LoadEnv(".env")
 	db.Connect()
 	redis.Connect()
 

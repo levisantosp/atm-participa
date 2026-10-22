@@ -10,7 +10,7 @@ import (
 )
 
 func Setup(t *testing.T) {
-	utils.LoadEnv("../../../.env.test")
+	utils.LoadEnv("../../.env.test")
 	redis.Connect()
 	sqlDB := db.Connect()
 
