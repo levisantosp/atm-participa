@@ -7,8 +7,6 @@ import (
 	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
 	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
-	"github.com/levisantosp/atm-participa/api/internal/r2"
-	"github.com/levisantosp/atm-participa/api/internal/routes"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
 )
 
@@ -39,16 +37,13 @@ func GetIssues(
 		return nil, err
 	}
 
-	items, err := routes.IssueResponsesFrom(ctx, issues, r2.Client)
-	if err != nil {
-		return nil, err
-	}
-
 	return &GetIssuesOutput{
 		Body: utils.CursorPaginatedResponseFrom(
-			items,
+			dtos.IssuesFrom(issues),
 			input.Limit,
-			func(item dtos.Issue) string { return item.ID },
+			func(item dtos.Issue) string {
+				return item.ID
+			},
 		),
 	}, nil
 }

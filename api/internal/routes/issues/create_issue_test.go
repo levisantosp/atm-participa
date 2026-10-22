@@ -166,8 +166,8 @@ func TestCreateIssue(t *testing.T) {
 		if err := json.NewDecoder(res.Body).Decode(&issue); err != nil {
 			t.Fatal(err)
 		}
-		if issue.ImageURL != nil {
-			t.Fatalf("expected no image URL, got %q", *issue.ImageURL)
+		if len(issue.Images) != 0 {
+			t.Fatalf("expected no images, got %d", len(issue.Images))
 		}
 	})
 
@@ -219,8 +219,8 @@ func TestCreateIssue(t *testing.T) {
 		if err := json.NewDecoder(res.Body).Decode(&issue); err != nil {
 			t.Fatal(err)
 		}
-		if issue.ImageURL == nil {
-			t.Fatal("expected image URL in create response")
+		if issue.Images[0] == nil {
+			t.Fatal("expected image id in create response")
 		}
 	})
 

@@ -8,8 +8,6 @@ import (
 	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
 	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
-	"github.com/levisantosp/atm-participa/api/internal/r2"
-	"github.com/levisantosp/atm-participa/api/internal/routes"
 )
 
 type GetIssueOutput struct {
@@ -33,12 +31,7 @@ func GetIssue(
 		return nil, err
 	}
 
-	item, err := routes.IssueResponseFrom(ctx, issue, r2.Client)
-	if err != nil {
-		return nil, err
-	}
-
 	return &GetIssueOutput{
-		Body: *item,
+		Body: dtos.IssueFrom(issue),
 	}, nil
 }
