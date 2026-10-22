@@ -9,7 +9,7 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/levisantosp/atm-participa/api/ent/generated"
 	"github.com/levisantosp/atm-participa/api/internal/db"
-	"github.com/levisantosp/atm-participa/api/internal/errors"
+	"github.com/levisantosp/atm-participa/api/pkg/errors"
 	"github.com/levisantosp/atm-participa/api/pkg/redis"
 )
 

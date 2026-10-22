@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/danielgtaylor/huma/v2"
-	"github.com/levisantosp/atm-participa/api/internal/errors"
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
+	"github.com/levisantosp/atm-participa/api/pkg/errors"
 	"github.com/levisantosp/atm-participa/api/pkg/redis"
 )
 

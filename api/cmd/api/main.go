@@ -10,12 +10,12 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/levisantosp/atm-participa/api/internal/db"
-	"github.com/levisantosp/atm-participa/api/internal/errors"
 	"github.com/levisantosp/atm-participa/api/internal/routes/admin"
 	"github.com/levisantosp/atm-participa/api/internal/routes/auth"
 	"github.com/levisantosp/atm-participa/api/internal/routes/issues"
 	"github.com/levisantosp/atm-participa/api/internal/routes/users"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
+	"github.com/levisantosp/atm-participa/api/pkg/errors"
 	"github.com/levisantosp/atm-participa/api/pkg/redis"
 
 	_ "github.com/levisantosp/atm-participa/api/ent/generated/runtime"
