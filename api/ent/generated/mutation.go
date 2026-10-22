@@ -1246,6 +1246,55 @@ func (m *IssueMutation) IDs(ctx context.Context) ([]int64, error) {
 	}
 }
 
+// SetUserID sets the "user_id" field.
+func (m *IssueMutation) SetUserID(i int64) {
+	m.user = &i
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *IssueMutation) UserID() (r int64, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Issue entity.
+// If the Issue object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IssueMutation) OldUserID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *IssueMutation) ClearUserID() {
+	m.user = nil
+	m.clearedFields[issue.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *IssueMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[issue.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *IssueMutation) ResetUserID() {
+	m.user = nil
+	delete(m.clearedFields, issue.FieldUserID)
+}
+
 // SetTitle sets the "title" field.
 func (m *IssueMutation) SetTitle(s string) {
 	m.title = &s
@@ -1482,27 +1531,15 @@ func (m *IssueMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetUserID sets the "user" edge to the User entity by id.
-func (m *IssueMutation) SetUserID(id int64) {
-	m.user = &id
-}
-
 // ClearUser clears the "user" edge to the User entity.
 func (m *IssueMutation) ClearUser() {
 	m.cleareduser = true
+	m.clearedFields[issue.FieldUserID] = struct{}{}
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
 func (m *IssueMutation) UserCleared() bool {
-	return m.cleareduser
-}
-
-// UserID returns the "user" edge ID in the mutation.
-func (m *IssueMutation) UserID() (id int64, exists bool) {
-	if m.user != nil {
-		return *m.user, true
-	}
-	return
+	return m.UserIDCleared() || m.cleareduser
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
@@ -1663,7 +1700,10 @@ func (m *IssueMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *IssueMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
+	if m.user != nil {
+		fields = append(fields, issue.FieldUserID)
+	}
 	if m.title != nil {
 		fields = append(fields, issue.FieldTitle)
 	}
@@ -1690,6 +1730,8 @@ func (m *IssueMutation) Fields() []string {
 // schema.
 func (m *IssueMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case issue.FieldUserID:
+		return m.UserID()
 	case issue.FieldTitle:
 		return m.Title()
 	case issue.FieldDescription:
@@ -1711,6 +1753,8 @@ func (m *IssueMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *IssueMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case issue.FieldUserID:
+		return m.OldUserID(ctx)
 	case issue.FieldTitle:
 		return m.OldTitle(ctx)
 	case issue.FieldDescription:
@@ -1732,6 +1776,13 @@ func (m *IssueMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *IssueMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case issue.FieldUserID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
 	case issue.FieldTitle:
 		v, ok := value.(string)
 		if !ok {
@@ -1818,7 +1869,11 @@ func (m *IssueMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *IssueMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(issue.FieldUserID) {
+		fields = append(fields, issue.FieldUserID)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1831,6 +1886,11 @@ func (m *IssueMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *IssueMutation) ClearField(name string) error {
+	switch name {
+	case issue.FieldUserID:
+		m.ClearUserID()
+		return nil
+	}
 	return fmt.Errorf("unknown Issue nullable field %s", name)
 }
 
@@ -1838,6 +1898,9 @@ func (m *IssueMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *IssueMutation) ResetField(name string) error {
 	switch name {
+	case issue.FieldUserID:
+		m.ResetUserID()
+		return nil
 	case issue.FieldTitle:
 		m.ResetTitle()
 		return nil

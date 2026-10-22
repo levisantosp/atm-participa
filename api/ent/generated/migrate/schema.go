@@ -75,7 +75,7 @@ var (
 		{Name: "upvotes", Type: field.TypeInt64, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "user_issues", Type: field.TypeInt64},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// IssuesTable holds the schema information for the "issues" table.
 	IssuesTable = &schema.Table{
@@ -87,12 +87,12 @@ var (
 				Symbol:     "issues_users_issues",
 				Columns:    []*schema.Column{IssuesColumns[7]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "issue_user_issues",
+				Name:    "issue_user_id",
 				Unique:  false,
 				Columns: []*schema.Column{IssuesColumns[7]},
 			},
