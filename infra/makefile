@@ -4,7 +4,7 @@ fmt:
 	find . -type f -name '*.go' -exec go tool goimports -w {} +
 
 lint:
-	golangci-lint $(filter-out $@,$(MAKECMDGOALS))
+	golangci-lint run $(filter-out $@,$(MAKECMDGOALS))
 
 lintf:
 	golangci-lint run --fix
