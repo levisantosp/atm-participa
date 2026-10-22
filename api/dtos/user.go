@@ -1,13 +1,14 @@
 package dtos
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/levisantosp/atm-participa/api/ent/generated"
 )
 
 type User struct {
-	ID          int64     `json:"id"`
+	ID          string    `json:"id"`
 	Username    string    `json:"username"`
 	DisplayName string    `json:"displayName"`
 	IsAdmin     bool      `json:"isAdmin"`
@@ -17,7 +18,7 @@ type User struct {
 
 func UserFrom(user *generated.User) User {
 	return User{
-		ID:          user.ID,
+		ID:          strconv.FormatInt(user.ID, 10),
 		Username:    user.Username,
 		DisplayName: user.DisplayName,
 		IsAdmin:     user.IsAdmin,
