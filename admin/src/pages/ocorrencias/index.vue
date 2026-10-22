@@ -169,7 +169,12 @@ const hasNextCursor = computed(() => {
           </TableCell>
         </TableRow>
         <template v-else>
-          <TableRow v-for="issue in issues" :key="issue.id">
+          <TableRow
+            v-for="issue in issues"
+            :key="issue.id"
+            class="cursor-pointer"
+            @click="router.push(`/ocorrencias/${issue.id}`)"
+          >
             <TableCell>{{ issue.id }}</TableCell>
             <TableCell class="max-w-80 truncate">
               {{ issue.title }}
