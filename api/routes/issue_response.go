@@ -38,3 +38,29 @@ func IssueResponsesFrom(
 
 	return responses, nil
 }
+
+func IssueResponseFrom(
+	ctx context.Context,
+	issue *generated.Issue,
+	client *r2.Client,
+) (*dtos.Issue, error) {
+	response := dtos.IssueFrom(issue)
+
+	if len(issue.Edges.IssueFiles) > 0 {
+		file := issue.Edges.IssueFiles[0]
+		keys, err := client.IssueFileObjectKeys(ctx, issue.ID, file.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(keys) > 0 {
+			imageURL, err := client.PresignGetObject(ctx, keys[0])
+			if err != nil {
+				return nil, err
+			}
+			response.ImageURL = &imageURL
+		}
+	}
+
+	return &response, nil
+}
