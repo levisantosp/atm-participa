@@ -1,5 +1,5 @@
 dev:
-	go run .
+	go run ./cmd/api
 
 fmt:
 	find . -path './pg' -prune -o -type f -name '*.go' -exec go tool gofumpt -w {} +
@@ -25,7 +25,7 @@ generate-clean:
 	rm -rf ent/generated && go generate ./ent/...
 
 build:
-	rm -rf bin && go build -o bin/api .
+	rm -rf bin && go build -o bin/api ./cmd/api
 
 start:
 	bin/api
@@ -34,4 +34,4 @@ push:
 	go run ./cmd/push
 
 test:
-	go test -p 1 ./routes/...
+	go test -p 1 ./internal/routes/...

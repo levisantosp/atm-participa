@@ -1,0 +1,27 @@
+package tests
+
+import (
+	"testing"
+
+	"github.com/levisantosp/atm-participa/api/ent/generated"
+	"github.com/levisantosp/atm-participa/api/internal/db"
+)
+
+func CreateUser(t *testing.T) *generated.User {
+	return db.Client.User.
+		Create().
+		SetUsername("test-user").
+		SetDisplayName("Test User").
+		SetEmail("testuser@email.com").
+		SaveX(t.Context())
+}
+
+func CreateAdminUser(t *testing.T) *generated.User {
+	return db.Client.User.
+		Create().
+		SetUsername("test-admin-user").
+		SetDisplayName("Test Admin User").
+		SetEmail("testadminuser@email.com").
+		SetIsAdmin(true).
+		SaveX(t.Context())
+}
