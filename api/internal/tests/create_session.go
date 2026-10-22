@@ -8,7 +8,7 @@ import (
 
 	"github.com/levisantosp/atm-participa/api/ent/generated"
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
-	"github.com/levisantosp/atm-participa/api/pkg/redis"
+	"github.com/levisantosp/atm-participa/infra/redis"
 )
 
 func CreateSession(user *generated.User, t *testing.T) middlewares.Session {

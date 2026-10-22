@@ -5,7 +5,7 @@ import (
 
 	"github.com/levisantosp/atm-participa/api/ent/generated"
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
-	"github.com/levisantosp/atm-participa/api/pkg/r2"
+	"github.com/levisantosp/atm-participa/infra/r2"
 )
 
 func IssueResponsesFrom(

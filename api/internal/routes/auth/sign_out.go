@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
-	"github.com/levisantosp/atm-participa/api/pkg/redis"
+	"github.com/levisantosp/atm-participa/infra/redis"
 )
 
 func SignOut(ctx context.Context, input *struct{}) (*SignInOutput, error) {

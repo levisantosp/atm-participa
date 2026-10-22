@@ -8,7 +8,7 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
-	"github.com/levisantosp/atm-participa/api/pkg/errors"
+	"github.com/levisantosp/atm-participa/infra/errors"
 )
 
 type EditMeOutput struct {

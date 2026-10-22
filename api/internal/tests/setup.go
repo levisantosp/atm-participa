@@ -6,7 +6,7 @@ import (
 
 	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
-	"github.com/levisantosp/atm-participa/api/pkg/redis"
+	"github.com/levisantosp/atm-participa/infra/redis"
 )
 
 func Setup(t *testing.T) {

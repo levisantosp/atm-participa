@@ -15,8 +15,8 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/routes/issues"
 	"github.com/levisantosp/atm-participa/api/internal/routes/users"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
-	"github.com/levisantosp/atm-participa/api/pkg/errors"
-	"github.com/levisantosp/atm-participa/api/pkg/redis"
+	"github.com/levisantosp/atm-participa/infra/errors"
+	"github.com/levisantosp/atm-participa/infra/redis"
 
 	_ "github.com/levisantosp/atm-participa/api/ent/generated/runtime"
 )

@@ -9,7 +9,7 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
 	"github.com/levisantosp/atm-participa/api/internal/routes"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
-	"github.com/levisantosp/atm-participa/api/pkg/r2"
+	"github.com/levisantosp/atm-participa/infra/r2"
 )
 
 type GetIssuesOutputBody = utils.CursorPaginatedResponse[dtos.Issue]

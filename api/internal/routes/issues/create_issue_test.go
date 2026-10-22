@@ -18,7 +18,7 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
 	"github.com/levisantosp/atm-participa/api/internal/tests"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
-	"github.com/levisantosp/atm-participa/api/pkg/r2"
+	"github.com/levisantosp/atm-participa/infra/r2"
 
 	_ "github.com/levisantosp/atm-participa/api/ent/generated/runtime"
 )

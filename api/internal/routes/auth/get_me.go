@@ -7,8 +7,8 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
-	"github.com/levisantosp/atm-participa/api/pkg/errors"
-	"github.com/levisantosp/atm-participa/api/pkg/redis"
+	"github.com/levisantosp/atm-participa/infra/errors"
+	"github.com/levisantosp/atm-participa/infra/redis"
 )
 
 type GetMeOutput struct {

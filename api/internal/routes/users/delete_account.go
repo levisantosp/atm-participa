@@ -7,7 +7,7 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
 	"github.com/levisantosp/atm-participa/api/internal/routes/auth"
-	"github.com/levisantosp/atm-participa/api/pkg/redis"
+	"github.com/levisantosp/atm-participa/infra/redis"
 )
 
 func DeleteAccount(

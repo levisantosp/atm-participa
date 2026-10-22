@@ -11,7 +11,7 @@ import (
 	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
 	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
-	"github.com/levisantosp/atm-participa/api/pkg/r2"
+	"github.com/levisantosp/atm-participa/infra/r2"
 )
 
 func CreateIssue(t *testing.T, user *generated.User) (*generated.Issue, error) {
