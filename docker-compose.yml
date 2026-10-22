@@ -103,6 +103,8 @@ services:
     build:
       context: .
       dockerfile: ./admin/Dockerfile
+      args:
+        VITE_CDN_URL: ${VITE_CDN_URL}
     container_name: admin-atm-participa
     restart: unless-stopped
     env_file: admin/.env

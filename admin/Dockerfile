@@ -2,8 +2,8 @@ FROM node:24.19.0-alpine AS build
 
 WORKDIR /app
 
-# ARG VITE_API_URL
-# ENV VITE_API_URL=$VITE_API_URL
+ARG VITE_CDN_URL
+ENV VITE_CDN_URL=$VITE_CDN_URL
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json /app/
 COPY web/package.json /app/web/package.json
@@ -16,7 +16,7 @@ RUN pn ci
 
 COPY . .
 
-# RUN printf 'VITE_API_URL=%s' "$VITE_API_URL" > .env
+RUN printf 'VITE_CDN_URL=%s\n' "$VITE_CDN_URL" > admin/.env
 RUN pn build
 
 FROM nginx:alpine
