@@ -253,6 +253,8 @@ jobs:
             git switch -C main "$DEPLOY_SHA"
             git branch --set-upstream-to=origin/main main
 
+            failed_services=()
+
             for service in "${SERVICES[@]}"; do
               if [ "$service" = "web" ]; then
                 echo "Waiting for the API OpenAPI endpoint before building web..."
@@ -261,7 +263,8 @@ jobs:
                 until docker compose exec -T api wget -q -T 5 -O /dev/null http://127.0.0.1:3333/openapi.json; do
                   if [ "$SECONDS" -ge "$API_READY_DEADLINE" ]; then
                     echo "API did not become ready within 60 seconds. Refusing to build web." >&2
-                    exit 1
+                    failed_services+=("$service")
+                    continue 2
                   fi
 
                   sleep 2
@@ -271,10 +274,21 @@ jobs:
               echo "Rebuilding $service..."
 
               if [ "$service" = "api" ] || [ "$service" = "cdn" ]; then
-                docker compose up -d --build "$service"
+                if ! docker compose up -d --build "$service"; then
+                  echo "Deploy failed for $service. Continuing with remaining services." >&2
+                  failed_services+=("$service")
+                fi
               else
                 # Keep frontend deploys from recreating an API blocked by Go validation.
-                docker compose up -d --build --no-deps "$service"
+                if ! docker compose up -d --build --no-deps "$service"; then
+                  echo "Deploy failed for $service. Continuing with remaining services." >&2
+                  failed_services+=("$service")
+                fi
               fi
             done
+
+            if [ "${#failed_services[@]}" -gt 0 ]; then
+              echo "Deploy failed for: ${failed_services[*]}" >&2
+              exit 1
+            fi
           REMOTE
