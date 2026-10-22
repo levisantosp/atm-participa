@@ -26,7 +26,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { z } from 'zod'
 
 const schema = z.object({
-  search: z.string().min(2, 'Mínimo 2 caracteres'),
+  search: z.string().min(2, 'Mínimo 2 caracteres').optional(),
   status: z.enum(['open', 'in_review', 'closed'])
 })
 
@@ -55,8 +55,7 @@ const onSubmit = handleSubmit((data) => {
   void router.push({
     query: {
       ...route.query,
-      search: data.search || undefined,
-      status: data.status
+      ...data
     }
   })
 })
