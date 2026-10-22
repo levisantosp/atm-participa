@@ -18,7 +18,9 @@ import (
 func main() {
 	env.LoadEnv(".env")
 
-	r2.Connect(context.Background())
+	if err := r2.Connect(context.Background()); err != nil {
+		log.Fatal(err)
+	}
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
