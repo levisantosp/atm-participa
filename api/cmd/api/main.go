@@ -11,12 +11,12 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/levisantosp/atm-participa/api/internal/db"
+	"github.com/levisantosp/atm-participa/api/internal/env"
 	"github.com/levisantosp/atm-participa/api/internal/r2"
 	"github.com/levisantosp/atm-participa/api/internal/routes/admin"
 	"github.com/levisantosp/atm-participa/api/internal/routes/auth"
 	"github.com/levisantosp/atm-participa/api/internal/routes/issues"
 	"github.com/levisantosp/atm-participa/api/internal/routes/users"
-	"github.com/levisantosp/atm-participa/api/internal/utils"
 	"github.com/levisantosp/atm-participa/infra/errors"
 	"github.com/levisantosp/atm-participa/infra/redis"
 
@@ -24,18 +24,18 @@ import (
 )
 
 func main() {
-	utils.LoadEnv(".env")
+	env.LoadEnv(".env")
 	db.Connect()
 	if err := r2.Connect(context.Background()); err != nil {
 		log.Fatal(err)
 	}
-	redis.Connect(utils.Env.RedisAddr, utils.Env.RedisPassword)
+	redis.Connect(env.Env.RedisAddr, env.Env.RedisPassword)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.RedirectSlashes)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins: utils.Env.TrustedOrigins,
+		AllowedOrigins: env.Env.TrustedOrigins,
 		AllowedMethods: []string{
 			"GET",
 			"POST",

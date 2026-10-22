@@ -16,8 +16,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/danielgtaylor/huma/v2/humatest"
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
+	"github.com/levisantosp/atm-participa/api/internal/env"
 	"github.com/levisantosp/atm-participa/api/internal/tests"
-	"github.com/levisantosp/atm-participa/api/internal/utils"
 	"github.com/levisantosp/atm-participa/infra/r2"
 
 	_ "github.com/levisantosp/atm-participa/api/ent/generated/runtime"
@@ -173,10 +173,10 @@ func TestCreateIssue(t *testing.T) {
 
 	t.Run("should create an issue with image", func(t *testing.T) {
 		client, err := r2.New(t.Context(), r2.Config{
-			AccessKeyID: utils.Env.CloudflareR2AccessKeyID,
-			SecretKey:   utils.Env.CloudflareR2SecretKey,
-			URL:         utils.Env.CloudflareR2URL,
-			Bucket:      utils.Env.CloudflareR2Bucket,
+			AccessKeyID: env.Env.CloudflareR2AccessKeyID,
+			SecretKey:   env.Env.CloudflareR2SecretKey,
+			URL:         env.Env.CloudflareR2URL,
+			Bucket:      env.Env.CloudflareR2Bucket,
 		})
 		if err != nil {
 			t.Fatal(err)

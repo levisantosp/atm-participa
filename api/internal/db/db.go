@@ -8,7 +8,7 @@ import (
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/levisantosp/atm-participa/api/ent/generated"
-	"github.com/levisantosp/atm-participa/api/internal/utils"
+	"github.com/levisantosp/atm-participa/api/internal/env"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -16,7 +16,7 @@ import (
 var Client *generated.Client
 
 func Connect() *sql.DB {
-	db, err := sql.Open("pgx", utils.Env.DatabaseURL)
+	db, err := sql.Open("pgx", env.Env.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
