@@ -13,7 +13,7 @@ type Issue struct {
 	Title       string       `json:"title"`
 	Description string       `json:"description"`
 	Status      issue.Status `json:"status"`
-	ImageURL    string       `json:"imageUrl,omitempty"`
+	ImageURL    *string      `json:"imageUrl,omitempty"`
 	CreatedAt   time.Time    `json:"createdAt"`
 	UpdatedAt   time.Time    `json:"updatedAt"`
 }

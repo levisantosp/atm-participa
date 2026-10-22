@@ -29,7 +29,7 @@ func IssueResponsesFrom(
 				if err != nil {
 					return nil, err
 				}
-				response.ImageURL = imageURL
+				response.ImageURL = &imageURL
 			}
 		}
 
