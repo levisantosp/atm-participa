@@ -64,7 +64,7 @@ services:
     container_name: api-atm-participa
     restart: unless-stopped
     env_file:
-      - .env
+      - ./api/.env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/admin
       - REDIS_ADDR=redis:6379
@@ -78,7 +78,7 @@ services:
     container_name: cdn-atm-participa
     restart: unless-stopped
     env_file:
-      - .env
+      - ./api/.env
     ports:
       - '3336:3336'
 
