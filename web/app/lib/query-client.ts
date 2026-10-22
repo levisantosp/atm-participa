@@ -28,7 +28,11 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 60_000,
-      retry: false
+      retry: false,
+      queryKeyHashFn: (queryKey) =>
+        JSON.stringify(queryKey, (_, v) =>
+          typeof v === 'bigint' ? v.toString() : v
+        )
     },
     mutations: {
       retry: false

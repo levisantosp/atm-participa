@@ -17,6 +17,7 @@ import {
 import { watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
+import { env } from '@/env'
 import { queryClient } from '@/lib/query'
 import DeleteDialog from './delete-dialog.vue'
 
@@ -125,8 +126,12 @@ watch(error, (err) => {
         <CardDescription>{{ data.description }}</CardDescription>
       </CardHeader>
 
-      <CardContent v-if="data.imageUrl">
-        <img :src="data.imageUrl" :alt="data.title" class="w-full rounded-xl" />
+      <CardContent v-if="data.images?.length">
+        <img
+          :src="`${env.VITE_CDN_URL}/issues/${data.id}/${data.images[0]}`"
+          :alt="data.title"
+          class="w-full rounded-xl"
+        />
       </CardContent>
     </Card>
   </div>
