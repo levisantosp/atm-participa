@@ -11,9 +11,7 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
-	r2client "github.com/levisantosp/atm-participa/api/internal/r2"
-	"github.com/levisantosp/atm-participa/api/internal/routes"
-	"github.com/levisantosp/atm-participa/infra/r2"
+	"github.com/levisantosp/atm-participa/api/internal/r2"
 )
 
 type CreateIssueOutput struct {
@@ -40,8 +38,6 @@ func CreateIssue(
 		)
 	}
 
-	var client *r2.Client
-
 	issue, err := db.WithTx(
 		ctx,
 		func(tx *generated.Tx) (*generated.Issue, error) {
@@ -61,10 +57,8 @@ func CreateIssue(
 				}
 				issue.Edges.IssueFiles = append(issue.Edges.IssueFiles, file)
 
-				client = r2client.Client
-
-				_, err = client.S3.PutObject(ctx, &s3.PutObjectInput{
-					Bucket: aws.String(client.Bucket),
+				_, err = r2.Client.S3.PutObject(ctx, &s3.PutObjectInput{
+					Bucket: aws.String(r2.Client.Bucket),
 					Key: aws.String(
 						fmt.Sprintf("issues/%d/%s", issue.ID, file.ID),
 					),
@@ -83,21 +77,7 @@ func CreateIssue(
 		return nil, err
 	}
 
-	response := dtos.IssueFrom(issue)
-	if body.File.IsSet {
-		responses, err := routes.IssueResponsesFrom(
-			ctx,
-			[]*generated.Issue{issue},
-			client,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		response = responses[0]
-	}
-
 	return &CreateIssueOutput{
-		Body: response,
+		Body: dtos.IssueFrom(issue),
 	}, nil
 }
