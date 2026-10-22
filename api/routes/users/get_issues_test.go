@@ -70,9 +70,9 @@ func TestGetIssues(t *testing.T) {
 				t.Fatalf("expected 1 item got %d", len(body.Items))
 			}
 
-			if body.Items[0].ID != issueIDs[i] {
+			if body.Items[0].ID != fmt.Sprint(issueIDs[i]) {
 				t.Fatalf(
-					"expected issue %d got %d",
+					"expected issue %d got %s",
 					issueIDs[i],
 					body.Items[0].ID,
 				)

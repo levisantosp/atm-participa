@@ -1,6 +1,7 @@
 package dtos
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/levisantosp/atm-participa/api/ent/generated"
@@ -8,7 +9,7 @@ import (
 )
 
 type Issue struct {
-	ID          int64        `json:"id"`
+	ID          string       `json:"id"`
 	Title       string       `json:"title"`
 	Description string       `json:"description"`
 	Status      issue.Status `json:"status"`
@@ -19,7 +20,7 @@ type Issue struct {
 
 func IssueFrom(issue *generated.Issue) Issue {
 	return Issue{
-		ID:          issue.ID,
+		ID:          strconv.FormatInt(issue.ID, 10),
 		Title:       issue.Title,
 		Description: issue.Description,
 		Status:      issue.Status,

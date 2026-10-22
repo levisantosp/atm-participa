@@ -65,7 +65,7 @@ func GetIssues(
 		Body: utils.CursorPaginatedResponseFrom(
 			items,
 			input.Limit,
-			func(item dtos.Issue) int64 {
+			func(item dtos.Issue) string {
 				return item.ID
 			},
 		),

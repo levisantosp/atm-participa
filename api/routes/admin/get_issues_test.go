@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -174,9 +175,9 @@ func TestGetIssues(t *testing.T) {
 					)
 				}
 
-				if body.Items[0].ID != testCase.id {
+				if body.Items[0].ID != fmt.Sprint(testCase.id) {
 					t.Fatalf(
-						"expected issue %d got %d for search %q",
+						"expected issue %d got %s for search %q",
 						testCase.id,
 						body.Items[0].ID,
 						testCase.search,
@@ -213,7 +214,7 @@ func TestGetIssues(t *testing.T) {
 			t.Fatalf("expected %d items got %d", 2, len(body.Items))
 		}
 
-		if *body.NextCursor != body.Items[1].ID {
+		if fmt.Sprint(*body.NextCursor) != body.Items[1].ID {
 			t.Fatal("expected cursor to match the last returned item")
 		}
 
@@ -236,7 +237,11 @@ func TestGetIssues(t *testing.T) {
 			t.Fatalf("expected 1 item got %d", len(nextBody.Items))
 		}
 
-		if nextBody.Items[0].ID >= *body.NextCursor {
+		nextID, err := strconv.ParseInt(nextBody.Items[0].ID, 10, 64)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if nextID >= *body.NextCursor {
 			t.Fatal("expected the next page to contain older issues")
 		}
 	})

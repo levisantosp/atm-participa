@@ -1,5 +1,7 @@
 package utils
 
+import "strconv"
+
 type PaginatedResponse[T any] struct {
 	Page        int  `json:"page"`
 	HasNextPage bool `json:"hasNextPage"`
@@ -32,13 +34,13 @@ func PaginatedResponseFrom[T any](
 func CursorPaginatedResponseFrom[T any](
 	items []T,
 	limit int,
-	getCursor func(T) int64,
+	getCursor func(T) string,
 ) CursorPaginatedResponse[T] {
 	var nextCursor *int64
 
 	if len(items) > limit {
 		items = items[:limit]
-		cursor := getCursor(items[len(items)-1])
+		cursor, _ := strconv.ParseInt(getCursor(items[len(items)-1]), 10, 64)
 		nextCursor = &cursor
 	}
 
