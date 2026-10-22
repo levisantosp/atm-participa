@@ -67,7 +67,7 @@ const { isFetching, isFetchingNextPage, fetchNextPage, error, data } =
       query: computed(() => ({
         search: route.query.search?.toString(),
         status: route.query.status?.toString() ?? 'open',
-        limit: 20
+        limit: 20n
       }))
     },
     {

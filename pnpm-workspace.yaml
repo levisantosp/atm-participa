@@ -39,7 +39,6 @@ catalog:
   oxlint-tsgolint: ^7.0.2002
   turbo: ^2.11.2
   dayjs: ^1.11.23
-  '@kubb/adapter-oas': ^5.4.1
   '@nuxt/image': ^2.1.0
   '@vitejs/plugin-vue': ^6.0.10
   '@vue/tsconfig': ^0.9.1
