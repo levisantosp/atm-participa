@@ -43,7 +43,9 @@ func GetIssueImage(
 			ctx.SetHeader("Content-Type", contentType)
 			ctx.SetHeader("Cache-Control", "public, max-age=3600")
 
-			defer file.Body.Close()
+			defer func() {
+				_ = file.Body.Close()
+			}()
 
 			_, _ = io.Copy(ctx.BodyWriter(), file.Body)
 		},
