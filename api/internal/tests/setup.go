@@ -5,12 +5,16 @@ import (
 	"testing"
 
 	"github.com/levisantosp/atm-participa/api/internal/db"
+	"github.com/levisantosp/atm-participa/api/internal/r2"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
 	"github.com/levisantosp/atm-participa/infra/redis"
 )
 
 func Setup(t *testing.T) {
 	utils.LoadEnv("../../../.env.test")
+	if err := r2.Connect(t.Context()); err != nil {
+		t.Fatal(err)
+	}
 	redis.Connect(utils.Env.RedisAddr, utils.Env.RedisPassword)
 	sqlDB := db.Connect()
 

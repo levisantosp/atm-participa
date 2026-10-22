@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/levisantosp/atm-participa/api/internal/db"
+	"github.com/levisantosp/atm-participa/api/internal/r2"
 	"github.com/levisantosp/atm-participa/api/internal/routes/admin"
 	"github.com/levisantosp/atm-participa/api/internal/routes/auth"
 	"github.com/levisantosp/atm-participa/api/internal/routes/issues"
@@ -24,6 +26,9 @@ import (
 func main() {
 	utils.LoadEnv(".env")
 	db.Connect()
+	if err := r2.Connect(context.Background()); err != nil {
+		log.Fatal(err)
+	}
 	redis.Connect(utils.Env.RedisAddr, utils.Env.RedisPassword)
 
 	r := chi.NewRouter()

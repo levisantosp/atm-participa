@@ -9,9 +9,9 @@ import (
 	"github.com/levisantosp/atm-participa/api/ent/generated/user"
 	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
+	"github.com/levisantosp/atm-participa/api/internal/r2"
 	"github.com/levisantosp/atm-participa/api/internal/routes"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
-	"github.com/levisantosp/atm-participa/infra/r2"
 )
 
 type GetUserIssuesOutputBody = utils.CursorPaginatedResponse[dtos.Issue]
@@ -48,17 +48,7 @@ func GetIssues(
 		return nil, err
 	}
 
-	client, err := r2.New(ctx, r2.Config{
-		AccessKeyID: utils.Env.CloudflareR2AccessKeyID,
-		SecretKey:   utils.Env.CloudflareR2SecretKey,
-		URL:         utils.Env.CloudflareR2URL,
-		Bucket:      utils.Env.CloudflareR2Bucket,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	items, err := routes.IssueResponsesFrom(ctx, issues, client)
+	items, err := routes.IssueResponsesFrom(ctx, issues, r2.Client)
 	if err != nil {
 		return nil, err
 	}

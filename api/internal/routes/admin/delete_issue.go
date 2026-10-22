@@ -10,8 +10,7 @@ import (
 	"github.com/levisantosp/atm-participa/api/ent/generated"
 	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
 	"github.com/levisantosp/atm-participa/api/internal/db"
-	"github.com/levisantosp/atm-participa/api/internal/utils"
-	"github.com/levisantosp/atm-participa/infra/r2"
+	"github.com/levisantosp/atm-participa/api/internal/r2"
 )
 
 func DeleteIssue(
@@ -29,15 +28,7 @@ func DeleteIssue(
 			return nil, err
 		}
 
-		client, err := r2.New(ctx, r2.Config{
-			AccessKeyID: utils.Env.CloudflareR2AccessKeyID,
-			SecretKey:   utils.Env.CloudflareR2SecretKey,
-			URL:         utils.Env.CloudflareR2URL,
-			Bucket:      utils.Env.CloudflareR2Bucket,
-		})
-		if err != nil {
-			return nil, err
-		}
+		client := r2.Client
 
 		objects := make(
 			[]types.ObjectIdentifier,
