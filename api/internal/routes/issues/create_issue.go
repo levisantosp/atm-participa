@@ -2,6 +2,7 @@ package issues
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -54,11 +55,6 @@ func CreateIssue(
 			}
 
 			if body.File.IsSet {
-				extension, err := r2.ImageExtension(body.File.ContentType)
-				if err != nil {
-					return nil, err
-				}
-
 				file, err := tx.File.Create().SetIssueID(issue.ID).Save(ctx)
 				if err != nil {
 					return nil, err
@@ -69,11 +65,9 @@ func CreateIssue(
 
 				_, err = client.S3.PutObject(ctx, &s3.PutObjectInput{
 					Bucket: aws.String(client.Bucket),
-					Key: aws.String(r2.IssueFileObjectKey(
-						issue.ID,
-						file.ID,
-						extension,
-					)),
+					Key: aws.String(
+						fmt.Sprintf("issues/%d/%s", issue.ID, file.ID),
+					),
 					Body:        body.File.File,
 					ContentType: aws.String(body.File.ContentType),
 				})
