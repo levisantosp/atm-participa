@@ -27,6 +27,10 @@ export const queryClient = new QueryClient({
   }),
   defaultOptions: {
     queries: {
+      queryKeyHashFn: (queryKey) =>
+        JSON.stringify(queryKey, (_, v) =>
+          typeof v === 'bigint' ? v.toString() : v
+        ),
       staleTime: 60_000,
       retry: false
     },

@@ -46,7 +46,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "issue" package.
 	IssuesInverseTable = "issues"
 	// IssuesColumn is the table column denoting the issues relation/edge.
-	IssuesColumn = "user_issues"
+	IssuesColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

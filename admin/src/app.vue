@@ -22,12 +22,14 @@ watch(
     if (!session && publicRoute) return
 
     if (session?.isAdmin && publicRoute) {
-      return router.push('/')
+      return await router.push('/')
     }
 
     if (!session?.isAdmin && !publicRoute) {
-      await auth.signOut()
-      router.push('/sign-in')
+      if (session) {
+        await auth.signOut()
+      }
+      await router.push('/sign-in')
     }
   },
   {

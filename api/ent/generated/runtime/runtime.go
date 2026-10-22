@@ -48,23 +48,23 @@ func init() {
 	issueFields := schema.Issue{}.Fields()
 	_ = issueFields
 	// issueDescTitle is the schema descriptor for title field.
-	issueDescTitle := issueFields[1].Descriptor()
+	issueDescTitle := issueFields[2].Descriptor()
 	// issue.TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	issue.TitleValidator = issueDescTitle.Validators[0].(func(string) error)
 	// issueDescDescription is the schema descriptor for description field.
-	issueDescDescription := issueFields[2].Descriptor()
+	issueDescDescription := issueFields[3].Descriptor()
 	// issue.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	issue.DescriptionValidator = issueDescDescription.Validators[0].(func(string) error)
 	// issueDescUpvotes is the schema descriptor for upvotes field.
-	issueDescUpvotes := issueFields[4].Descriptor()
+	issueDescUpvotes := issueFields[5].Descriptor()
 	// issue.DefaultUpvotes holds the default value on creation for the upvotes field.
 	issue.DefaultUpvotes = issueDescUpvotes.Default.(int64)
 	// issueDescCreatedAt is the schema descriptor for created_at field.
-	issueDescCreatedAt := issueFields[5].Descriptor()
+	issueDescCreatedAt := issueFields[6].Descriptor()
 	// issue.DefaultCreatedAt holds the default value on creation for the created_at field.
 	issue.DefaultCreatedAt = issueDescCreatedAt.Default.(func() time.Time)
 	// issueDescUpdatedAt is the schema descriptor for updated_at field.
-	issueDescUpdatedAt := issueFields[6].Descriptor()
+	issueDescUpdatedAt := issueFields[7].Descriptor()
 	// issue.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	issue.DefaultUpdatedAt = issueDescUpdatedAt.Default.(func() time.Time)
 	// issue.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

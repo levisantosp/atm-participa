@@ -26,7 +26,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { z } from 'zod'
 
 const schema = z.object({
-  search: z.string().min(2, 'Mínimo 2 caracteres'),
+  search: z.string().min(2, 'Mínimo 2 caracteres').optional(),
   status: z.enum(['open', 'in_review', 'closed'])
 })
 
@@ -55,8 +55,7 @@ const onSubmit = handleSubmit((data) => {
   void router.push({
     query: {
       ...route.query,
-      search: data.search || undefined,
-      status: data.status
+      ...data
     }
   })
 })
@@ -67,7 +66,7 @@ const { isFetching, isFetchingNextPage, fetchNextPage, error, data } =
       query: computed(() => ({
         search: route.query.search?.toString(),
         status: route.query.status?.toString() ?? 'open',
-        limit: 20
+        limit: 20n
       }))
     },
     {
@@ -169,7 +168,12 @@ const hasNextCursor = computed(() => {
           </TableCell>
         </TableRow>
         <template v-else>
-          <TableRow v-for="issue in issues" :key="issue.id">
+          <TableRow
+            v-for="issue in issues"
+            :key="issue.id"
+            class="cursor-pointer"
+            @click="router.push(`/ocorrencias/${issue.id}`)"
+          >
             <TableCell>{{ issue.id }}</TableCell>
             <TableCell class="max-w-80 truncate">
               {{ issue.title }}

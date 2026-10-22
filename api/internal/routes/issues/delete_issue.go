@@ -1,0 +1,82 @@
+package issues
+
+import (
+	"context"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/levisantosp/atm-participa/api/ent/generated"
+	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/api/ent/generated/user"
+	"github.com/levisantosp/atm-participa/api/internal/db"
+	"github.com/levisantosp/atm-participa/api/internal/middlewares"
+	"github.com/levisantosp/atm-participa/api/internal/r2"
+)
+
+func DeleteIssue(
+	ctx context.Context,
+	input *struct {
+		ID int64 `path:"id"`
+	},
+) (*struct{}, error) {
+	userCtx := middlewares.MustGetUserFromContext(ctx)
+
+	_, err := db.WithTx(ctx, func(tx *generated.Tx) (*struct{}, error) {
+		issue, err := tx.Issue.Query().
+			Where(issue.IDEQ(input.ID), issue.HasUserWith(user.IDEQ(userCtx.ID))).
+			WithIssueFiles().
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		client := r2.Client
+
+		objects := make(
+			[]types.ObjectIdentifier,
+			0,
+			len(issue.Edges.IssueFiles),
+		)
+		for _, file := range issue.Edges.IssueFiles {
+			keys, err := client.IssueFileObjectKeys(ctx, issue.ID, file.ID)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, key := range keys {
+				objects = append(objects, types.ObjectIdentifier{
+					Key: aws.String(key),
+				})
+			}
+		}
+
+		if len(objects) > 0 {
+			_, err := client.S3.DeleteObjects(ctx, &s3.DeleteObjectsInput{
+				Bucket: aws.String(client.Bucket),
+				Delete: &types.Delete{
+					Objects: objects,
+				},
+			})
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		if err := tx.Issue.DeleteOneID(issue.ID).Exec(ctx); err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	})
+	if err != nil {
+		if generated.IsNotFound(err) {
+			return nil, huma.Error404NotFound("Ocorrência não encontrada")
+		}
+
+		return nil, err
+	}
+
+	return nil, nil
+}

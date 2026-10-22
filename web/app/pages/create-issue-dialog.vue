@@ -67,7 +67,11 @@ const createIssueMutation = useCreateIssue({
   mutation: {
     onSuccess(issue) {
       queryClient.setQueryData<InfiniteData<GetIssuesStatus200>>(
-        getIssuesInfiniteQueryKey({ query: { limit: 100 } }),
+        getIssuesInfiniteQueryKey({
+          query: {
+            limit: 100n
+          }
+        }),
         (currentData) => {
           if (!currentData?.pages.length) {
             return currentData

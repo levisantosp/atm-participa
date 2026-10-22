@@ -19,6 +19,7 @@ type Issue struct {
 func (Issue) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id"),
+		field.Int64("user_id").Optional(),
 		field.String("title").MaxLen(72),
 		field.String("description").MaxLen(65_000),
 		field.Enum("status").
@@ -35,9 +36,9 @@ func (Issue) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
 			Ref("issues").
+			Field("user_id").
 			Unique().
-			Required().
-			Annotations(entsql.OnDelete(entsql.Cascade)),
+			Annotations(entsql.OnDelete(entsql.SetNull)),
 		edge.From("issue_upvotes", Upvote.Type).Ref("issue"),
 		edge.From("issue_files", File.Type).Ref("issue"),
 	}

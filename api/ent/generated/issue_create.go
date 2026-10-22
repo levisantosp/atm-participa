@@ -23,6 +23,20 @@ type IssueCreate struct {
 	hooks    []Hook
 }
 
+// SetUserID sets the "user_id" field.
+func (_c *IssueCreate) SetUserID(v int64) *IssueCreate {
+	_c.mutation.SetUserID(v)
+	return _c
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (_c *IssueCreate) SetNillableUserID(v *int64) *IssueCreate {
+	if v != nil {
+		_c.SetUserID(*v)
+	}
+	return _c
+}
+
 // SetTitle sets the "title" field.
 func (_c *IssueCreate) SetTitle(v string) *IssueCreate {
 	_c.mutation.SetTitle(v)
@@ -94,12 +108,6 @@ func (_c *IssueCreate) SetNillableUpdatedAt(v *time.Time) *IssueCreate {
 // SetID sets the "id" field.
 func (_c *IssueCreate) SetID(v int64) *IssueCreate {
 	_c.mutation.SetID(v)
-	return _c
-}
-
-// SetUserID sets the "user" edge to the User entity by ID.
-func (_c *IssueCreate) SetUserID(id int64) *IssueCreate {
-	_c.mutation.SetUserID(id)
 	return _c
 }
 
@@ -226,9 +234,6 @@ func (_c *IssueCreate) check() error {
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`generated: missing required field "Issue.updated_at"`)}
 	}
-	if len(_c.mutation.UserIDs()) == 0 {
-		return &ValidationError{Name: "user", err: errors.New(`generated: missing required edge "Issue.user"`)}
-	}
 	return nil
 }
 
@@ -299,7 +304,7 @@ func (_c *IssueCreate) createSpec() (*Issue, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_issues = &nodes[0]
+		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.IssueUpvotesIDs(); len(nodes) > 0 {

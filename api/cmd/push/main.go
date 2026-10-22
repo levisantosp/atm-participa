@@ -4,12 +4,12 @@ import (
 	"context"
 	"log"
 
-	"github.com/levisantosp/atm-participa/api/db"
-	"github.com/levisantosp/atm-participa/api/utils"
+	"github.com/levisantosp/atm-participa/api/internal/db"
+	"github.com/levisantosp/atm-participa/api/internal/env"
 )
 
 func main() {
-	utils.LoadEnv("../.env")
+	env.LoadEnv(".env")
 	db.Connect()
 
 	err := db.Client.Schema.Create(context.Background())

@@ -29,7 +29,6 @@ type IssueQuery struct {
 	withUser         *UserQuery
 	withIssueUpvotes *UpvoteQuery
 	withIssueFiles   *FileQuery
-	withFKs          bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -372,12 +371,12 @@ func (_q *IssueQuery) WithIssueFiles(opts ...func(*FileQuery)) *IssueQuery {
 // Example:
 //
 //	var v []struct {
-//		Title string `json:"title,omitempty"`
+//		UserID int64 `json:"user_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Issue.Query().
-//		GroupBy(issue.FieldTitle).
+//		GroupBy(issue.FieldUserID).
 //		Aggregate(generated.Count()).
 //		Scan(ctx, &v)
 func (_q *IssueQuery) GroupBy(field string, fields ...string) *IssueGroupBy {
@@ -395,11 +394,11 @@ func (_q *IssueQuery) GroupBy(field string, fields ...string) *IssueGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Title string `json:"title,omitempty"`
+//		UserID int64 `json:"user_id,omitempty"`
 //	}
 //
 //	client.Issue.Query().
-//		Select(issue.FieldTitle).
+//		Select(issue.FieldUserID).
 //		Scan(ctx, &v)
 func (_q *IssueQuery) Select(fields ...string) *IssueSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
@@ -443,7 +442,6 @@ func (_q *IssueQuery) prepareQuery(ctx context.Context) error {
 func (_q *IssueQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Issue, error) {
 	var (
 		nodes       = []*Issue{}
-		withFKs     = _q.withFKs
 		_spec       = _q.querySpec()
 		loadedTypes = [3]bool{
 			_q.withUser != nil,
@@ -451,12 +449,6 @@ func (_q *IssueQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Issue,
 			_q.withIssueFiles != nil,
 		}
 	)
-	if _q.withUser != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, issue.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Issue).scanValues(nil, columns)
 	}
@@ -502,10 +494,7 @@ func (_q *IssueQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*I
 	ids := make([]int64, 0, len(nodes))
 	nodeids := make(map[int64][]*Issue)
 	for i := range nodes {
-		if nodes[i].user_issues == nil {
-			continue
-		}
-		fk := *nodes[i].user_issues
+		fk := nodes[i].UserID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -522,7 +511,7 @@ func (_q *IssueQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*I
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_issues" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -617,6 +606,9 @@ func (_q *IssueQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != issue.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if _q.withUser != nil {
+			_spec.Node.AddColumnOnce(issue.FieldUserID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

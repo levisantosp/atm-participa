@@ -31,6 +31,26 @@ func (_u *IssueUpdate) Where(ps ...predicate.Issue) *IssueUpdate {
 	return _u
 }
 
+// SetUserID sets the "user_id" field.
+func (_u *IssueUpdate) SetUserID(v int64) *IssueUpdate {
+	_u.mutation.SetUserID(v)
+	return _u
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (_u *IssueUpdate) SetNillableUserID(v *int64) *IssueUpdate {
+	if v != nil {
+		_u.SetUserID(*v)
+	}
+	return _u
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (_u *IssueUpdate) ClearUserID() *IssueUpdate {
+	_u.mutation.ClearUserID()
+	return _u
+}
+
 // SetTitle sets the "title" field.
 func (_u *IssueUpdate) SetTitle(v string) *IssueUpdate {
 	_u.mutation.SetTitle(v)
@@ -97,12 +117,6 @@ func (_u *IssueUpdate) AddUpvotes(v int64) *IssueUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *IssueUpdate) SetUpdatedAt(v time.Time) *IssueUpdate {
 	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetUserID sets the "user" edge to the User entity by ID.
-func (_u *IssueUpdate) SetUserID(id int64) *IssueUpdate {
-	_u.mutation.SetUserID(id)
 	return _u
 }
 
@@ -246,9 +260,6 @@ func (_u *IssueUpdate) check() error {
 		if err := issue.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`generated: validator failed for field "Issue.status": %w`, err)}
 		}
-	}
-	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
-		return errors.New(`generated: clearing a required unique edge "Issue.user"`)
 	}
 	return nil
 }
@@ -422,6 +433,26 @@ type IssueUpdateOne struct {
 	mutation *IssueMutation
 }
 
+// SetUserID sets the "user_id" field.
+func (_u *IssueUpdateOne) SetUserID(v int64) *IssueUpdateOne {
+	_u.mutation.SetUserID(v)
+	return _u
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (_u *IssueUpdateOne) SetNillableUserID(v *int64) *IssueUpdateOne {
+	if v != nil {
+		_u.SetUserID(*v)
+	}
+	return _u
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (_u *IssueUpdateOne) ClearUserID() *IssueUpdateOne {
+	_u.mutation.ClearUserID()
+	return _u
+}
+
 // SetTitle sets the "title" field.
 func (_u *IssueUpdateOne) SetTitle(v string) *IssueUpdateOne {
 	_u.mutation.SetTitle(v)
@@ -488,12 +519,6 @@ func (_u *IssueUpdateOne) AddUpvotes(v int64) *IssueUpdateOne {
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *IssueUpdateOne) SetUpdatedAt(v time.Time) *IssueUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetUserID sets the "user" edge to the User entity by ID.
-func (_u *IssueUpdateOne) SetUserID(id int64) *IssueUpdateOne {
-	_u.mutation.SetUserID(id)
 	return _u
 }
 
@@ -650,9 +675,6 @@ func (_u *IssueUpdateOne) check() error {
 		if err := issue.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`generated: validator failed for field "Issue.status": %w`, err)}
 		}
-	}
-	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
-		return errors.New(`generated: clearing a required unique edge "Issue.user"`)
 	}
 	return nil
 }

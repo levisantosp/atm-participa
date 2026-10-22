@@ -12,9 +12,11 @@ import CreateIssueDialog from './create-issue-dialog.vue'
 
 const { isFetching, error, data } = useGetIssuesInfinite({
   query: {
-    limit: 100
+    limit: 100n
   }
 })
+
+const config = useRuntimeConfig()
 
 const issues = computed(
   () => data.value?.pages.flatMap((page) => page.items ?? []) ?? []
@@ -38,9 +40,9 @@ const issues = computed(
           <CardDescription>{{ issue.description }}</CardDescription>
         </CardHeader>
 
-        <CardContent v-if="issue.imageUrl">
+        <CardContent v-if="issue.images?.length">
           <NuxtImg
-            :src="issue.imageUrl"
+            :src="`${config.public.cdnUrl}/issues/${issue.id}/${issue.images[0]}`"
             :alt="issue.title"
             class="aspect-video w-full rounded-xl object-cover"
           />

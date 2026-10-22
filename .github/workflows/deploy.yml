@@ -49,6 +49,14 @@ jobs:
               - '.oxlintrc.json'
             api:
               - 'api/**'
+              - 'infra/**'
+              - 'go.work'
+              - 'go.work.sum'
+              - 'Makefile'
+              - '.golangci.yml'
+            cdn:
+              - 'cdn/**'
+              - 'infra/**'
               - 'go.work'
               - 'go.work.sum'
               - 'Makefile'
@@ -136,6 +144,7 @@ jobs:
           CHANGED_WEB: ${{ steps.changes.outputs.web }}
           CHANGED_FRONTEND: ${{ steps.changes.outputs.frontend }}
           CHANGED_API: ${{ steps.changes.outputs.api }}
+          CHANGED_CDN: ${{ steps.changes.outputs.cdn }}
           CHANGED_GLOBAL: ${{ steps.changes.outputs.global }}
           FRONTEND_ALLOWED: ${{ steps.checks.outputs.frontend_allowed }}
           API_ALLOWED: ${{ steps.checks.outputs.api_allowed }}
@@ -145,6 +154,11 @@ jobs:
           if [ "$API_ALLOWED" = "true" ] &&
             { [ "$CHANGED_API" = "true" ] || [ "$CHANGED_GLOBAL" = "true" ]; }; then
             SERVICES_TO_DEPLOY+=(api)
+          fi
+
+          if [ "$API_ALLOWED" = "true" ] &&
+            { [ "$CHANGED_CDN" = "true" ] || [ "$CHANGED_GLOBAL" = "true" ]; }; then
+            SERVICES_TO_DEPLOY+=(cdn)
           fi
 
           if [ "$FRONTEND_ALLOWED" = "true" ]; then
@@ -256,7 +270,7 @@ jobs:
 
               echo "Rebuilding $service..."
 
-              if [ "$service" = "api" ]; then
+              if [ "$service" = "api" ] || [ "$service" = "cdn" ]; then
                 docker compose up -d --build "$service"
               else
                 # Keep frontend deploys from recreating an API blocked by Go validation.
