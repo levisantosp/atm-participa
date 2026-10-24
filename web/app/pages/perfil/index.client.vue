@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import {
-  getAuthMeQueryKey,
-  useGetUsersByUserIdIssuesInfinite,
-  usePutUsersMe
-} from 'api-client'
 import {
   BadgeCheckIcon,
   CalendarDaysIcon,
@@ -17,9 +11,12 @@ import {
   ShieldCheckIcon,
   UserRoundIcon
 } from '@lucide/vue'
-import { useForm } from 'vee-validate'
-import { toast } from 'vue-sonner'
-import { z } from 'zod'
+import { toTypedSchema } from '@vee-validate/zod'
+import {
+  getAuthMeQueryKey,
+  useGetUsersByUserIdIssuesInfinite,
+  usePutUsersMe
+} from 'api-client'
 import {
   Button,
   Card,
@@ -31,6 +28,9 @@ import {
   Label,
   Spinner
 } from 'ui'
+import { useForm } from 'vee-validate'
+import { toast } from 'vue-sonner'
+import { z } from 'zod'
 import { auth } from '~/lib/auth'
 import { queryClient } from '~/lib/query-client'
 
@@ -141,7 +141,6 @@ const signOut = async () => {
   await auth.signOut()
   await navigateTo('/sign-in')
 }
-
 </script>
 
 <template>
@@ -176,7 +175,11 @@ const signOut = async () => {
             class="mt-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
           >
             <BadgeCheckIcon :size="14" />
-            {{ session.data.value?.isAdmin ? 'Administrador' : 'Cidadão participante' }}
+            {{
+              session.data.value?.isAdmin
+                ? 'Administrador'
+                : 'Cidadão participante'
+            }}
           </span>
         </div>
 
@@ -266,7 +269,7 @@ const signOut = async () => {
                   setValues({
                     displayName: session.data.value?.displayName ?? '',
                     username: session.data.value?.username ?? ''
-                  });
+                  })
                   isEditing = false
                 "
               >
@@ -292,7 +295,9 @@ const signOut = async () => {
               <MegaphoneIcon :size="19" />
             </span>
             <span class="min-w-0">
-              <span class="block text-sm font-semibold">Minhas manifestações</span>
+              <span class="block text-sm font-semibold"
+                >Minhas manifestações</span
+              >
               <span class="mt-0.5 block text-xs text-muted-foreground">
                 Acesse o histórico de demandas enviadas.
               </span>
@@ -321,7 +326,10 @@ const signOut = async () => {
               </span>
             </span>
           </span>
-          <ChevronRightIcon :size="19" class="shrink-0 text-muted-foreground/50" />
+          <ChevronRightIcon
+            :size="19"
+            class="shrink-0 text-muted-foreground/50"
+          />
         </div>
 
         <button
@@ -336,7 +344,9 @@ const signOut = async () => {
               <LogOutIcon :size="19" />
             </span>
             <span class="min-w-0">
-              <span class="block text-sm font-semibold group-hover:text-destructive">
+              <span
+                class="block text-sm font-semibold group-hover:text-destructive"
+              >
                 Sair da conta
               </span>
               <span class="mt-0.5 block text-xs text-muted-foreground">
