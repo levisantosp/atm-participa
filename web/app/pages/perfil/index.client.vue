@@ -141,6 +141,23 @@ const signOut = async () => {
   await auth.signOut()
   await navigateTo('/sign-in')
 }
+
+const onSubmit = handleSubmit((values) =>
+  updateProfile.mutate({
+    body: {
+      displayName: values.displayName,
+      username: values.username
+    }
+  })
+)
+
+const cancelEditing = () => {
+  setValues({
+    displayName: session.data.value?.displayName ?? '',
+    username: session.data.value?.username ?? ''
+  })
+  isEditing.value = false
+}
 </script>
 
 <template>
@@ -183,19 +200,7 @@ const signOut = async () => {
           </span>
         </div>
 
-        <form
-          class="mt-6 space-y-4 border-t pt-5"
-          @submit="
-            handleSubmit((values) =>
-              updateProfile.mutate({
-                body: {
-                  displayName: values.displayName,
-                  username: values.username
-                }
-              })
-            )
-          "
-        >
+        <form class="mt-6 space-y-4 border-t pt-5" @submit="onSubmit">
           <div class="grid gap-2">
             <Label for="displayName">Nome de exibição</Label>
             <Input
@@ -265,13 +270,7 @@ const signOut = async () => {
                 variant="outline"
                 class="w-full sm:w-auto"
                 :disabled="updateProfile.isPending.value"
-                @click="
-                  setValues({
-                    displayName: session.data.value?.displayName ?? '',
-                    username: session.data.value?.username ?? ''
-                  })
-                  isEditing = false
-                "
+                @click="cancelEditing"
               >
                 Cancelar
               </Button>
