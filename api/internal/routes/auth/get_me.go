@@ -11,14 +11,10 @@ import (
 	"github.com/levisantosp/atm-participa/infra/redis"
 )
 
-type GetMeOutput struct {
-	Body middlewares.Session
-}
-
 func GetMe(ctx context.Context, input *struct {
 	Session http.Cookie `cookie:"session"`
 },
-) (*GetMeOutput, error) {
+) (*Output[middlewares.Session], error) {
 	if input.Session.Name == "" {
 		return nil, huma.Error404NotFound(errors.NotFound)
 	}
@@ -36,7 +32,7 @@ func GetMe(ctx context.Context, input *struct {
 		return nil, err
 	}
 
-	return &GetMeOutput{
+	return &Output[middlewares.Session]{
 		Body: session,
 	}, nil
 }

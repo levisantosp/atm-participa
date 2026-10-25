@@ -18,10 +18,6 @@ import (
 	"github.com/levisantosp/atm-participa/infra/redis"
 )
 
-type SignInOutput struct {
-	SetCookie []http.Cookie `header:"Set-Cookie"`
-}
-
 func SignInWithEmail(
 	ctx context.Context,
 	input *struct {
@@ -30,7 +26,7 @@ func SignInWithEmail(
 			Password string `json:"password" minLength:"8" maxLength:"72"`
 		}
 	},
-) (*SignInOutput, error) {
+) (*OutputAuth, error) {
 	account, err := db.Client.Account.Query().
 		Where(account.HasUserWith(user.EmailEQ(input.Body.Email))).
 		WithUser().
@@ -83,7 +79,7 @@ func SignInWithEmail(
 		Path:     "/",
 	}
 
-	return &SignInOutput{
+	return &OutputAuth{
 		SetCookie: []http.Cookie{sessionCookie},
 	}, nil
 }

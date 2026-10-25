@@ -13,7 +13,7 @@ import (
 func DeleteAccount(
 	ctx context.Context,
 	input *struct{},
-) (*auth.SignInOutput, error) {
+) (*auth.OutputAuth, error) {
 	user := middlewares.MustGetUserFromContext(ctx)
 	session := middlewares.MustGetSessionFromContext(ctx)
 
@@ -26,7 +26,7 @@ func DeleteAccount(
 		return nil, err
 	}
 
-	return &auth.SignInOutput{
+	return &auth.OutputAuth{
 		SetCookie: []http.Cookie{
 			{
 				Name:     "session",

@@ -15,7 +15,7 @@ func UpvoteIssue(
 	input *struct {
 		IssueID int64 `path:"id"`
 	},
-) (*CreateIssueOutput, error) {
+) (*Output[dtos.Issue], error) {
 	user := middlewares.MustGetUserFromContext(ctx)
 
 	issue, err := db.WithTx(
@@ -56,7 +56,7 @@ func UpvoteIssue(
 		return nil, err
 	}
 
-	return &CreateIssueOutput{
+	return &Output[dtos.Issue]{
 		Body: dtos.IssueFrom(issue),
 	}, nil
 }

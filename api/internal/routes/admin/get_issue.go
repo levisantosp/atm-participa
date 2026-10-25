@@ -10,16 +10,12 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
 )
 
-type GetIssueOutput struct {
-	Body dtos.Issue
-}
-
 func GetIssue(
 	ctx context.Context,
 	input *struct {
 		ID int64 `path:"id"`
 	},
-) (*GetIssueOutput, error) {
+) (*Output[dtos.Issue], error) {
 	issue, err := db.Client.Issue.Query().
 		Where(issue.IDEQ(input.ID)).
 		WithIssueFiles().
@@ -31,7 +27,7 @@ func GetIssue(
 		return nil, err
 	}
 
-	return &GetIssueOutput{
+	return &Output[dtos.Issue]{
 		Body: dtos.IssueFrom(issue),
 	}, nil
 }

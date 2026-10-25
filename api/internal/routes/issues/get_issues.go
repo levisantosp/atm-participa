@@ -10,19 +10,13 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/utils"
 )
 
-type GetIssuesOutputBody = utils.CursorPaginatedResponse[dtos.Issue]
-
-type GetIssuesOutput struct {
-	Body GetIssuesOutputBody
-}
-
 func GetIssues(
 	ctx context.Context,
 	input *struct {
 		Limit  int   `query:"limit" minimum:"1" maximum:"100" default:"10"`
 		Cursor int64 `query:"cursor" minimum:"1"`
 	},
-) (*GetIssuesOutput, error) {
+) (*Output[utils.CursorPaginatedResponse[dtos.Issue]], error) {
 	query := db.Client.Issue.Query().
 		WithIssueFiles().
 		Order(issue.ByID(sql.OrderDesc())).
@@ -37,7 +31,7 @@ func GetIssues(
 		return nil, err
 	}
 
-	return &GetIssuesOutput{
+	return &Output[utils.CursorPaginatedResponse[dtos.Issue]]{
 		Body: utils.CursorPaginatedResponseFrom(
 			dtos.IssuesFrom(issues),
 			input.Limit,

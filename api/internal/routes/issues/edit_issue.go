@@ -12,10 +12,6 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
 )
 
-type EditIssueOutput struct {
-	Body dtos.Issue
-}
-
 func EditIssue(ctx context.Context, input *struct {
 	ID   int64 `path:"id"`
 	Body struct {
@@ -23,7 +19,7 @@ func EditIssue(ctx context.Context, input *struct {
 		Description string `json:"description" maxLength:"65000" minLength:"10"`
 	}
 },
-) (*EditIssueOutput, error) {
+) (*Output[dtos.Issue], error) {
 	userCtx := middlewares.MustGetUserFromContext(ctx)
 
 	issueEntity, err := db.Client.Issue.UpdateOneID(input.ID).
@@ -39,7 +35,7 @@ func EditIssue(ctx context.Context, input *struct {
 		return nil, err
 	}
 
-	return &EditIssueOutput{
+	return &Output[dtos.Issue]{
 		Body: dtos.IssueFrom(issueEntity),
 	}, nil
 }

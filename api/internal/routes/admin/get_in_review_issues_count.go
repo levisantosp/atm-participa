@@ -10,7 +10,7 @@ import (
 func GetInReviewIssuesCount(
 	ctx context.Context,
 	_ *struct{},
-) (*GetOpenIssuesCountOutput, error) {
+) (*Output[int], error) {
 	count, err := db.Client.Issue.Query().
 		Where(issue.StatusEQ(issue.StatusInReview)).
 		Count(ctx)
@@ -18,7 +18,7 @@ func GetInReviewIssuesCount(
 		return nil, err
 	}
 
-	return &GetOpenIssuesCountOutput{
+	return &Output[int]{
 		Body: count,
 	}, nil
 }

@@ -10,10 +10,6 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
 )
 
-type UpdateIssueOutput struct {
-	Body dtos.Issue
-}
-
 func UpdateIssueStatus(
 	ctx context.Context,
 	input *struct {
@@ -22,7 +18,7 @@ func UpdateIssueStatus(
 			Status issue.Status `json:"status" enum:"open,closed,in_review"`
 		}
 	},
-) (*UpdateIssueOutput, error) {
+) (*Output[dtos.Issue], error) {
 	issue, err := db.Client.Issue.UpdateOneID(input.ID).
 		SetStatus(input.Body.Status).
 		Save(ctx)
@@ -34,7 +30,7 @@ func UpdateIssueStatus(
 		return nil, err
 	}
 
-	return &UpdateIssueOutput{
+	return &Output[dtos.Issue]{
 		Body: dtos.IssueFrom(issue),
 	}, nil
 }

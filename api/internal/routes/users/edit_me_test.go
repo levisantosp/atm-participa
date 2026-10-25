@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/danielgtaylor/huma/v2/humatest"
-	"github.com/levisantosp/atm-participa/api/internal/dtos"
+	"github.com/levisantosp/atm-participa/api/internal/middlewares"
 	"github.com/levisantosp/atm-participa/api/internal/tests"
 
 	_ "github.com/levisantosp/atm-participa/api/ent/generated/runtime"
@@ -64,25 +64,46 @@ func TestEditMe(t *testing.T) {
 			)
 		}
 
-		var updatedUser dtos.User
-		if err := json.NewDecoder(res.Body).Decode(&updatedUser); err != nil {
+		var updatedSession middlewares.Session
+		if err := json.NewDecoder(res.Body).
+			Decode(&updatedSession); err != nil {
 			t.Fatal(err)
 		}
 
-		if updatedUser.DisplayName != "Updated Name" {
+		if updatedSession.DisplayName != "Updated Name" {
 			t.Errorf(
 				"expected display name %q got %q",
 				"Updated Name",
-				updatedUser.DisplayName,
+				updatedSession.DisplayName,
 			)
 		}
 
-		if updatedUser.Username != user.Username {
+		if updatedSession.Username != user.Username {
 			t.Errorf(
 				"expected username %q to remain unchanged, got %q",
 				user.Username,
-				updatedUser.Username,
+				updatedSession.Username,
 			)
+		}
+
+		if updatedSession.UserId != session.UserId {
+			t.Errorf(
+				"expected user id %q got %q",
+				session.UserId,
+				updatedSession.UserId,
+			)
+		}
+
+		if updatedSession.ID != session.ID {
+			t.Errorf(
+				"expected session id %q got %q",
+				session.ID,
+				updatedSession.ID,
+			)
+		}
+
+		if got := res.Header().Get("Set-Cookie"); got == "" {
+			t.Error("expected Set-Cookie response header")
 		}
 	})
 }
