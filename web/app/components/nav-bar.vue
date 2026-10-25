@@ -51,7 +51,7 @@ const dropItems = {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Conta</DropdownMenuLabel>
 
