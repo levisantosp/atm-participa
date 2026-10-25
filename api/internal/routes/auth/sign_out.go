@@ -8,7 +8,7 @@ import (
 	"github.com/levisantosp/atm-participa/infra/redis"
 )
 
-func SignOut(ctx context.Context, input *struct{}) (*SignInOutput, error) {
+func SignOut(ctx context.Context, input *struct{}) (*OutputAuth, error) {
 	session := middlewares.MustGetSessionFromContext(ctx)
 
 	if err := redis.Client.Unlink(ctx, "session:"+session.ID).
@@ -16,7 +16,7 @@ func SignOut(ctx context.Context, input *struct{}) (*SignInOutput, error) {
 		return nil, err
 	}
 
-	return &SignInOutput{
+	return &OutputAuth{
 		SetCookie: []http.Cookie{
 			{
 				Name:     "session",

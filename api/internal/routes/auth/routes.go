@@ -1,9 +1,19 @@
 package auth
 
 import (
+	"net/http"
+
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
 )
+
+type Output[T any] struct {
+	Body T
+}
+
+type OutputAuth struct {
+	SetCookie []http.Cookie `header:"Set-Cookie"`
+}
 
 func Routes(api huma.API) {
 	group := huma.NewGroup(api, "/auth")

@@ -14,10 +14,6 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/r2"
 )
 
-type CreateIssueOutput struct {
-	Body dtos.Issue
-}
-
 func CreateIssue(
 	ctx context.Context,
 	input *struct {
@@ -27,7 +23,7 @@ func CreateIssue(
 			File        huma.FormFile `form:"file" contentType:"image/png,image/jpeg,image/webp,image/gif" required:"false"`
 		}]
 	},
-) (*CreateIssueOutput, error) {
+) (*Output[dtos.Issue], error) {
 	userCtx := middlewares.MustGetUserFromContext(ctx)
 
 	body := input.RawBody.Data()
@@ -77,7 +73,7 @@ func CreateIssue(
 		return nil, err
 	}
 
-	return &CreateIssueOutput{
+	return &Output[dtos.Issue]{
 		Body: dtos.IssueFrom(issue),
 	}, nil
 }

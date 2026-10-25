@@ -5,6 +5,10 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
 )
 
+type Output[T any] struct {
+	Body T
+}
+
 func Routes(api huma.API) {
 	group := huma.NewGroup(api, "/admin")
 	group.UseMiddleware(middlewares.Auth(api, true))

@@ -27,7 +27,7 @@ func SignUpWithEmail(
 			Username    string `json:"username" minLength:"3" maxLength:"32" pattern:"^[a-zA-Z0-9_]+$"`
 		}
 	},
-) (*SignInOutput, error) {
+) (*OutputAuth, error) {
 	hash, err := utils.GeneratePasswordHash(input.Body.Password)
 	if err != nil {
 		return nil, err
@@ -105,7 +105,7 @@ func SignUpWithEmail(
 		Path:     "/",
 	}
 
-	return &SignInOutput{
+	return &OutputAuth{
 		SetCookie: []http.Cookie{sessionCookie},
 	}, nil
 }
