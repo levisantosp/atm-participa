@@ -17,6 +17,7 @@ import {
   useGetUsersByUserIdIssuesInfinite,
   usePutUsersMe
 } from 'api-client'
+import dayjs from 'dayjs'
 import {
   Button,
   Card,
@@ -41,11 +42,12 @@ definePageMeta({
 const session = auth.useSession()
 const config = useRuntimeConfig()
 const isEditing = ref(false)
-const updateProfile = usePutUsersMe({
+
+const { mutate: updateProfile, isPending: isUpdatingProfile } = usePutUsersMe({
   mutation: {
-    onSuccess: async () => {
+    onSuccess(data) {
       isEditing.value = false
-      await queryClient.invalidateQueries({ queryKey: getAuthMeQueryKey() })
+      queryClient.setQueryData(getAuthMeQueryKey(), data)
       toast.success('Perfil atualizado com sucesso')
     }
   }
@@ -82,7 +84,9 @@ watch(
       })
     }
   },
-  { immediate: true }
+  {
+    immediate: true
+  }
 )
 
 watch(
@@ -92,20 +96,38 @@ watch(
       navigateTo('/sign-in')
     }
   },
-  { immediate: true }
+  {
+    immediate: true
+  }
 )
 
 const issuePath = computed(() => ({
   userId: BigInt(session.data.value?.userId ?? '0')
 }))
 
-const issuesQuery = useGetUsersByUserIdIssuesInfinite(
-  { path: issuePath, query: { limit: 5n } },
-  { query: { enabled: computed(() => !!session.data.value) } }
+const {
+  data: issuesData,
+  isPending: isLoadingIssues,
+  isError: hasIssuesError,
+  hasNextPage: hasMoreIssues,
+  isFetchingNextPage: isLoadingMoreIssues,
+  fetchNextPage: fetchNextIssues
+} = useGetUsersByUserIdIssuesInfinite(
+  {
+    path: issuePath,
+    query: {
+      limit: 5n
+    }
+  },
+  {
+    query: {
+      enabled: computed(() => !!session.data.value)
+    }
+  }
 )
 
 const issues = computed(
-  () => issuesQuery.data.value?.pages.flatMap((page) => page.items ?? []) ?? []
+  () => issuesData.value?.pages.flatMap((page) => page.items ?? []) ?? []
 )
 
 const initials = computed(() => {
@@ -118,11 +140,6 @@ const initials = computed(() => {
     .join('')
 })
 
-const formatDate = (value: string) =>
-  new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium' }).format(
-    new Date(value)
-  )
-
 const statusLabel = (status: string) => {
   const labels: Record<string, string> = {
     open: 'Aberta',
@@ -132,18 +149,8 @@ const statusLabel = (status: string) => {
   return labels[status] ?? status
 }
 
-const loadMoreIssues = () => issuesQuery.fetchNextPage()
-
-const scrollToHistory = () =>
-  document.getElementById('historico')?.scrollIntoView({ behavior: 'smooth' })
-
-const signOut = async () => {
-  await auth.signOut()
-  await navigateTo('/sign-in')
-}
-
 const onSubmit = handleSubmit((values) =>
-  updateProfile.mutate({
+  updateProfile({
     body: {
       displayName: values.displayName,
       username: values.username
@@ -189,14 +196,11 @@ const cancelEditing = () => {
             @{{ session.data.value?.username }}
           </p>
           <span
+            v-if="session.data.value?.isAdmin"
             class="mt-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
           >
             <BadgeCheckIcon :size="14" />
-            {{
-              session.data.value?.isAdmin
-                ? 'Administrador'
-                : 'Cidadão participante'
-            }}
+            Administrador
           </span>
         </div>
 
@@ -210,7 +214,7 @@ const cancelEditing = () => {
               autocomplete="name"
               placeholder="Seu nome"
               maxlength="100"
-              :readonly="!isEditing"
+              :readonly="!isEditing || isUpdatingProfile"
               class="read-only:border-transparent read-only:bg-muted/50 read-only:shadow-none"
             />
             <span v-if="errors.displayName" class="text-sm text-destructive">
@@ -234,7 +238,7 @@ const cancelEditing = () => {
                 autocomplete="username"
                 placeholder="seu_usuario"
                 maxlength="32"
-                :readonly="!isEditing"
+                :readonly="!isEditing || isUpdatingProfile"
               />
             </div>
             <span v-if="isEditing" class="text-xs text-muted-foreground">
@@ -245,7 +249,7 @@ const cancelEditing = () => {
             </span>
           </div>
 
-          <div class="flex flex-col gap-2 pt-1 sm:flex-row">
+          <div class="flex flex-wrap gap-2 pt-1">
             <Button
               v-if="!isEditing"
               type="button"
@@ -256,109 +260,28 @@ const cancelEditing = () => {
               <PencilLineIcon :size="16" />
               Editar perfil
             </Button>
-            <template v-else>
-              <Button
-                type="submit"
-                class="w-full gap-2"
-                :disabled="updateProfile.isPending.value"
-              >
-                <Spinner v-if="updateProfile.isPending.value" />
-                <span v-else>Salvar alterações</span>
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                class="w-full sm:w-auto"
-                :disabled="updateProfile.isPending.value"
-                @click="cancelEditing"
-              >
-                Cancelar
-              </Button>
-            </template>
+            <Button
+              v-if="isEditing"
+              type="submit"
+              class="w-full gap-2 sm:w-auto"
+              :disabled="isUpdatingProfile"
+            >
+              <Spinner v-if="isUpdatingProfile" />
+              <span>Salvar alterações</span>
+            </Button>
+            <Button
+              v-if="isEditing"
+              type="button"
+              variant="outline"
+              class="w-full sm:w-auto"
+              :disabled="isUpdatingProfile"
+              @click="cancelEditing"
+            >
+              Cancelar
+            </Button>
           </div>
         </form>
       </CardContent>
-    </Card>
-
-    <Card class="overflow-hidden py-0">
-      <div class="divide-y">
-        <button
-          type="button"
-          class="group flex w-full items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-muted/50 sm:p-5"
-          @click="scrollToHistory"
-        >
-          <span class="flex min-w-0 items-center gap-4">
-            <span
-              class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground transition-colors group-hover:bg-primary/10 group-hover:text-primary"
-            >
-              <MegaphoneIcon :size="19" />
-            </span>
-            <span class="min-w-0">
-              <span class="block text-sm font-semibold"
-                >Minhas manifestações</span
-              >
-              <span class="mt-0.5 block text-xs text-muted-foreground">
-                Acesse o histórico de demandas enviadas.
-              </span>
-            </span>
-          </span>
-          <ChevronRightIcon
-            :size="19"
-            class="shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
-          />
-        </button>
-
-        <div
-          class="flex items-center justify-between gap-3 p-4 sm:p-5"
-          aria-disabled="true"
-        >
-          <span class="flex min-w-0 items-center gap-4">
-            <span
-              class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground"
-            >
-              <LockKeyholeIcon :size="19" />
-            </span>
-            <span class="min-w-0">
-              <span class="block text-sm font-semibold">Alterar senha</span>
-              <span class="mt-0.5 block text-xs text-muted-foreground">
-                Essa opção ainda não está disponível.
-              </span>
-            </span>
-          </span>
-          <ChevronRightIcon
-            :size="19"
-            class="shrink-0 text-muted-foreground/50"
-          />
-        </div>
-
-        <button
-          type="button"
-          class="group flex w-full items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-destructive/5 sm:p-5"
-          @click="signOut"
-        >
-          <span class="flex min-w-0 items-center gap-4">
-            <span
-              class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground transition-colors group-hover:bg-destructive/10 group-hover:text-destructive"
-            >
-              <LogOutIcon :size="19" />
-            </span>
-            <span class="min-w-0">
-              <span
-                class="block text-sm font-semibold group-hover:text-destructive"
-              >
-                Sair da conta
-              </span>
-              <span class="mt-0.5 block text-xs text-muted-foreground">
-                Encerre sua sessão no Altamira Participa.
-              </span>
-            </span>
-          </span>
-          <ChevronRightIcon
-            :size="19"
-            class="shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-destructive"
-          />
-        </button>
-      </div>
     </Card>
 
     <div
@@ -379,7 +302,7 @@ const cancelEditing = () => {
       <CardHeader>
         <CardTitle class="flex items-center gap-2">
           <MegaphoneIcon :size="20" class="text-primary" />
-          Histórico de manifestações
+          Histórico de ocorrências
         </CardTitle>
         <CardDescription>
           Acompanhe as contribuições que você enviou.
@@ -387,28 +310,17 @@ const cancelEditing = () => {
       </CardHeader>
 
       <CardContent>
-        <div
-          v-if="issuesQuery.isPending.value"
-          class="flex justify-center py-10"
-        >
+        <div v-if="isLoadingIssues" class="flex justify-center py-10">
           <Spinner />
         </div>
 
         <div
-          v-else-if="issuesQuery.isError.value"
+          v-else-if="hasIssuesError"
           class="rounded-xl border border-dashed p-6 text-center"
         >
-          <p class="text-sm text-muted-foreground">
-            Não foi possível carregar suas manifestações.
+          <p class="text-sm text-destructive">
+            Não foi possível carregar suas ocorrências.
           </p>
-          <Button
-            variant="outline"
-            size="sm"
-            class="mt-3"
-            @click="issuesQuery.refetch()"
-          >
-            Tentar novamente
-          </Button>
         </div>
 
         <div
@@ -420,7 +332,7 @@ const cancelEditing = () => {
           >
             <MegaphoneIcon :size="21" />
           </div>
-          <p class="font-medium">Você ainda não enviou manifestações</p>
+          <p class="font-medium">Você ainda não enviou ocorrências</p>
           <p class="mt-1 max-w-xs text-sm text-muted-foreground">
             Participe das discussões e ajude a construir melhorias para a
             cidade.
@@ -453,7 +365,7 @@ const cancelEditing = () => {
               class="mt-3 flex items-center gap-2 text-xs text-muted-foreground"
             >
               <CalendarDaysIcon :size="14" />
-              Enviada em {{ formatDate(issue.createdAt) }}
+              Enviada em {{ dayjs(issue.createdAt).format('DD/MM/YYYY HH:mm') }}
             </div>
             <NuxtImg
               v-if="issue.images?.length"
@@ -465,14 +377,14 @@ const cancelEditing = () => {
         </div>
 
         <Button
-          v-if="issuesQuery.hasNextPage.value"
+          v-if="hasMoreIssues"
           variant="outline"
           class="mt-5 w-full"
-          :disabled="issuesQuery.isFetchingNextPage.value"
-          @click="loadMoreIssues"
+          :disabled="isLoadingMoreIssues"
+          @click="fetchNextIssues()"
         >
           <LoaderCircleIcon
-            v-if="issuesQuery.isFetchingNextPage.value"
+            v-if="isLoadingMoreIssues"
             class="mr-2 animate-spin"
             :size="16"
           />
