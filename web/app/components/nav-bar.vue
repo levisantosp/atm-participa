@@ -27,6 +27,10 @@ const dropItems = {
     {
       label: 'Perfil',
       href: '/perfil'
+    },
+    {
+      label: 'Histórico',
+      href: '/historico'
     }
   ]
 } as const
