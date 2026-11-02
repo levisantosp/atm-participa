@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/danielgtaylor/huma/v2/humatest"
+	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
 	"github.com/levisantosp/atm-participa/api/internal/tests"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
@@ -23,6 +24,18 @@ func TestGetIssues(t *testing.T) {
 	session := tests.CreateSession(user, t)
 
 	t.Run("should use default values", func(t *testing.T) {
+		openIssue, err := tests.CreateIssueWithStatus(t, user, issue.StatusOpen)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tests.CreateIssueWithStatus(
+			t,
+			user,
+			issue.StatusClosed,
+		); err != nil {
+			t.Fatal(err)
+		}
+
 		res := api.Get("/issues", tests.GetCookie(session.ID))
 		if res.Code != http.StatusOK {
 			t.Fatalf("expected status %d got %d", http.StatusOK, res.Code)
@@ -36,19 +49,33 @@ func TestGetIssues(t *testing.T) {
 		if body.NextCursor != nil {
 			t.Fatal("expected no next page")
 		}
+		if len(body.Items) != 1 {
+			t.Fatalf("expected 1 open issue got %d", len(body.Items))
+		}
+		if body.Items[0].ID != fmt.Sprint(openIssue.ID) {
+			t.Fatalf(
+				"expected open issue %d got %s",
+				openIssue.ID,
+				body.Items[0].ID,
+			)
+		}
 	})
 
 	t.Run("should paginate with cursor", func(t *testing.T) {
 		var issueIDs []int64
 		for range 3 {
-			item, err := tests.CreateIssue(t, user)
+			item, err := tests.CreateIssueWithStatus(
+				t,
+				user,
+				issue.StatusInReview,
+			)
 			if err != nil {
 				t.Fatal(err)
 			}
 			issueIDs = append(issueIDs, item.ID)
 		}
 
-		path := "/issues?limit=1"
+		path := "/issues?limit=1&status=in_review"
 		for i := len(issueIDs) - 1; i >= 0; i-- {
 			res := api.Get(path, tests.GetCookie(session.ID))
 			if res.Code != http.StatusOK {
@@ -83,7 +110,22 @@ func TestGetIssues(t *testing.T) {
 				t.Fatal("expected cursor to match the last returned item")
 			}
 
-			path = fmt.Sprintf("/issues?limit=1&cursor=%d", *body.NextCursor)
+			path = fmt.Sprintf(
+				"/issues?limit=1&status=in_review&cursor=%d",
+				*body.NextCursor,
+			)
+		}
+	})
+
+	t.Run("should reject invalid status", func(t *testing.T) {
+		res := api.Get("/issues?status=invalid", tests.GetCookie(session.ID))
+
+		if res.Code != http.StatusUnprocessableEntity {
+			t.Fatalf(
+				"expected status %d got %d",
+				http.StatusUnprocessableEntity,
+				res.Code,
+			)
 		}
 	})
 
