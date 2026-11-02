@@ -13,13 +13,15 @@ import (
 func GetIssues(
 	ctx context.Context,
 	input *struct {
-		Limit  int   `query:"limit" minimum:"1" maximum:"100" default:"10"`
-		Cursor int64 `query:"cursor" minimum:"1"`
+		Limit  int          `query:"limit" minimum:"1" maximum:"100" default:"10"`
+		Cursor int64        `query:"cursor" minimum:"1"`
+		Status issue.Status `query:"status" enum:"open,closed,in_review" default:"open"`
 	},
 ) (*Output[utils.CursorPaginatedResponse[dtos.Issue]], error) {
 	query := db.Client.Issue.Query().
 		WithIssueFiles().
 		Order(issue.ByID(sql.OrderDesc())).
+		Where(issue.StatusEQ(input.Status)).
 		Limit(input.Limit + 1)
 
 	if input.Cursor > 0 {
