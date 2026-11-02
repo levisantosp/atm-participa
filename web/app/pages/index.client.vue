@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { PlusIcon } from '@lucide/vue'
 import { useGetIssuesInfinite } from 'api-client'
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
@@ -10,6 +8,7 @@ import {
   CardTitle,
   Spinner
 } from 'ui'
+import CreateIssueDialog from './create-issue-dialog.vue'
 
 const { isFetching, error, data } = useGetIssuesInfinite({
   query: {
@@ -26,14 +25,6 @@ const issues = computed(
 
 <template>
   <div class="mx-auto flex flex-col w-full max-w-5xl gap-5 px-4">
-    <div class="flex w-full justify-end">
-      <Button as-child>
-        <NuxtLink to="/criar-demanda">
-          <PlusIcon />
-          <span>Cadastrar demanda</span>
-        </NuxtLink>
-      </Button>
-    </div>
     <Spinner v-if="isFetching || !data" class="self-center" />
 
     <span v-else-if="error" class="text-red-400">
@@ -41,6 +32,8 @@ const issues = computed(
     </span>
 
     <div v-else class="flex w-full flex-col gap-5">
+      <CreateIssueDialog />
+
       <Card v-for="issue in issues" :key="issue.id" class="w-full">
         <CardHeader>
           <CardTitle>{{ issue.title }}</CardTitle>
