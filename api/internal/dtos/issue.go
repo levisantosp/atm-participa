@@ -13,6 +13,7 @@ type Issue struct {
 	Title       string       `json:"title"`
 	Description string       `json:"description"`
 	Status      issue.Status `json:"status"`
+	Upvotes     int64        `json:"upvotes"`
 	Images      []*string    `json:"images,omitempty"`
 	HasUpvoted  bool         `json:"hasUpvoted"`
 	CreatedAt   time.Time    `json:"createdAt"`
@@ -30,6 +31,7 @@ func IssueFrom(issue *generated.Issue) Issue {
 		Title:       issue.Title,
 		Description: issue.Description,
 		Status:      issue.Status,
+		Upvotes:     issue.Upvotes,
 		Images:      images,
 		HasUpvoted:  len(issue.Edges.IssueUpvotes) > 0,
 		CreatedAt:   issue.CreatedAt,
