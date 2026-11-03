@@ -53,7 +53,8 @@ const { isPending, mutate, variables } = usePostIssuesByIdUpvote({
                     i.id === data.id
                       ? {
                           ...i,
-                          hasUpvoted: true
+                          hasUpvoted: true,
+                          upvotes: data.upvotes
                         }
                       : i
                   )
@@ -111,7 +112,12 @@ function onUpvote(issue: Issue) {
             <Spinner
               v-if="isPending && variables?.path.id === BigInt(issue.id)"
             />
-            <ThumbsUp v-else :class="issue.hasUpvoted ? `fill-white` : ''" />
+            <div v-else class="flex gap-1 items-center">
+              <ThumbsUp :class="issue.hasUpvoted ? `fill-white` : ''" />
+              <span>
+                {{ issue.upvotes }}
+              </span>
+            </div>
           </Button>
         </CardContent>
       </Card>
