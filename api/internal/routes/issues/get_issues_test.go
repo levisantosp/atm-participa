@@ -28,12 +28,25 @@ func TestGetIssues(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		unvotedIssue, err := tests.CreateIssueWithStatus(
+			t,
+			user,
+			issue.StatusOpen,
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
 		if _, err := tests.CreateIssueWithStatus(
 			t,
 			user,
 			issue.StatusClosed,
 		); err != nil {
 			t.Fatal(err)
+		}
+		path := fmt.Sprintf("/issues/%d/upvote", openIssue.ID)
+		upvoteRes := api.Post(path, tests.GetCookie(session.ID))
+		if upvoteRes.Code != http.StatusOK {
+			t.Fatalf("expected status %d got %d", http.StatusOK, upvoteRes.Code)
 		}
 
 		res := api.Get("/issues", tests.GetCookie(session.ID))
@@ -49,14 +62,20 @@ func TestGetIssues(t *testing.T) {
 		if body.NextCursor != nil {
 			t.Fatal("expected no next page")
 		}
-		if len(body.Items) != 1 {
-			t.Fatalf("expected 1 open issue got %d", len(body.Items))
+		if len(body.Items) != 2 {
+			t.Fatalf("expected 2 open issues got %d", len(body.Items))
 		}
-		if body.Items[0].ID != fmt.Sprint(openIssue.ID) {
-			t.Fatalf(
-				"expected open issue %d got %s",
-				openIssue.ID,
-				body.Items[0].ID,
+
+		hasUpvotedByID := make(map[string]bool, len(body.Items))
+		for _, item := range body.Items {
+			hasUpvotedByID[item.ID] = item.HasUpvoted
+		}
+		if !hasUpvotedByID[fmt.Sprint(openIssue.ID)] {
+			t.Fatal("expected hasUpvoted to be true for the upvoted issue")
+		}
+		if hasUpvotedByID[fmt.Sprint(unvotedIssue.ID)] {
+			t.Fatal(
+				"expected hasUpvoted to be false for the issue without an upvote",
 			)
 		}
 	})
