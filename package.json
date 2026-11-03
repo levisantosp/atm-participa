@@ -9,7 +9,10 @@
     "build": "turbo run build",
     "check": "turbo run check",
     "build:web": "turbo run build -F web",
-    "start:web": "turbo run start -F web"
+    "start:web": "turbo run start -F web",
+    "build:admin": "turbo run build -F admin",
+    "dev:admin": "turbo run dev -F admin",
+    "dev:web": "turbo run dev -F web"
   },
   "devDependencies": {
     "@types/node": "catalog:",

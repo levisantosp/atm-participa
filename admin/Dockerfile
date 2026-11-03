@@ -17,7 +17,7 @@ RUN pn ci
 COPY . .
 
 RUN printf 'VITE_CDN_URL=%s\n' "$VITE_CDN_URL" > admin/.env
-RUN pn build
+RUN pn build:admin
 
 FROM nginx:alpine
 COPY --from=build /app/admin/dist /usr/share/nginx/html
