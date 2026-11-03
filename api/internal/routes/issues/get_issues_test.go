@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/danielgtaylor/huma/v2/humatest"
 	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
 	"github.com/levisantosp/atm-participa/api/internal/tests"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
@@ -136,6 +138,94 @@ func TestGetIssues(t *testing.T) {
 		}
 	})
 
+	t.Run(
+		"should search issue title and description case-insensitively",
+		func(t *testing.T) {
+			for _, testCase := range []struct {
+				title       string
+				description string
+				search      string
+			}{
+				{
+					title:       "Broken streetlight",
+					description: "Lamp near the park is out",
+					search:      "STREETLIGHT",
+				},
+				{
+					title:       "Flooded crossing",
+					description: "Water leaks near school",
+					search:      "LEAKS",
+				},
+			} {
+				createdIssue, err := tests.CreateIssue(t, user)
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				if _, err := db.Client.Issue.UpdateOneID(createdIssue.ID).
+					SetTitle(testCase.title).
+					SetDescription(testCase.description).
+					Save(t.Context()); err != nil {
+					t.Fatal(err)
+				}
+
+				res := api.Get(
+					"/issues?search="+testCase.search,
+					tests.GetCookie(session.ID),
+				)
+				if res.Code != http.StatusOK {
+					t.Fatalf(
+						"expected status %d got %d",
+						http.StatusOK,
+						res.Code,
+					)
+				}
+
+				var body utils.CursorPaginatedResponse[dtos.Issue]
+				if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+					t.Fatal(err)
+				}
+
+				if len(body.Items) != 1 {
+					t.Fatalf(
+						"expected 1 item got %d for search %q",
+						len(body.Items),
+						testCase.search,
+					)
+				}
+				if body.Items[0].ID != fmt.Sprint(createdIssue.ID) {
+					t.Fatalf(
+						"expected issue %d got %s for search %q",
+						createdIssue.ID,
+						body.Items[0].ID,
+						testCase.search,
+					)
+				}
+			}
+		},
+	)
+
+	t.Run(
+		"should return no issues when search has no matches",
+		func(t *testing.T) {
+			res := api.Get(
+				"/issues?search=nomatch",
+				tests.GetCookie(session.ID),
+			)
+			if res.Code != http.StatusOK {
+				t.Fatalf("expected status %d got %d", http.StatusOK, res.Code)
+			}
+
+			var body utils.CursorPaginatedResponse[dtos.Issue]
+			if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+				t.Fatal(err)
+			}
+			if len(body.Items) != 0 {
+				t.Fatalf("expected no items got %d", len(body.Items))
+			}
+		},
+	)
+
 	t.Run("should reject invalid status", func(t *testing.T) {
 		res := api.Get("/issues?status=invalid", tests.GetCookie(session.ID))
 
@@ -171,6 +261,36 @@ func TestGetIssues(t *testing.T) {
 			)
 		}
 	})
+
+	t.Run("should reject search shorter than 2 characters", func(t *testing.T) {
+		res := api.Get("/issues?search=a", tests.GetCookie(session.ID))
+
+		if res.Code != http.StatusUnprocessableEntity {
+			t.Fatalf(
+				"expected status %d got %d",
+				http.StatusUnprocessableEntity,
+				res.Code,
+			)
+		}
+	})
+
+	t.Run(
+		"should reject search longer than 100 characters",
+		func(t *testing.T) {
+			res := api.Get(
+				"/issues?search="+strings.Repeat("a", 101),
+				tests.GetCookie(session.ID),
+			)
+
+			if res.Code != http.StatusUnprocessableEntity {
+				t.Fatalf(
+					"expected status %d got %d",
+					http.StatusUnprocessableEntity,
+					res.Code,
+				)
+			}
+		},
+	)
 
 	t.Run("should reject unauthenticated request", func(t *testing.T) {
 		res := api.Get("/issues?cursor=-1")
