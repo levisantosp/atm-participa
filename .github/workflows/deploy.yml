@@ -253,6 +253,8 @@ jobs:
             git switch -C main "$DEPLOY_SHA"
             git branch --set-upstream-to=origin/main main
 
+            make migrate
+
             failed_services=()
 
             for service in "${SERVICES[@]}"; do
