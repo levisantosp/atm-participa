@@ -45,6 +45,7 @@ catalog:
   vite: ^8.3.4
   api-client: workspace:*
   ui: workspace:*
+  cn: ^0.5.1
 cleanupUnusedCatalogs: true
 
 catalogMode: prefer
