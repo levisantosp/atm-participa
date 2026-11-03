@@ -4,9 +4,12 @@ import (
 	"context"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/levisantosp/atm-participa/api/ent/generated"
 	"github.com/levisantosp/atm-participa/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/api/ent/generated/upvote"
 	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/dtos"
+	"github.com/levisantosp/atm-participa/api/internal/middlewares"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
 )
 
@@ -18,8 +21,13 @@ func GetIssues(
 		Status issue.Status `query:"status" enum:"open,closed,in_review" default:"open"`
 	},
 ) (*Output[utils.CursorPaginatedResponse[dtos.Issue]], error) {
+	user := middlewares.MustGetUserFromContext(ctx)
+
 	query := db.Client.Issue.Query().
 		WithIssueFiles().
+		WithIssueUpvotes(func(uq *generated.UpvoteQuery) {
+			uq.Where(upvote.UserID(user.ID))
+		}).
 		Order(issue.ByID(sql.OrderDesc())).
 		Where(issue.StatusEQ(input.Status)).
 		Limit(input.Limit + 1)
