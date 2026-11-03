@@ -23,6 +23,7 @@
     "@vueuse/core": "catalog:",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
+    "cn": "catalog:",
     "reka-ui": "catalog:",
     "shadcn-vue": "^2.8.2",
     "tailwind-merge": "catalog:",
