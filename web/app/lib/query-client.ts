@@ -32,7 +32,8 @@ export const queryClient = new QueryClient({
       queryKeyHashFn: (queryKey) =>
         JSON.stringify(queryKey, (_, v) =>
           typeof v === 'bigint' ? v.toString() : v
-        )
+        ),
+      refetchOnWindowFocus: false
     },
     mutations: {
       retry: false
