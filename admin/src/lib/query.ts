@@ -32,7 +32,8 @@ export const queryClient = new QueryClient({
           typeof v === 'bigint' ? v.toString() : v
         ),
       staleTime: 60_000,
-      retry: false
+      retry: false,
+      refetchOnWindowFocus: false
     },
     mutations: {
       retry: false
