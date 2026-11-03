@@ -24,6 +24,16 @@ generate:
 generate-clean:
 	rm -rf ent/generated && go generate ./ent/...
 
+generate-migrations:
+	GOWORK=off atlas migrate diff --env local
+
+migrate:
+	@if [ -z "$$DATABASE_URL" ] && [ -f .env ]; then set -a; . ./.env; set +a; fi; \
+	case "$$DATABASE_URL" in *sslmode=*) ;; *\?*) DATABASE_URL="$$DATABASE_URL&sslmode=disable" ;; *) DATABASE_URL="$$DATABASE_URL?sslmode=disable" ;; esac; \
+	case "$$DATABASE_URL" in *search_path=*) ;; *\?*) DATABASE_URL="$$DATABASE_URL&search_path=public" ;; *) DATABASE_URL="$$DATABASE_URL?search_path=public" ;; esac; \
+	export DATABASE_URL; \
+	atlas migrate apply --env local --revisions-schema atlas_schema_revisions
+
 build:
 	rm -rf bin && go build -o bin/api ./cmd/api
 

@@ -1,4 +1,4 @@
-.PHONY: dev fmt lint lintf create-schema generate generate-clean build start push test
+.PHONY: dev fmt lint lintf create-schema generate generate-clean generate-migrations migrate build start push test
 .PHONY: dev\:api fmt\:api lint\:api lintf\:api build\:api start\:api push\:api test\:api
 .PHONY: dev\:cdn fmt\:cdn lint\:cdn lintf\:cdn build\:cdn start\:cdn test\:cdn
 .PHONY: fmt\:infra lint\:infra lintf\:infra build\:infra
@@ -53,6 +53,12 @@ generate:
 
 generate-clean:
 	$(MAKE) -C api generate-clean
+
+generate-migrations:
+	$(MAKE) -C api generate-migrations
+
+migrate:
+	$(MAKE) -C api migrate
 
 build: build\:api build\:cdn build\:infra
 
