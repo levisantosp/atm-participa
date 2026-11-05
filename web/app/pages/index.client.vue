@@ -21,10 +21,13 @@ import {
 import { queryClient } from '~/lib/query-client'
 import CreateIssueDialog from './create-issue-dialog.vue'
 
+const search = ref('')
+
 const { isFetching, error, data } = useGetIssuesInfinite({
-  query: {
-    limit: 100n
-  }
+  query: computed(() => ({
+    limit: 100n,
+    search: search.value
+  }))
 })
 
 const config = useRuntimeConfig()
@@ -33,34 +36,14 @@ const issues = computed(
   () => data.value?.pages.flatMap((page) => page.items ?? []) ?? []
 )
 
-const searchTerm = ref('')
-
-const filteredIssues = computed(() => {
-  const normalizedSearchTerm = searchTerm.value
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-
-  if (!normalizedSearchTerm) return issues.value
-
-  return issues.value.filter((issue) =>
-    [issue.title, issue.description].some((value) =>
-      value
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .includes(normalizedSearchTerm)
-    )
-  )
-})
-
 const { isPending, mutate, variables } = usePostIssuesByIdUpvote({
   mutation: {
     onSuccess(data) {
       queryClient.setQueryData<InfiniteData<GetIssuesStatus200>>(
         getIssuesInfiniteQueryKey({
           query: {
-            limit: 100n
+            limit: 100n,
+            search: search.value
           }
         }),
         (old) => {
@@ -114,7 +97,7 @@ function onUpvote(issue: Issue) {
           class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
         />
         <Input
-          v-model="searchTerm"
+          v-model="search"
           type="search"
           placeholder="Pesquisar ocorrências"
           class="pl-9"
@@ -123,7 +106,7 @@ function onUpvote(issue: Issue) {
 
       <CreateIssueDialog />
 
-      <Card v-for="issue in filteredIssues" :key="issue.id" class="w-full">
+      <Card v-for="issue in issues" :key="issue.id" class="w-full">
         <CardHeader>
           <CardTitle>{{ issue.title }}</CardTitle>
           <CardDescription>{{ issue.description }}</CardDescription>
@@ -156,7 +139,7 @@ function onUpvote(issue: Issue) {
         </CardContent>
       </Card>
 
-      <Card v-if="!filteredIssues.length" class="w-full">
+      <Card v-if="!issues.length" class="w-full">
         <CardContent class="py-6 text-center text-muted-foreground">
           Nenhuma ocorrência encontrada para a pesquisa.
         </CardContent>
