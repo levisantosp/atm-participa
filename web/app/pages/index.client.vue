@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ThumbsUp } from '@lucide/vue'
+import { Search, ThumbsUp } from '@lucide/vue'
 import type { InfiniteData } from '@tanstack/vue-query'
 import {
   getIssuesInfiniteQueryKey,
@@ -15,15 +15,19 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Input,
   Spinner
 } from 'ui'
 import { queryClient } from '~/lib/query-client'
 import CreateIssueDialog from './create-issue-dialog.vue'
 
+const search = ref('')
+
 const { isFetching, error, data } = useGetIssuesInfinite({
-  query: {
-    limit: 100n
-  }
+  query: computed(() => ({
+    limit: 100n,
+    search: search.value
+  }))
 })
 
 const config = useRuntimeConfig()
@@ -38,7 +42,8 @@ const { isPending, mutate, variables } = usePostIssuesByIdUpvote({
       queryClient.setQueryData<InfiniteData<GetIssuesStatus200>>(
         getIssuesInfiniteQueryKey({
           query: {
-            limit: 100n
+            limit: 100n,
+            search: search.value
           }
         }),
         (old) => {
@@ -87,6 +92,18 @@ function onUpvote(issue: Issue) {
     </span>
 
     <div v-else class="flex w-full flex-col gap-5">
+      <div class="relative w-full">
+        <Search
+          class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        />
+        <Input
+          v-model="search"
+          type="search"
+          placeholder="Pesquisar ocorrências"
+          class="pl-9"
+        />
+      </div>
+
       <CreateIssueDialog />
 
       <Card v-for="issue in issues" :key="issue.id" class="w-full">
@@ -119,6 +136,12 @@ function onUpvote(issue: Issue) {
               </span>
             </div>
           </Button>
+        </CardContent>
+      </Card>
+
+      <Card v-if="!issues.length" class="w-full">
+        <CardContent class="py-6 text-center text-muted-foreground">
+          Nenhuma ocorrência encontrada para a pesquisa.
         </CardContent>
       </Card>
     </div>
