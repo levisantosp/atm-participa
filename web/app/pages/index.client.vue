@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Search, ThumbsUp } from '@lucide/vue'
 import type { InfiniteData } from '@tanstack/vue-query'
+import { toTypedSchema } from '@vee-validate/zod'
 import {
   getIssuesInfiniteQueryKey,
   useGetIssuesInfinite,
@@ -18,16 +19,65 @@ import {
   Input,
   Spinner
 } from 'ui'
+import { useForm } from 'vee-validate'
+import { z } from 'zod'
 import { queryClient } from '~/lib/query-client'
 import CreateIssueDialog from './create-issue-dialog.vue'
 
-const search = ref('')
+definePageMeta({
+  key: (route) => route.query.search?.toString() ?? 'search-empty'
+})
+
+const route = useRoute()
+const router = useRouter()
+const schema = z.object({
+  search: z
+    .string()
+    .trim()
+    .refine(
+      (value) => value.length === 0 || value.length >= 2,
+      'Digite pelo menos 2 caracteres para pesquisar.'
+    )
+    .max(100, 'A pesquisa deve ter no máximo 100 caracteres.')
+})
+
+const { handleSubmit, errors, defineField, setFieldValue } = useForm({
+  validationSchema: toTypedSchema(schema),
+  initialValues: {
+    search: typeof route.query.search === 'string' ? route.query.search : ''
+  }
+})
+
+const [search, searchAttrs] = defineField('search')
+const submittedSearch = computed(() => {
+  const value = route.query.search
+  if (typeof value !== 'string') return ''
+
+  const result = schema.shape.search.safeParse(value)
+  return result.success ? result.data : ''
+})
+
+watch(
+  () => route.query.search,
+  (value) => {
+    setFieldValue('search', typeof value === 'string' ? value : '')
+  }
+)
+
+const handleSearch = handleSubmit(async ({ search: validatedSearch }) => {
+  await router.replace({
+    query: {
+      ...route.query,
+      search: validatedSearch || undefined
+    }
+  })
+})
 
 const { isFetching, error, data } = useGetIssuesInfinite({
-  query: computed(() => ({
+  query: {
     limit: 100n,
-    search: search.value
-  }))
+    search: submittedSearch.value
+  }
 })
 
 const config = useRuntimeConfig()
@@ -43,7 +93,7 @@ const { isPending, mutate, variables } = usePostIssuesByIdUpvote({
         getIssuesInfiniteQueryKey({
           query: {
             limit: 100n,
-            search: search.value
+            search: submittedSearch.value
           }
         }),
         (old) => {
@@ -92,17 +142,30 @@ function onUpvote(issue: Issue) {
     </span>
 
     <div v-else class="flex w-full flex-col gap-5">
-      <div class="relative w-full">
-        <Search
-          class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-        />
-        <Input
-          v-model="search"
-          type="search"
-          placeholder="Pesquisar ocorrências"
-          class="pl-9"
-        />
-      </div>
+      <form class="flex w-full flex-col gap-2" @submit.prevent="handleSearch">
+        <div class="flex w-full gap-2">
+          <div class="relative min-w-0 flex-1">
+            <Search
+              class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            />
+            <Input
+              v-model="search"
+              v-bind="searchAttrs"
+              type="search"
+              placeholder="Pesquisar ocorrências"
+              class="pl-9"
+              :aria-invalid="!!errors.search"
+            />
+          </div>
+          <Button type="submit" aria-label="Pesquisar">
+            <Search class="size-4" />
+            <span>Pesquisar</span>
+          </Button>
+        </div>
+        <p v-if="errors.search" class="text-sm text-red-400" role="alert">
+          {{ errors.search }}
+        </p>
+      </form>
 
       <CreateIssueDialog />
 
