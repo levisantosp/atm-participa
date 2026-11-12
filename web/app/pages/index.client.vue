@@ -34,41 +34,31 @@ const schema = z.object({
   search: z
     .string()
     .trim()
-    .refine(
-      (value) => value.length === 0 || value.length >= 2,
-      'Digite pelo menos 2 caracteres para pesquisar.'
-    )
+    .min(2, 'Digite pelo menos 2 caracteres para pesquisar.')
     .max(100, 'A pesquisa deve ter no máximo 100 caracteres.')
 })
 
 const { handleSubmit, errors, defineField, setFieldValue } = useForm({
-  validationSchema: toTypedSchema(schema),
-  initialValues: {
-    search: typeof route.query.search === 'string' ? route.query.search : ''
-  }
+  validationSchema: toTypedSchema(schema)
 })
 
 const [search, searchAttrs] = defineField('search')
-const submittedSearch = computed(() => {
-  const value = route.query.search
-  if (typeof value !== 'string') return ''
-
-  const result = schema.shape.search.safeParse(value)
-  return result.success ? result.data : ''
-})
 
 watch(
   () => route.query.search,
-  (value) => {
-    setFieldValue('search', typeof value === 'string' ? value : '')
+  (v) => {
+    setFieldValue('search', v?.toString())
+  },
+  {
+    immediate: true
   }
 )
 
-const handleSearch = handleSubmit(async ({ search: validatedSearch }) => {
-  await router.replace({
+const onSubmit = handleSubmit((data) => {
+  void router.push({
     query: {
       ...route.query,
-      search: validatedSearch || undefined
+      ...data
     }
   })
 })
@@ -76,7 +66,7 @@ const handleSearch = handleSubmit(async ({ search: validatedSearch }) => {
 const { isFetching, error, data } = useGetIssuesInfinite({
   query: {
     limit: 100n,
-    search: submittedSearch.value
+    search: route.query.search?.toString()
   }
 })
 
@@ -93,7 +83,7 @@ const { isPending, mutate, variables } = usePostIssuesByIdUpvote({
         getIssuesInfiniteQueryKey({
           query: {
             limit: 100n,
-            search: submittedSearch.value
+            search: route.query.search?.toString()
           }
         }),
         (old) => {
@@ -142,8 +132,8 @@ function onUpvote(issue: Issue) {
     </span>
 
     <div v-else class="flex w-full flex-col gap-5">
-      <form class="flex w-full flex-col gap-2" @submit.prevent="handleSearch">
-        <div class="flex w-full gap-2">
+      <form class="flex w-full flex-col gap-2" @submit.prevent="onSubmit">
+        <div class="flex flex-wrap gap-2">
           <div class="relative min-w-0 flex-1">
             <Search
               class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
@@ -154,15 +144,19 @@ function onUpvote(issue: Issue) {
               type="search"
               placeholder="Pesquisar ocorrências"
               class="pl-9"
-              :aria-invalid="!!errors.search"
             />
           </div>
-          <Button type="submit" aria-label="Pesquisar">
+
+          <Button aria-label="Pesquisar">
             <Search class="size-4" />
-            <span>Pesquisar</span>
+            <span class="hidden md:block">Pesquisar</span>
           </Button>
         </div>
-        <p v-if="errors.search" class="text-sm text-red-400" role="alert">
+        <p
+          v-if="!errors.search?.startsWith('Invalid input')"
+          class="text-sm text-red-400"
+          role="alert"
+        >
           {{ errors.search }}
         </p>
       </form>
