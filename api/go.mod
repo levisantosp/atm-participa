@@ -1,6 +1,6 @@
 module github.com/levisantosp/atm-participa/api
 
-go 1.27.0
+go 1.27.3
 
 ignore ./pg
 
