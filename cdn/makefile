@@ -7,10 +7,10 @@ fmt:
 	find . -type f -name '*.go' -exec go tool goimports -w {} +
 
 lint:
-	golangci-lint run $(filter-out $@,$(MAKECMDGOALS))
+	go tool golangci-lint run $(filter-out $@,$(MAKECMDGOALS))
 
 lintf:
-	golangci-lint run --fix
+	go tool golangci-lint run --fix
 
 build:
 	mkdir -p bin && go build -o bin/cdn ./cmd/cdn
