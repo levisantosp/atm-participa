@@ -72,6 +72,7 @@ jobs:
             echo "CLOUDFLARE_R2_BUCKET=$CLOUDFLARE_R2_BUCKET"
             echo "RESEND_API_KEY=$RESEND_API_KEY"
             echo "RESEND_EMAIL=$RESEND_EMAIL"
+            echo "WEB_URL=http://localhost:5173"
           } >> api/.env.test
       - name: run tests
         id: tests
