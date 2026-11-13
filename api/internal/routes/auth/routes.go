@@ -20,6 +20,7 @@ func Routes(api huma.API) {
 	huma.Post(group, "/sign-in/email", SignInWithEmail)
 	huma.Post(group, "/sign-up/email", SignUpWithEmail)
 	huma.Get(group, "/me", GetMe)
+	huma.Post(group, "/forgot-password", ForgotPassword)
 
 	group.UseMiddleware(middlewares.Auth(group, false))
 	huma.Post(group, "/sign-out", SignOut)
