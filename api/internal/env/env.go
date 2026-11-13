@@ -20,6 +20,7 @@ type TEnv struct {
 	CloudflareR2URL         string   `zog:"CLOUDFLARE_R2_URL"`
 	CloudflareR2Bucket      string   `zog:"CLOUDFLARE_R2_BUCKET"`
 	ResendAPIKey            string   `zog:"RESEND_API_KEY"`
+	ResendEmail             string   `zog:"RESEND_EMAIL"`
 }
 
 var Env TEnv
@@ -47,6 +48,7 @@ func LoadEnv(envFile string) {
 		"CloudflareR2URL":         zog.String().URL().Required(),
 		"CloudflareR2Bucket":      zog.String().Required(),
 		"ResendAPIKey":            zog.String().Required(),
+		"ResendEmail":             zog.String().Required(),
 	})
 
 	err := schema.Parse(zenv.NewDataProvider(), &Env)

@@ -60,7 +60,7 @@ func ForgotPassword(
 
 	_, err = client.Emails.SendWithContext(ctx, &resend.SendEmailRequest{
 		To:      []string{input.Body.Email},
-		From:    "Altamira Participa <atm-participa@levisantos.dev>",
+		From:    fmt.Sprintf("Altamira Participa <%s>", env.Env.ResendEmail),
 		Text:    "Recuperação de Senha",
 		Subject: "Código para redefinição de senha",
 		Html: fmt.Sprintf(`
