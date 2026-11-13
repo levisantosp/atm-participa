@@ -15,6 +15,7 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
 	"github.com/levisantosp/atm-participa/infra/redis"
+	goredis "github.com/redis/go-redis/v9"
 )
 
 func SignUpWithEmail(
@@ -90,11 +91,30 @@ func SignUpWithEmail(
 	}
 
 	ttl := 7 * 24 * time.Hour
-	err = redis.Client.Set(ctx, "session:"+sessionId, session, ttl).Err()
+	userID := strconv.FormatInt(user.ID, 10)
+	err = redis.Client.Set(
+		ctx,
+		"session:"+sessionId,
+		session,
+		ttl,
+	).Err()
 	if err != nil {
 		return nil, err
 	}
-
+	key := "user_sessions:" + userID
+	if err := redis.Client.ZAdd(
+		ctx,
+		key,
+		goredis.Z{
+			Score:  float64(time.Now().Add(ttl).Unix()),
+			Member: sessionId,
+		},
+	).Err(); err != nil {
+		return nil, err
+	}
+	if err := redis.Client.Expire(ctx, key, ttl).Err(); err != nil {
+		return nil, err
+	}
 	sessionCookie := http.Cookie{
 		Name:     "session",
 		Value:    sessionId,

@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
@@ -15,14 +16,26 @@ func DeleteAccount(
 	input *struct{},
 ) (*auth.OutputAuth, error) {
 	user := middlewares.MustGetUserFromContext(ctx)
-	session := middlewares.MustGetSessionFromContext(ctx)
 
 	if err := db.Client.User.DeleteOneID(user.ID).Exec(ctx); err != nil {
 		return nil, err
 	}
 
-	if err := redis.Client.Unlink(ctx, "session:"+session.ID).
-		Err(); err != nil {
+	key := "user_sessions:" + strconv.FormatInt(user.ID, 10)
+	ids, err := redis.Client.ZRange(ctx, key, 0, -1).Result()
+	if err != nil {
+		return nil, err
+	}
+	if len(ids) > 0 {
+		keys := make([]string, 0, len(ids))
+		for _, id := range ids {
+			keys = append(keys, "session:"+id)
+		}
+		if err := redis.Client.Unlink(ctx, keys...).Err(); err != nil {
+			return nil, err
+		}
+	}
+	if err := redis.Client.Unlink(ctx, key).Err(); err != nil {
 		return nil, err
 	}
 
