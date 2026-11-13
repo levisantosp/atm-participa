@@ -29,13 +29,13 @@ func main() {
 	if err := r2.Connect(context.Background()); err != nil {
 		log.Fatal(err)
 	}
-	redis.Connect(env.Env.RedisAddr, env.Env.RedisPassword)
+	redis.Connect(env.Data.RedisAddr, env.Data.RedisPassword)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.RedirectSlashes)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins: env.Env.TrustedOrigins,
+		AllowedOrigins: env.Data.TrustedOrigins,
 		AllowedMethods: []string{
 			"GET",
 			"POST",

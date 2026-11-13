@@ -23,7 +23,7 @@ type TEnv struct {
 	ResendEmail             string   `zog:"RESEND_EMAIL"`
 }
 
-var Env TEnv
+var Data TEnv
 
 func LoadEnv(envFile string) {
 	_ = godotenv.Overload(envFile)
@@ -51,7 +51,7 @@ func LoadEnv(envFile string) {
 		"ResendEmail":             zog.String().Required(),
 	})
 
-	err := schema.Parse(zenv.NewDataProvider(), &Env)
+	err := schema.Parse(zenv.NewDataProvider(), &Data)
 	if err != nil {
 		log.Fatal(err)
 	}
