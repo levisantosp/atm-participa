@@ -62,6 +62,7 @@ jobs:
           CLOUDFLARE_R2_URL: ${{ secrets.CLOUDFLARE_R2_URL }}
           CLOUDFLARE_R2_BUCKET: ${{ secrets.CLOUDFLARE_R2_BUCKET }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_EMAIL: ${{ secrets.RESEND_EMAIL }}
         run: |
           cp api/.env.example api/.env.test
           {
@@ -70,6 +71,7 @@ jobs:
             echo "CLOUDFLARE_R2_URL=$CLOUDFLARE_R2_URL"
             echo "CLOUDFLARE_R2_BUCKET=$CLOUDFLARE_R2_BUCKET"
             echo "RESEND_API_KEY=$RESEND_API_KEY"
+            echo "RESEND_EMAIL=$RESEND_EMAIL"
           } >> api/.env.test
       - name: run tests
         id: tests
