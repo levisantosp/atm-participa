@@ -46,7 +46,7 @@ func LoadEnv(envFile string) {
 		"CloudflareR2SecretKey":   zog.String().Required(),
 		"CloudflareR2URL":         zog.String().URL().Required(),
 		"CloudflareR2Bucket":      zog.String().Required(),
-		"ResendAPIKey":            zog.String(),
+		"ResendAPIKey":            zog.String().Required(),
 	})
 
 	err := schema.Parse(zenv.NewDataProvider(), &Env)
