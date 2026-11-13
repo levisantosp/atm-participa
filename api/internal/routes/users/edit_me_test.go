@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/danielgtaylor/huma/v2/humatest"
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
 	"github.com/levisantosp/atm-participa/api/internal/tests"
+	"github.com/levisantosp/atm-participa/infra/redis"
 
 	_ "github.com/levisantosp/atm-participa/api/ent/generated/runtime"
 )
@@ -62,6 +64,25 @@ func TestEditMe(t *testing.T) {
 				http.StatusOK,
 				res.Code,
 			)
+		}
+
+		if err := redis.Client.ZScore(
+			t.Context(),
+			"user_sessions:"+session.UserId,
+			session.ID,
+		).Err(); err != nil {
+			t.Fatalf("expected session to be tracked: %v", err)
+		}
+
+		ttl, err := redis.Client.TTL(
+			t.Context(),
+			"user_sessions:"+session.UserId,
+		).Result()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if ttl < 24*time.Hour {
+			t.Fatalf("expected user sessions TTL >= 24h, got %s", ttl)
 		}
 
 		var updatedSession middlewares.Session

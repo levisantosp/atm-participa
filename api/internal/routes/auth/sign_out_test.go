@@ -6,6 +6,7 @@ import (
 
 	"github.com/danielgtaylor/huma/v2/humatest"
 	"github.com/levisantosp/atm-participa/api/internal/tests"
+	"github.com/levisantosp/atm-participa/infra/redis"
 )
 
 func TestSignOut(t *testing.T) {
@@ -39,6 +40,21 @@ func TestSignOut(t *testing.T) {
 				http.StatusNoContent,
 				res.Code,
 			)
+		}
+
+		if err := redis.Client.Get(
+			t.Context(),
+			"session:"+session.ID,
+		).Err(); err != redis.Nil {
+			t.Fatalf("expected session to be removed, got: %v", err)
+		}
+
+		if err := redis.Client.ZScore(
+			t.Context(),
+			"user_sessions:"+session.UserId,
+			session.ID,
+		).Err(); err != redis.Nil {
+			t.Fatalf("expected session to be untracked, got: %v", err)
 		}
 	})
 }
