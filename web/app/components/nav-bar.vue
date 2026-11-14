@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { CircleUserIcon, HouseIcon } from '@lucide/vue'
+import { CircleUserIcon, History, HouseIcon, LogOut, User2 } from '@lucide/vue'
+import { getAuthMeQueryKey } from 'api-client'
 import {
   Button,
   DropdownMenu,
@@ -11,8 +12,11 @@ import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
-  NavigationMenuList
+  NavigationMenuList,
+  Spinner
 } from 'ui'
+import { auth } from '~/lib/auth'
+import { queryClient } from '~/lib/query-client'
 
 const navItems = [
   {
@@ -26,14 +30,27 @@ const dropItems = {
   account: [
     {
       label: 'Perfil',
-      href: '/perfil'
+      href: '/perfil',
+      icon: User2
     },
     {
       label: 'Histórico',
-      href: '/historico'
+      href: '/historico',
+      icon: History
     }
   ]
 } as const
+
+const isPending = ref(false)
+
+async function signOut() {
+  isPending.value = true
+  await auth.signOut()
+  isPending.value = false
+  await queryClient.resetQueries({
+    queryKey: getAuthMeQueryKey()
+  })
+}
 </script>
 
 <template>
@@ -65,9 +82,21 @@ const dropItems = {
             :to="item.href"
           >
             <DropdownMenuItem class="cursor-pointer">
+              <component :is="item.icon" />
               {{ item.label }}
             </DropdownMenuItem>
           </NuxtLink>
+
+          <DropdownMenuItem
+            class="cursor-pointer hover:bg-destructive! text-destructive"
+            @click="signOut"
+            :disabled="isPending"
+            @select.prevent
+          >
+            <LogOut />
+            <span v-if="!isPending">Sair</span>
+            <Spinner v-else />
+          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
