@@ -35,12 +35,12 @@ jobs:
           base: ${{ github.ref }}
           filters: |
             admin:
-              - 'admin/**'
+              - 'apps/admin/**'
             web:
-              - 'web/**'
+              - 'apps/web/**'
             frontend:
-              - 'ui/**'
-              - 'api-client/**'
+              - 'pkg/ui/**'
+              - 'pkg/api-client/**'
               - 'package.json'
               - 'pnpm-lock.yaml'
               - 'pnpm-workspace.yaml'
@@ -48,16 +48,16 @@ jobs:
               - '.oxfmtrc.json'
               - '.oxlintrc.json'
             api:
-              - 'api/**'
-              - 'infra/**'
+              - 'apps/api/**'
+              - 'pkg/infra/**'
               - 'go.work'
               - 'go.work.sum'
               - 'justfile'
               - '**/justfile'
               - '.golangci.yml'
             cdn:
-              - 'cdn/**'
-              - 'infra/**'
+              - 'apps/cdn/**'
+              - 'pkg/infra/**'
               - 'go.work'
               - 'go.work.sum'
               - 'justfile'

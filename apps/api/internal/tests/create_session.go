@@ -1,0 +1,99 @@
+package tests
+
+import (
+	"encoding/json"
+	"strconv"
+	"testing"
+	"time"
+
+	"github.com/levisantosp/atm-participa/apps/api/ent/generated"
+	"github.com/levisantosp/atm-participa/apps/api/internal/middlewares"
+	"github.com/levisantosp/atm-participa/pkg/infra/redis"
+	goredis "github.com/redis/go-redis/v9"
+)
+
+func CreateSession(user *generated.User, t *testing.T) middlewares.Session {
+	session := middlewares.Session{
+		ID:          "test-session",
+		UserId:      strconv.FormatInt(user.ID, 10),
+		Username:    user.Username,
+		DisplayName: user.DisplayName,
+		IsAdmin:     user.IsAdmin,
+	}
+
+	sessionJson, err := json.Marshal(session)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := redis.Client.Set(
+		t.Context(),
+		"session:"+session.ID,
+		sessionJson,
+		time.Minute,
+	).Err(); err != nil {
+		t.Fatal(err)
+	}
+	key := "user_sessions:" + session.UserId
+	if err := redis.Client.ZAdd(
+		t.Context(),
+		key,
+		goredis.Z{
+			Score:  float64(time.Now().Add(time.Minute).Unix()),
+			Member: session.ID,
+		},
+	).Err(); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := redis.Client.Expire(t.Context(), key, time.Minute).
+		Err(); err != nil {
+		t.Fatal(err)
+	}
+
+	return session
+}
+
+func CreateAdminSession(
+	user *generated.User,
+	t *testing.T,
+) middlewares.Session {
+	session := middlewares.Session{
+		ID:          "admin-test-session",
+		UserId:      strconv.FormatInt(user.ID, 10),
+		Username:    user.Username,
+		DisplayName: user.DisplayName,
+		IsAdmin:     user.IsAdmin,
+	}
+
+	sessionJson, err := json.Marshal(session)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := redis.Client.Set(
+		t.Context(),
+		"session:"+session.ID,
+		sessionJson,
+		time.Minute,
+	).Err(); err != nil {
+		t.Fatal(err)
+	}
+	key := "user_sessions:" + session.UserId
+	if err := redis.Client.ZAdd(
+		t.Context(),
+		key,
+		goredis.Z{
+			Score:  float64(time.Now().Add(time.Minute).Unix()),
+			Member: session.ID,
+		},
+	).Err(); err != nil {
+		t.Fatal(err)
+	}
+	if err := redis.Client.Expire(t.Context(), key, time.Minute).
+		Err(); err != nil {
+		t.Fatal(err)
+	}
+
+	return session
+}

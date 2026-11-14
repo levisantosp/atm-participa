@@ -1,0 +1,24 @@
+package admin
+
+import (
+	"context"
+
+	"github.com/levisantosp/atm-participa/apps/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/apps/api/internal/db"
+)
+
+func GetInReviewIssuesCount(
+	ctx context.Context,
+	_ *struct{},
+) (*Output[int], error) {
+	count, err := db.Client.Issue.Query().
+		Where(issue.StatusEQ(issue.StatusInReview)).
+		Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Output[int]{
+		Body: count,
+	}, nil
+}

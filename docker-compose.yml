@@ -60,11 +60,11 @@ services:
         condition: service_healthy
     build:
       context: .
-      dockerfile: ./api/Dockerfile
+      dockerfile: ./apps/api/Dockerfile
     container_name: api-atm-participa
     restart: unless-stopped
     env_file:
-      - ./api/.env
+      - ./apps/api/.env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/admin
       - REDIS_ADDR=redis:6379
@@ -74,11 +74,11 @@ services:
   cdn:
     build:
       context: .
-      dockerfile: ./cdn/Dockerfile
+      dockerfile: ./apps/cdn/Dockerfile
     container_name: cdn-atm-participa
     restart: unless-stopped
     env_file:
-      - ./api/.env
+      - ./apps/api/.env
     ports:
       - '3336:3336'
 
@@ -88,11 +88,11 @@ services:
         condition: service_started
     build:
       context: .
-      dockerfile: ./web/Dockerfile
+      dockerfile: ./apps/web/Dockerfile
     container_name: web-atm-participa
     restart: unless-stopped
     env_file:
-      - ./web/.env
+      - ./apps/web/.env
     ports:
       - '5174:5174'
 
@@ -102,12 +102,12 @@ services:
         condition: service_started
     build:
       context: .
-      dockerfile: ./admin/Dockerfile
+      dockerfile: ./apps/admin/Dockerfile
       args:
         VITE_CDN_URL: ${VITE_CDN_URL}
     container_name: admin-atm-participa
     restart: unless-stopped
-    env_file: admin/.env
+    env_file: apps/admin/.env
     ports:
       - '5176:80'
 

@@ -1,8 +1,6 @@
 packages:
-  - web
-  - admin
-  - ui
-  - api-client
+  - apps/*
+  - pkg/*
 
 ignoreWorkspaceRootCheck: true
 

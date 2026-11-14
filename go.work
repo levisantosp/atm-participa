@@ -1,7 +1,7 @@
 go 1.27.3
 
 use (
-	./api
-	./cdn
-	./infra
+	./apps/api
+	./apps/cdn
+	./pkg/infra
 )

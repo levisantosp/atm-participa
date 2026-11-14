@@ -40,7 +40,7 @@ jobs:
         uses: actions/setup-go@main
         with:
           go-version-file: go.work
-          cache-dependency-path: api/go.mod
+          cache-dependency-path: apps/api/go.mod
           cache: true
 
       - name: setup just
@@ -50,7 +50,7 @@ jobs:
         uses: golangci/golangci-lint-action@v9
         with:
           version: v2.13
-          working-directory: api
+          working-directory: apps/api
           install-only: true
 
       - name: run go fmt and golangci-lint autofix
@@ -82,4 +82,4 @@ jobs:
         uses: golangci/golangci-lint-action@v9
         with:
           version: v2.13
-          working-directory: api
+          working-directory: apps/api

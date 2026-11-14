@@ -1,0 +1,63 @@
+package issues
+
+import (
+	"context"
+
+	"entgo.io/ent/dialect/sql"
+	"github.com/levisantosp/atm-participa/apps/api/ent/generated"
+	"github.com/levisantosp/atm-participa/apps/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/apps/api/ent/generated/upvote"
+	"github.com/levisantosp/atm-participa/apps/api/internal/db"
+	"github.com/levisantosp/atm-participa/apps/api/internal/dtos"
+	"github.com/levisantosp/atm-participa/apps/api/internal/middlewares"
+	"github.com/levisantosp/atm-participa/apps/api/internal/utils"
+)
+
+func GetIssues(
+	ctx context.Context,
+	input *struct {
+		Limit  int          `query:"limit" minimum:"1" maximum:"100" default:"10"`
+		Cursor int64        `query:"cursor" minimum:"1"`
+		Status issue.Status `query:"status" enum:"open,closed,in_review" default:"open"`
+		Search string       `query:"search" minLength:"2" maxLength:"100"`
+	},
+) (*Output[utils.CursorPaginatedResponse[dtos.Issue]], error) {
+	user := middlewares.MustGetUserFromContext(ctx)
+
+	query := db.Client.Issue.Query().
+		WithIssueFiles().
+		WithIssueUpvotes(func(uq *generated.UpvoteQuery) {
+			uq.Where(upvote.UserID(user.ID))
+		}).
+		Order(issue.ByID(sql.OrderDesc())).
+		Where(issue.StatusEQ(input.Status)).
+		Limit(input.Limit + 1)
+
+	if input.Cursor > 0 {
+		query = query.Where(issue.IDLT(input.Cursor))
+	}
+
+	if input.Search != "" {
+		query = query.Where(
+			issue.Or(
+				issue.TitleContainsFold(input.Search),
+				issue.DescriptionContainsFold(input.Search),
+			),
+		)
+	}
+
+	issues, err := query.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Output[utils.CursorPaginatedResponse[dtos.Issue]]{
+		Body: utils.CursorPaginatedResponseFrom(
+			dtos.IssuesFrom(issues),
+			input.Limit,
+			func(item dtos.Issue) string {
+				return item.ID
+			},
+		),
+	}, nil
+}

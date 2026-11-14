@@ -3,7 +3,9 @@ name: go tests
 on:
   push:
     paths:
-      - 'api/**'
+      - 'apps/api/**'
+      - 'apps/cdn/**'
+      - 'pkg/infra/**'
       - 'go.work'
       - 'go.work.sum'
       - 'justfile'
@@ -12,7 +14,9 @@ on:
 
   pull_request:
     paths:
-      - 'api/**'
+      - 'apps/api/**'
+      - 'apps/cdn/**'
+      - 'pkg/infra/**'
       - 'go.work'
       - 'go.work.sum'
       - 'justfile'
@@ -56,7 +60,7 @@ jobs:
         uses: actions/setup-go@main
         with:
           go-version-file: go.work
-          cache-dependency-path: api/go.mod
+          cache-dependency-path: apps/api/go.mod
           cache: true
 
       - name: setup just
@@ -71,7 +75,7 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           RESEND_EMAIL: ${{ secrets.RESEND_EMAIL }}
         run: |
-          cp api/.env.example api/.env.test
+          cp apps/api/.env.example apps/api/.env.test
           {
             echo "CLOUDFLARE_R2_ACCESS_KEY_ID=$CLOUDFLARE_R2_ACCESS_KEY_ID"
             echo "CLOUDFLARE_R2_SECRET_ACCESS_KEY=$CLOUDFLARE_R2_SECRET_ACCESS_KEY"
@@ -80,7 +84,7 @@ jobs:
             echo "RESEND_API_KEY=$RESEND_API_KEY"
             echo "RESEND_EMAIL=$RESEND_EMAIL"
             echo "WEB_URL=http://localhost:5173"
-          } >> api/.env.test
+          } >> apps/api/.env.test
       - name: run tests
         id: tests
         run: just test
