@@ -31,20 +31,23 @@ func TestResetPassword(t *testing.T) {
 		SetUser(user).
 		SaveX(t.Context())
 
-	t.Run("should reject a password shorter than 8 characters", func(t *testing.T) {
-		res := api.Post("/auth/reset-password", map[string]any{
-			"token":    "test-token",
-			"password": strings.Repeat("a", 7),
-		})
+	t.Run(
+		"should reject a password shorter than 8 characters",
+		func(t *testing.T) {
+			res := api.Post("/auth/reset-password", map[string]any{
+				"token":    "test-token",
+				"password": strings.Repeat("a", 7),
+			})
 
-		if res.Code != http.StatusUnprocessableEntity {
-			t.Fatalf(
-				"expected status %d got %d",
-				http.StatusUnprocessableEntity,
-				res.Code,
-			)
-		}
-	})
+			if res.Code != http.StatusUnprocessableEntity {
+				t.Fatalf(
+					"expected status %d got %d",
+					http.StatusUnprocessableEntity,
+					res.Code,
+				)
+			}
+		},
+	)
 
 	t.Run("should reject a missing or expired token", func(t *testing.T) {
 		res := api.Post("/auth/reset-password", map[string]any{
@@ -61,47 +64,55 @@ func TestResetPassword(t *testing.T) {
 		}
 	})
 
-	t.Run("should update the password and consume the token", func(t *testing.T) {
-		token := "valid-reset-token"
-		const newPassword = "new-password"
-		_, tokenHash, err := GenerateToken(&token)
-		if err != nil {
-			t.Fatal(err)
-		}
-		key := "reset-password:" + *tokenHash
-		if err := redis.Client.Set(
-			t.Context(),
-			key,
-			user.ID,
-			10*time.Minute,
-		).Err(); err != nil {
-			t.Fatal(err)
-		}
+	t.Run(
+		"should update the password and consume the token",
+		func(t *testing.T) {
+			token := "valid-reset-token"
+			const newPassword = "new-password"
+			_, tokenHash, err := GenerateToken(&token)
+			if err != nil {
+				t.Fatal(err)
+			}
+			key := "reset-password:" + *tokenHash
+			if err := redis.Client.Set(
+				t.Context(),
+				key,
+				user.ID,
+				10*time.Minute,
+			).Err(); err != nil {
+				t.Fatal(err)
+			}
 
-		res := api.Post("/auth/reset-password", map[string]any{
-			"token":    token,
-			"password": newPassword,
-		})
+			res := api.Post("/auth/reset-password", map[string]any{
+				"token":    token,
+				"password": newPassword,
+			})
 
-		if res.Code != http.StatusNoContent {
-			t.Fatalf("expected status %d got %d", http.StatusNoContent, res.Code)
-		}
+			if res.Code != http.StatusNoContent {
+				t.Fatalf(
+					"expected status %d got %d",
+					http.StatusNoContent,
+					res.Code,
+				)
+			}
 
-		updatedAccount, err := db.Client.Account.Query().
-			Where(acc.UserIDEQ(user.ID), acc.ProviderEQ(acc.ProviderEmail)).
-			Only(t.Context())
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !utils.VerifyPassword(newPassword, updatedAccount.Password) {
-			t.Fatal("expected account password to be updated")
-		}
-		if utils.VerifyPassword("old-password", updatedAccount.Password) {
-			t.Fatal("expected previous password to stop working")
-		}
+			updatedAccount, err := db.Client.Account.Query().
+				Where(acc.UserIDEQ(user.ID), acc.ProviderEQ(acc.ProviderEmail)).
+				Only(t.Context())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !utils.VerifyPassword(newPassword, updatedAccount.Password) {
+				t.Fatal("expected account password to be updated")
+			}
+			if utils.VerifyPassword("old-password", updatedAccount.Password) {
+				t.Fatal("expected previous password to stop working")
+			}
 
-		if err := redis.Client.Get(t.Context(), key).Err(); err != redis.Nil {
-			t.Fatalf("expected reset token to be consumed, got: %v", err)
-		}
-	})
+			if err := redis.Client.Get(t.Context(), key).
+				Err(); err != redis.Nil {
+				t.Fatalf("expected reset token to be consumed, got: %v", err)
+			}
+		},
+	)
 }
