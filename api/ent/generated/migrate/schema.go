@@ -15,7 +15,7 @@ var (
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "user_accounts", Type: field.TypeInt64},
+		{Name: "user_id", Type: field.TypeInt64},
 	}
 	// AccountsTable holds the schema information for the "accounts" table.
 	AccountsTable = &schema.Table{
@@ -27,12 +27,12 @@ var (
 				Symbol:     "accounts_users_accounts",
 				Columns:    []*schema.Column{AccountsColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "account_user_accounts",
+				Name:    "account_user_id",
 				Unique:  false,
 				Columns: []*schema.Column{AccountsColumns[5]},
 			},

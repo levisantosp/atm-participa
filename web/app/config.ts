@@ -14,5 +14,11 @@ export const publicRoutes = new Map<string, PublicRoute>([
     {
       action: 'redirect'
     }
+  ],
+  [
+    '/redefinir-senha',
+    {
+      action: 'next'
+    }
   ]
 ])

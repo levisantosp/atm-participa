@@ -15,7 +15,7 @@ func Setup(t *testing.T) {
 	if err := r2.Connect(t.Context()); err != nil {
 		t.Fatal(err)
 	}
-	redis.Connect(env.Env.RedisAddr, env.Env.RedisPassword)
+	redis.Connect(env.Data.RedisAddr, env.Data.RedisPassword)
 	sqlDB := db.Connect()
 
 	if _, err := sqlDB.Exec(`

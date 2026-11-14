@@ -92,12 +92,12 @@ const signIn = handleSubmit(async (data) => {
             <div class="grid gap-2">
               <div class="flex items-center">
                 <Label for="password">Senha</Label>
-                <a
-                  href="#"
+                <NuxtLink
+                  href="/redefinir-senha"
                   class="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                 >
                   Esqueci minha senha
-                </a>
+                </NuxtLink>
               </div>
               <Input
                 id="password"

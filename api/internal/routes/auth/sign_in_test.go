@@ -2,11 +2,15 @@ package auth
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/danielgtaylor/huma/v2/humatest"
+	"github.com/levisantosp/atm-participa/api/ent/generated/user"
+	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/tests"
+	"github.com/levisantosp/atm-participa/infra/redis"
 )
 
 func TestSignIn(t *testing.T) {
@@ -97,6 +101,38 @@ func TestSignIn(t *testing.T) {
 				http.StatusNoContent,
 				res.Code,
 			)
+		}
+
+		var sessionID string
+		for _, cookie := range res.Result().Cookies() {
+			if cookie.Name == "session" {
+				sessionID = cookie.Value
+			}
+		}
+		if sessionID == "" {
+			t.Fatal("expected a session cookie in the response")
+		}
+
+		u, err := db.Client.User.Query().
+			Where(user.EmailEQ(email)).
+			Only(t.Context())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := redis.Client.Get(
+			t.Context(),
+			"session:"+sessionID,
+		).Err(); err != nil {
+			t.Fatalf("expected session to be stored: %v", err)
+		}
+
+		if err := redis.Client.ZScore(
+			t.Context(),
+			"user_sessions:"+strconv.FormatInt(u.ID, 10),
+			sessionID,
+		).Err(); err != nil {
+			t.Fatalf("expected session to be tracked: %v", err)
 		}
 	})
 }

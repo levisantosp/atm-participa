@@ -6,6 +6,7 @@ import (
 
 	"github.com/danielgtaylor/huma/v2/humatest"
 	"github.com/levisantosp/atm-participa/api/internal/tests"
+	"github.com/levisantosp/atm-participa/infra/redis"
 
 	_ "github.com/levisantosp/atm-participa/api/ent/generated/runtime"
 )
@@ -41,6 +42,20 @@ func TestDeleteAccount(t *testing.T) {
 				http.StatusNoContent,
 				res.Code,
 			)
+		}
+
+		if err := redis.Client.Get(
+			t.Context(),
+			"session:"+session.ID,
+		).Err(); err != redis.Nil {
+			t.Fatalf("expected session to be removed, got: %v", err)
+		}
+
+		if exists := redis.Client.Exists(
+			t.Context(),
+			"user_sessions:"+session.UserId,
+		).Val(); exists != 0 {
+			t.Fatal("expected user sessions to be removed")
 		}
 	})
 }

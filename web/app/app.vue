@@ -28,11 +28,12 @@ watch(
     if (!session && publicRoute) return
 
     if (session && publicRoute?.action === 'redirect') {
-      return router.push('/')
+      return void router.push('/')
     }
 
     if (!session && !publicRoute) {
-      router.push('/sign-in')
+      void auth.signOut()
+      void router.push('/sign-in')
     }
   }
 )

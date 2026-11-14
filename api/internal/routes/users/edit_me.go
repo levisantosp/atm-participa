@@ -64,10 +64,15 @@ func EditMe(
 	}
 
 	ttl := 7 * 24 * time.Hour
-	err = redis.Client.SetArgs(ctx, "session:"+session.ID, sessionJson, goredis.SetArgs{
-		Mode: "XX",
-		TTL:  ttl,
-	}).
+	err = redis.Client.SetArgs(
+		ctx,
+		"session:"+session.ID,
+		sessionJson,
+		goredis.SetArgs{
+			Mode: "XX",
+			TTL:  ttl,
+		},
+	).
 		Err()
 	if err != nil {
 		if err == redis.Nil {
@@ -75,7 +80,20 @@ func EditMe(
 		}
 		return nil, err
 	}
-
+	key := "user_sessions:" + strconv.FormatInt(user.ID, 10)
+	if err := redis.Client.ZAdd(
+		ctx,
+		key,
+		goredis.Z{
+			Score:  float64(time.Now().Add(ttl).Unix()),
+			Member: session.ID,
+		},
+	).Err(); err != nil {
+		return nil, err
+	}
+	if err := redis.Client.Expire(ctx, key, ttl).Err(); err != nil {
+		return nil, err
+	}
 	sessionCookie := http.Cookie{
 		Name:     "session",
 		Value:    session.ID,

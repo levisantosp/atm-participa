@@ -173,10 +173,10 @@ func TestCreateIssue(t *testing.T) {
 
 	t.Run("should create an issue with image", func(t *testing.T) {
 		client, err := r2.New(t.Context(), r2.Config{
-			AccessKeyID: env.Env.CloudflareR2AccessKeyID,
-			SecretKey:   env.Env.CloudflareR2SecretKey,
-			URL:         env.Env.CloudflareR2URL,
-			Bucket:      env.Env.CloudflareR2Bucket,
+			AccessKeyID: env.Data.CloudflareR2AccessKeyID,
+			SecretKey:   env.Data.CloudflareR2SecretKey,
+			URL:         env.Data.CloudflareR2URL,
+			Bucket:      env.Data.CloudflareR2Bucket,
 		})
 		if err != nil {
 			t.Fatal(err)

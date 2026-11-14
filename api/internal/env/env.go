@@ -19,9 +19,12 @@ type TEnv struct {
 	CloudflareR2SecretKey   string   `zog:"CLOUDFLARE_R2_SECRET_ACCESS_KEY"`
 	CloudflareR2URL         string   `zog:"CLOUDFLARE_R2_URL"`
 	CloudflareR2Bucket      string   `zog:"CLOUDFLARE_R2_BUCKET"`
+	ResendAPIKey            string   `zog:"RESEND_API_KEY"`
+	ResendEmail             string   `zog:"RESEND_EMAIL"`
+	WebURL                  string   `zog:"WEB_URL"`
 }
 
-var Env TEnv
+var Data TEnv
 
 func LoadEnv(envFile string) {
 	_ = godotenv.Overload(envFile)
@@ -45,9 +48,12 @@ func LoadEnv(envFile string) {
 		"CloudflareR2SecretKey":   zog.String().Required(),
 		"CloudflareR2URL":         zog.String().URL().Required(),
 		"CloudflareR2Bucket":      zog.String().Required(),
+		"ResendAPIKey":            zog.String().Required(),
+		"ResendEmail":             zog.String().Required(),
+		"WebURL":                  zog.String().URL().Required(),
 	})
 
-	err := schema.Parse(zenv.NewDataProvider(), &Env)
+	err := schema.Parse(zenv.NewDataProvider(), &Data)
 	if err != nil {
 		log.Fatal(err)
 	}

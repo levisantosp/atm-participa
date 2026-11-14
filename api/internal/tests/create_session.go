@@ -9,6 +9,7 @@ import (
 	"github.com/levisantosp/atm-participa/api/ent/generated"
 	"github.com/levisantosp/atm-participa/api/internal/middlewares"
 	"github.com/levisantosp/atm-participa/infra/redis"
+	goredis "github.com/redis/go-redis/v9"
 )
 
 func CreateSession(user *generated.User, t *testing.T) middlewares.Session {
@@ -31,6 +32,22 @@ func CreateSession(user *generated.User, t *testing.T) middlewares.Session {
 		sessionJson,
 		time.Minute,
 	).Err(); err != nil {
+		t.Fatal(err)
+	}
+	key := "user_sessions:" + session.UserId
+	if err := redis.Client.ZAdd(
+		t.Context(),
+		key,
+		goredis.Z{
+			Score:  float64(time.Now().Add(time.Minute).Unix()),
+			Member: session.ID,
+		},
+	).Err(); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := redis.Client.Expire(t.Context(), key, time.Minute).
+		Err(); err != nil {
 		t.Fatal(err)
 	}
 
@@ -60,6 +77,21 @@ func CreateAdminSession(
 		sessionJson,
 		time.Minute,
 	).Err(); err != nil {
+		t.Fatal(err)
+	}
+	key := "user_sessions:" + session.UserId
+	if err := redis.Client.ZAdd(
+		t.Context(),
+		key,
+		goredis.Z{
+			Score:  float64(time.Now().Add(time.Minute).Unix()),
+			Member: session.ID,
+		},
+	).Err(); err != nil {
+		t.Fatal(err)
+	}
+	if err := redis.Client.Expire(t.Context(), key, time.Minute).
+		Err(); err != nil {
 		t.Fatal(err)
 	}
 

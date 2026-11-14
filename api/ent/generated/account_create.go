@@ -21,6 +21,12 @@ type AccountCreate struct {
 	hooks    []Hook
 }
 
+// SetUserID sets the "user_id" field.
+func (_c *AccountCreate) SetUserID(v int64) *AccountCreate {
+	_c.mutation.SetUserID(v)
+	return _c
+}
+
 // SetProvider sets the "provider" field.
 func (_c *AccountCreate) SetProvider(v account.Provider) *AccountCreate {
 	_c.mutation.SetProvider(v)
@@ -72,12 +78,6 @@ func (_c *AccountCreate) SetNillableUpdatedAt(v *time.Time) *AccountCreate {
 // SetID sets the "id" field.
 func (_c *AccountCreate) SetID(v int64) *AccountCreate {
 	_c.mutation.SetID(v)
-	return _c
-}
-
-// SetUserID sets the "user" edge to the User entity by ID.
-func (_c *AccountCreate) SetUserID(id int64) *AccountCreate {
-	_c.mutation.SetUserID(id)
 	return _c
 }
 
@@ -133,6 +133,9 @@ func (_c *AccountCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *AccountCreate) check() error {
+	if _, ok := _c.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`generated: missing required field "Account.user_id"`)}
+	}
 	if _, ok := _c.mutation.Provider(); !ok {
 		return &ValidationError{Name: "provider", err: errors.New(`generated: missing required field "Account.provider"`)}
 	}
@@ -212,7 +215,7 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_accounts = &nodes[0]
+		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

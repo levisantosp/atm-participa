@@ -16,7 +16,7 @@ import (
 var Client *generated.Client
 
 func Connect() *sql.DB {
-	db, err := sql.Open("pgx", env.Env.DatabaseURL)
+	db, err := sql.Open("pgx", env.Data.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
