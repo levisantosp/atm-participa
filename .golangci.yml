@@ -5,4 +5,3 @@ linters:
     errcheck:
       exclude-functions:
         - github.com/danielgtaylor/huma/v2.WriteErr
-        - github.com/levisantosp/atm-participa/api/utils.LogErr
