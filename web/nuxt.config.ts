@@ -24,5 +24,8 @@ export default defineNuxtConfig({
     public: {
       cdnUrl: ''
     }
+  },
+  experimental: {
+    typedPages: true
   }
 })
