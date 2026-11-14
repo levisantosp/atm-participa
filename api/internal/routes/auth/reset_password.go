@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/danielgtaylor/huma/v2"
+	"github.com/levisantosp/atm-participa/api/ent/generated"
 	acc "github.com/levisantosp/atm-participa/api/ent/generated/account"
 	"github.com/levisantosp/atm-participa/api/internal/db"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
@@ -47,10 +48,31 @@ func ResetPassord(
 		return nil, err
 	}
 
-	_, err = db.Client.Account.Update().
-		Where(acc.UserIDEQ(userID), acc.ProviderEQ(acc.ProviderEmail)).
-		SetPassword(*passHash).
-		Save(ctx)
+	_, err = db.WithTx(ctx, func(tx *generated.Tx) (*struct{}, error) {
+		_, err := tx.Account.Update().
+			Where(acc.UserIDEQ(userID), acc.ProviderEQ(acc.ProviderEmail)).
+			SetPassword(*passHash).
+			Save(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		keys := []string{"user_sessions:" + raw}
+		sessionsIDs, err := redis.Client.ZRange(ctx, keys[0], 0, -1).Result()
+		if err != nil {
+			return nil, err
+		}
+
+		for _, id := range sessionsIDs {
+			keys = append(keys, "session:"+id)
+		}
+
+		if err := redis.Client.Unlink(ctx, keys...).Err(); err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	})
 	if err != nil {
 		return nil, err
 	}
