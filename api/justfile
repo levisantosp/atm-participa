@@ -28,7 +28,7 @@ generate-migrations:
   GOWORK=off atlas migrate diff --env local
 
 migrate:
-  atlas migrate apply --env local --url "$DATABASE_URL"
+  atlas migrate apply --env local --url "$DATABASE_URL" --revisions-schema atlas_schema_revisions
 
 build:
   rm -rf bin
