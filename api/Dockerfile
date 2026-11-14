@@ -2,7 +2,7 @@ FROM golang:1.27.3-alpine AS build
 
 WORKDIR /app
 
-RUN apk add --no-cache make
+RUN apk add --no-cache just
 
 COPY go.work go.work.sum /app/
 COPY api/go.mod api/go.sum /app/api/
@@ -13,7 +13,7 @@ RUN cd api && go mod download
 
 COPY . .
 
-RUN make build:api
+RUN just build-api
 
 FROM alpine:latest
 

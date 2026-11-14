@@ -52,14 +52,16 @@ jobs:
               - 'infra/**'
               - 'go.work'
               - 'go.work.sum'
-              - 'Makefile'
+              - 'justfile'
+              - '**/justfile'
               - '.golangci.yml'
             cdn:
               - 'cdn/**'
               - 'infra/**'
               - 'go.work'
               - 'go.work.sum'
-              - 'Makefile'
+              - 'justfile'
+              - '**/justfile'
               - '.golangci.yml'
             global:
               - 'docker-compose.yml'
@@ -253,7 +255,7 @@ jobs:
             git switch -C main "$DEPLOY_SHA"
             git branch --set-upstream-to=origin/main main
 
-            make migrate
+            just migrate
 
             failed_services=()
 

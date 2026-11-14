@@ -1,0 +1,44 @@
+set dotenv-load
+
+dev:
+  go run ./cmd/api
+
+fmt:
+  find . -path './pg' -prune -o -type f -name '*.go' -exec go tool gofumpt -w {} +
+  find . -path './pg' -prune -o -type f -name '*.go' -exec go tool golines -m 80 -w {} +
+  find . -path './pg' -prune -o -type f -name '*.go' -exec go tool goimports -w {} +
+
+lint *args:
+  go tool golangci-lint run {{ args }}
+
+lintf:
+  go tool golangci-lint run --fix
+
+create-schema name:
+  go tool ent new {{ name }}
+
+generate:
+  go generate ./ent/...
+
+generate-clean:
+  rm -rf ent/generated
+  go generate ./ent/...
+
+generate-migrations:
+  GOWORK=off atlas migrate diff --env local
+
+migrate:
+  atlas migrate apply --env local --url "$DATABASE_URL"
+
+build:
+  rm -rf bin
+  go build -o bin/api ./cmd/api
+
+start:
+  bin/api
+
+push:
+  go run ./cmd/push
+
+test:
+  go test -p 1 ./internal/routes/...

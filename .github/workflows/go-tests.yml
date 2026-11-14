@@ -6,6 +6,8 @@ on:
       - 'api/**'
       - 'go.work'
       - 'go.work.sum'
+      - 'justfile'
+      - '**/justfile'
       - '.github/workflows/go-tests.yml'
 
   pull_request:
@@ -13,6 +15,8 @@ on:
       - 'api/**'
       - 'go.work'
       - 'go.work.sum'
+      - 'justfile'
+      - '**/justfile'
       - '.github/workflows/go-tests.yml'
 
 jobs:
@@ -55,6 +59,9 @@ jobs:
           cache-dependency-path: api/go.mod
           cache: true
 
+      - name: setup just
+        uses: extractions/setup-just@trunk
+
       - name: create .env.test file
         env:
           CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
@@ -76,4 +83,4 @@ jobs:
           } >> api/.env.test
       - name: run tests
         id: tests
-        run: make test
+        run: just test
