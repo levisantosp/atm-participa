@@ -24,7 +24,6 @@ type AccountQuery struct {
 	inters     []Interceptor
 	predicates []predicate.Account
 	withUser   *UserQuery
-	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -299,12 +298,12 @@ func (_q *AccountQuery) WithUser(opts ...func(*UserQuery)) *AccountQuery {
 // Example:
 //
 //	var v []struct {
-//		Provider account.Provider `json:"provider,omitempty"`
+//		UserID int64 `json:"user_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Account.Query().
-//		GroupBy(account.FieldProvider).
+//		GroupBy(account.FieldUserID).
 //		Aggregate(generated.Count()).
 //		Scan(ctx, &v)
 func (_q *AccountQuery) GroupBy(field string, fields ...string) *AccountGroupBy {
@@ -322,11 +321,11 @@ func (_q *AccountQuery) GroupBy(field string, fields ...string) *AccountGroupBy 
 // Example:
 //
 //	var v []struct {
-//		Provider account.Provider `json:"provider,omitempty"`
+//		UserID int64 `json:"user_id,omitempty"`
 //	}
 //
 //	client.Account.Query().
-//		Select(account.FieldProvider).
+//		Select(account.FieldUserID).
 //		Scan(ctx, &v)
 func (_q *AccountQuery) Select(fields ...string) *AccountSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
@@ -370,18 +369,11 @@ func (_q *AccountQuery) prepareQuery(ctx context.Context) error {
 func (_q *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Account, error) {
 	var (
 		nodes       = []*Account{}
-		withFKs     = _q.withFKs
 		_spec       = _q.querySpec()
 		loadedTypes = [1]bool{
 			_q.withUser != nil,
 		}
 	)
-	if _q.withUser != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, account.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Account).scanValues(nil, columns)
 	}
@@ -413,10 +405,7 @@ func (_q *AccountQuery) loadUser(ctx context.Context, query *UserQuery, nodes []
 	ids := make([]int64, 0, len(nodes))
 	nodeids := make(map[int64][]*Account)
 	for i := range nodes {
-		if nodes[i].user_accounts == nil {
-			continue
-		}
-		fk := *nodes[i].user_accounts
+		fk := nodes[i].UserID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -433,7 +422,7 @@ func (_q *AccountQuery) loadUser(ctx context.Context, query *UserQuery, nodes []
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_accounts" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -466,6 +455,9 @@ func (_q *AccountQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != account.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if _q.withUser != nil {
+			_spec.Node.AddColumnOnce(account.FieldUserID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"entgo.io/ent"
-	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -19,6 +18,7 @@ type Account struct {
 func (Account) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id"),
+		field.Int64("user_id"),
 		field.Enum("provider").Values("google", "email"),
 		field.String("password").Sensitive().Optional(),
 		field.Time("created_at").Default(time.Now).Immutable(),
@@ -31,9 +31,9 @@ func (Account) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
 			Ref("accounts").
+			Field("user_id").
 			Unique().
-			Required().
-			Annotations(entsql.OnDelete(entsql.Cascade)),
+			Required(),
 	}
 }
 

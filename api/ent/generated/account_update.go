@@ -29,6 +29,20 @@ func (_u *AccountUpdate) Where(ps ...predicate.Account) *AccountUpdate {
 	return _u
 }
 
+// SetUserID sets the "user_id" field.
+func (_u *AccountUpdate) SetUserID(v int64) *AccountUpdate {
+	_u.mutation.SetUserID(v)
+	return _u
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (_u *AccountUpdate) SetNillableUserID(v *int64) *AccountUpdate {
+	if v != nil {
+		_u.SetUserID(*v)
+	}
+	return _u
+}
+
 // SetProvider sets the "provider" field.
 func (_u *AccountUpdate) SetProvider(v account.Provider) *AccountUpdate {
 	_u.mutation.SetProvider(v)
@@ -66,12 +80,6 @@ func (_u *AccountUpdate) ClearPassword() *AccountUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *AccountUpdate) SetUpdatedAt(v time.Time) *AccountUpdate {
 	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetUserID sets the "user" edge to the User entity by ID.
-func (_u *AccountUpdate) SetUserID(id int64) *AccountUpdate {
-	_u.mutation.SetUserID(id)
 	return _u
 }
 
@@ -213,6 +221,20 @@ type AccountUpdateOne struct {
 	mutation *AccountMutation
 }
 
+// SetUserID sets the "user_id" field.
+func (_u *AccountUpdateOne) SetUserID(v int64) *AccountUpdateOne {
+	_u.mutation.SetUserID(v)
+	return _u
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (_u *AccountUpdateOne) SetNillableUserID(v *int64) *AccountUpdateOne {
+	if v != nil {
+		_u.SetUserID(*v)
+	}
+	return _u
+}
+
 // SetProvider sets the "provider" field.
 func (_u *AccountUpdateOne) SetProvider(v account.Provider) *AccountUpdateOne {
 	_u.mutation.SetProvider(v)
@@ -250,12 +272,6 @@ func (_u *AccountUpdateOne) ClearPassword() *AccountUpdateOne {
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *AccountUpdateOne) SetUpdatedAt(v time.Time) *AccountUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetUserID sets the "user" edge to the User entity by ID.
-func (_u *AccountUpdateOne) SetUserID(id int64) *AccountUpdateOne {
-	_u.mutation.SetUserID(id)
 	return _u
 }
 

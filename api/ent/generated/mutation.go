@@ -157,6 +157,42 @@ func (m *AccountMutation) IDs(ctx context.Context) ([]int64, error) {
 	}
 }
 
+// SetUserID sets the "user_id" field.
+func (m *AccountMutation) SetUserID(i int64) {
+	m.user = &i
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *AccountMutation) UserID() (r int64, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Account entity.
+// If the Account object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountMutation) OldUserID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *AccountMutation) ResetUserID() {
+	m.user = nil
+}
+
 // SetProvider sets the "provider" field.
 func (m *AccountMutation) SetProvider(a account.Provider) {
 	m.provider = &a
@@ -314,27 +350,15 @@ func (m *AccountMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetUserID sets the "user" edge to the User entity by id.
-func (m *AccountMutation) SetUserID(id int64) {
-	m.user = &id
-}
-
 // ClearUser clears the "user" edge to the User entity.
 func (m *AccountMutation) ClearUser() {
 	m.cleareduser = true
+	m.clearedFields[account.FieldUserID] = struct{}{}
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
 func (m *AccountMutation) UserCleared() bool {
 	return m.cleareduser
-}
-
-// UserID returns the "user" edge ID in the mutation.
-func (m *AccountMutation) UserID() (id int64, exists bool) {
-	if m.user != nil {
-		return *m.user, true
-	}
-	return
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
@@ -387,7 +411,10 @@ func (m *AccountMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AccountMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
+	if m.user != nil {
+		fields = append(fields, account.FieldUserID)
+	}
 	if m.provider != nil {
 		fields = append(fields, account.FieldProvider)
 	}
@@ -408,6 +435,8 @@ func (m *AccountMutation) Fields() []string {
 // schema.
 func (m *AccountMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case account.FieldUserID:
+		return m.UserID()
 	case account.FieldProvider:
 		return m.Provider()
 	case account.FieldPassword:
@@ -425,6 +454,8 @@ func (m *AccountMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *AccountMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case account.FieldUserID:
+		return m.OldUserID(ctx)
 	case account.FieldProvider:
 		return m.OldProvider(ctx)
 	case account.FieldPassword:
@@ -442,6 +473,13 @@ func (m *AccountMutation) OldField(ctx context.Context, name string) (ent.Value,
 // type.
 func (m *AccountMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case account.FieldUserID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
 	case account.FieldProvider:
 		v, ok := value.(account.Provider)
 		if !ok {
@@ -477,13 +515,16 @@ func (m *AccountMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *AccountMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *AccountMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
 	return nil, false
 }
 
@@ -528,6 +569,9 @@ func (m *AccountMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *AccountMutation) ResetField(name string) error {
 	switch name {
+	case account.FieldUserID:
+		m.ResetUserID()
+		return nil
 	case account.FieldProvider:
 		m.ResetProvider()
 		return nil
