@@ -26,7 +26,7 @@ const schema = z.object({
   email: z.email('Informe um e-mail válido')
 })
 
-const { handleSubmit, errors, defineField } = useForm({
+const { handleSubmit, errors, defineField, resetForm } = useForm({
   validationSchema: toTypedSchema(schema)
 })
 
@@ -40,9 +40,10 @@ const { isPending, mutate } = usePostAuthForgotPassword({
       toast.success(
         'Enviamos um e-mail com as instruções para redefinir sua senha. Verifique sua caixa de entrada.',
         {
-          duration: 15_000
+          duration: 10_000
         }
       )
+      resetForm()
     }
   }
 })
