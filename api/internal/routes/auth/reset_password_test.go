@@ -12,6 +12,7 @@ import (
 	"github.com/levisantosp/atm-participa/api/internal/tests"
 	"github.com/levisantosp/atm-participa/api/internal/utils"
 	"github.com/levisantosp/atm-participa/infra/redis"
+	goredis "github.com/redis/go-redis/v9"
 )
 
 func TestResetPassword(t *testing.T) {
@@ -83,6 +84,28 @@ func TestResetPassword(t *testing.T) {
 				t.Fatal(err)
 			}
 
+			session := tests.CreateSession(user, t)
+			const sessionID = "another-test-session"
+
+			if err := redis.Client.Set(
+				t.Context(),
+				"session:"+sessionID,
+				"{}",
+				time.Minute,
+			).Err(); err != nil {
+				t.Fatal(err)
+			}
+
+			if err := redis.Client.ZAdd(
+				t.Context(),
+				"user_sessions:"+session.UserId,
+				goredis.Z{
+					Member: sessionID,
+				},
+			).Err(); err != nil {
+				t.Fatal(err)
+			}
+
 			res := api.Post("/auth/reset-password", map[string]any{
 				"token":    token,
 				"password": newPassword,
@@ -112,6 +135,30 @@ func TestResetPassword(t *testing.T) {
 			if err := redis.Client.Get(t.Context(), key).
 				Err(); err != redis.Nil {
 				t.Fatalf("expected reset token to be consumed, got: %v", err)
+			}
+
+			if err := redis.Client.Get(t.Context(), "session:"+session.ID).
+				Err(); err != redis.Nil {
+				t.Fatalf("expected session to be removed, got: %v", err)
+			}
+
+			if err := redis.Client.Get(
+				t.Context(),
+				"session:"+sessionID,
+			).Err(); err != redis.Nil {
+				t.Fatalf("expected second session to be removed, got: %v", err)
+			}
+
+			exists, err := redis.Client.Exists(
+				t.Context(),
+				"user_sessions:"+session.UserId,
+			).Result()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if exists != 0 {
+				t.Fatal("expected user sessions index to be removed")
 			}
 		},
 	)
