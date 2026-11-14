@@ -66,7 +66,7 @@ func ForgotPassword(
 			<h1><strong>%s</strong></h1>
 			<p>Este link expira em <strong>10 minutos</strong>.</p>
 			<p>Se você não solicitou a redefinição de senha, ignore este e-mail. Nenhuma alteração foi realizada na sua conta.</p>
-		`, env.Data.WebURL+"/reset-password?token="+token),
+		`, env.Data.WebURL+"/redefinir-senha?token="+token),
 	})
 	if err != nil {
 		return nil, err
