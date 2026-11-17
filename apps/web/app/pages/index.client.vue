@@ -25,10 +25,6 @@ import { queryClient } from '~/lib/query-client'
 import { isDark } from '~/lib/theme'
 import CreateIssueDialog from './create-issue-dialog.vue'
 
-definePageMeta({
-  key: (route) => route.query.search?.toString() ?? 'search-empty'
-})
-
 const route = useRoute()
 const router = useRouter()
 const schema = z.object({
