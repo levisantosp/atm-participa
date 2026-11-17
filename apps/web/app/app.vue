@@ -41,20 +41,18 @@ watch(
 </script>
 
 <template>
-  <Html class="dark">
-    <Body>
-      <div
-        v-if="session.isPending.value"
-        class="flex gap-1 min-h-screen justify-center items-center"
-      >
-        <Spinner class="size-5" />
-      </div>
+  <Body>
+    <div
+      v-if="session.isPending.value"
+      class="flex gap-1 min-h-screen justify-center items-center"
+    >
+      <Spinner class="size-5" />
+    </div>
 
-      <NuxtLayout v-else>
-        <NuxtPage />
-      </NuxtLayout>
+    <NuxtLayout v-else>
+      <NuxtPage />
+    </NuxtLayout>
 
-      <Toaster position="top-center" :theme="isDark ? 'dark' : 'light'" />
-    </Body>
-  </Html>
+    <Toaster position="top-center" :theme="isDark ? 'dark' : 'light'" />
+  </Body>
 </template>
