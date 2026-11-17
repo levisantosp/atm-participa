@@ -27,7 +27,11 @@ func IssueFrom(issue *generated.Issue) Issue {
 		images = append(images, &file.ID)
 	}
 
-	author := UserFrom(issue.Edges.User)
+	var author *User
+	if issue.Edges.User != nil {
+		user := UserFrom(issue.Edges.User)
+		author = &user
+	}
 
 	return Issue{
 		ID:          strconv.FormatInt(issue.ID, 10),
@@ -37,7 +41,7 @@ func IssueFrom(issue *generated.Issue) Issue {
 		Upvotes:     issue.Upvotes,
 		Images:      images,
 		HasUpvoted:  len(issue.Edges.IssueUpvotes) > 0,
-		Author:      &author,
+		Author:      author,
 		CreatedAt:   issue.CreatedAt,
 		UpdatedAt:   issue.UpdatedAt,
 	}
