@@ -3,6 +3,7 @@ import 'vue-sonner/style.css'
 import { Spinner, Toaster } from 'ui'
 import { publicRoutes } from './config'
 import { auth } from './lib/auth'
+import { isDark } from './lib/theme'
 
 const title = 'Altamira Participa'
 const description = 'Reporte problemas na cidade de Altamira'
@@ -53,7 +54,7 @@ watch(
         <NuxtPage />
       </NuxtLayout>
 
-      <Toaster position="top-center" theme="dark" />
+      <Toaster position="top-center" :theme="isDark ? 'dark' : 'light'" />
     </Body>
   </Html>
 </template>
