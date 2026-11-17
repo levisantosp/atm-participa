@@ -29,6 +29,7 @@ func GetIssues(
 		WithIssueUpvotes(func(uq *generated.UpvoteQuery) {
 			uq.Where(upvote.UserID(user.ID))
 		}).
+		WithUser().
 		Order(issue.ByID(sql.OrderDesc())).
 		Where(issue.StatusEQ(input.Status)).
 		Limit(input.Limit + 1)
