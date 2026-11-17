@@ -22,6 +22,7 @@ import {
 import { useForm } from 'vee-validate'
 import { z } from 'zod'
 import { queryClient } from '~/lib/query-client'
+import { isDark } from '~/lib/theme'
 import CreateIssueDialog from './create-issue-dialog.vue'
 
 definePageMeta({
@@ -187,7 +188,13 @@ function onUpvote(issue: Issue) {
               v-if="isPending && variables?.path.id === BigInt(issue.id)"
             />
             <div v-else class="flex gap-1 items-center">
-              <ThumbsUp :class="issue.hasUpvoted ? `fill-white` : ''" />
+              <ThumbsUp
+                :class="
+                  issue.hasUpvoted
+                    ? `${isDark ? 'fill-white' : 'fill-black'}`
+                    : ''
+                "
+              />
               <span>
                 {{ issue.upvotes }}
               </span>
