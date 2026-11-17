@@ -13,10 +13,12 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  Spinner
+  Spinner,
+  Switch
 } from 'ui'
 import { auth } from '~/lib/auth'
 import { queryClient } from '~/lib/query-client'
+import { isDark } from '~/lib/theme'
 
 const navItems = [
   {
@@ -50,6 +52,10 @@ async function signOut() {
   await queryClient.resetQueries({
     queryKey: getAuthMeQueryKey()
   })
+}
+
+function setTheme(v: boolean) {
+  isDark.value = v
 }
 </script>
 
@@ -96,6 +102,13 @@ async function signOut() {
             <LogOut />
             <span v-if="!isPending">Sair</span>
             <Spinner v-else />
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Tema</DropdownMenuLabel>
+          <DropdownMenuItem @select.prevent>
+            <Switch :model-value="isDark" @update:model-value="setTheme" />
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

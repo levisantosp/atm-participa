@@ -19,6 +19,7 @@
     "@tailwindcss/vite": "catalog:",
     "@tanstack/vue-query": "catalog:",
     "@vee-validate/zod": "catalog:",
+    "@vueuse/core": "catalog:",
     "api-client": "workspace:*",
     "dayjs": "catalog:",
     "nuxt": "catalog:",
