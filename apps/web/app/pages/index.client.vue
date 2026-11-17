@@ -166,6 +166,12 @@ function onUpvote(issue: Issue) {
 
       <Card v-for="issue in issues" :key="issue.id" class="w-full">
         <CardHeader>
+          <div class="flex flex-wrap gap-1" v-if="issue.author">
+            <span>{{ issue.author.displayName }}</span>
+            <span class="text-muted-foreground">
+              @{{ issue.author.username }}
+            </span>
+          </div>
           <CardTitle>{{ issue.title }}</CardTitle>
           <CardDescription>{{ issue.description }}</CardDescription>
         </CardHeader>
