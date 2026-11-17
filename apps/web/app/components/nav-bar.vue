@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { CircleUserIcon, History, HouseIcon, LogOut, User2 } from '@lucide/vue'
+import {
+  CircleUserIcon,
+  History,
+  HouseIcon,
+  LogOut,
+  Moon,
+  Sun,
+  User2
+} from '@lucide/vue'
 import { getAuthMeQueryKey } from 'api-client'
 import {
   Button,
@@ -108,7 +116,13 @@ function setTheme(v: boolean) {
         <DropdownMenuGroup>
           <DropdownMenuLabel>Tema</DropdownMenuLabel>
           <DropdownMenuItem @select.prevent>
-            <Switch :model-value="isDark" @update:model-value="setTheme" />
+            <Sun />
+            <Switch
+              class="cursor-pointer"
+              :model-value="isDark"
+              @update:model-value="setTheme"
+            />
+            <Moon />
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
