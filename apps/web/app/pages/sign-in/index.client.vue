@@ -20,7 +20,7 @@ import { z } from 'zod'
 import { auth } from '~/lib/auth'
 
 definePageMeta({
-  layout: 'default'
+  layout: 'public'
 })
 
 const schema = z.object({
