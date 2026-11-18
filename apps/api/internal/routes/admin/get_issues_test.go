@@ -52,7 +52,12 @@ func TestGetIssues(t *testing.T) {
 		issue.StatusClosed,
 		issue.StatusInReview,
 	} {
-		if _, err := tests.CreateIssueWithStatus(t, user, status); err != nil {
+		if _, err := tests.CreateIssueWithStatus(
+			t,
+			user,
+			status,
+			0,
+		); err != nil {
 			t.Fatal(err)
 		}
 	}

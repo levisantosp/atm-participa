@@ -15,18 +15,20 @@ import (
 )
 
 func CreateIssue(t *testing.T, user *generated.User) (*generated.Issue, error) {
-	return CreateIssueWithStatus(t, user, issue.StatusOpen)
+	return CreateIssueWithStatus(t, user, issue.StatusOpen, 0)
 }
 
 func CreateIssueWithStatus(
 	t *testing.T,
 	user *generated.User,
 	status issue.Status,
+	upvotes int64,
 ) (*generated.Issue, error) {
 	return db.Client.Issue.Create().
 		SetTitle(strings.Repeat("a", 20)).
 		SetDescription(strings.Repeat("a", 20)).
 		SetStatus(status).
+		SetUpvotes(upvotes).
 		SetUserID(user.ID).
 		Save(t.Context())
 }
