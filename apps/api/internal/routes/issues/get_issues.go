@@ -16,10 +16,11 @@ import (
 func GetIssues(
 	ctx context.Context,
 	input *struct {
-		Limit  int          `query:"limit" minimum:"1" maximum:"100" default:"10"`
-		Cursor int64        `query:"cursor" minimum:"1"`
-		Status issue.Status `query:"status" enum:"open,closed,in_review" default:"open"`
-		Search string       `query:"search" minLength:"2" maxLength:"100"`
+		Limit   int          `query:"limit" minimum:"1" maximum:"100" default:"10"`
+		Cursor  int64        `query:"cursor" minimum:"1"`
+		Status  issue.Status `query:"status" enum:"open,closed,in_review" default:"open"`
+		Search  string       `query:"search" minLength:"2" maxLength:"100"`
+		OrderBy string       `query:"orderBy" enum:"id,upvotes" default:"id"`
 	},
 ) (*Output[utils.CursorPaginatedResponse[dtos.Issue]], error) {
 	user := middlewares.MustGetUserFromContext(ctx)
@@ -30,12 +31,17 @@ func GetIssues(
 			uq.Where(upvote.UserID(user.ID))
 		}).
 		WithUser().
-		Order(issue.ByID(sql.OrderDesc())).
 		Where(issue.StatusEQ(input.Status)).
 		Limit(input.Limit + 1)
 
 	if input.Cursor > 0 {
 		query = query.Where(issue.IDLT(input.Cursor))
+	}
+
+	if input.OrderBy == "id" {
+		query = query.Order(issue.ByID(sql.OrderDesc()))
+	} else {
+		query = query.Order(issue.ByUpvotes(sql.OrderDesc()))
 	}
 
 	if input.Search != "" {
