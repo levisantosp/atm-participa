@@ -11,6 +11,7 @@ type Output[T any] struct {
 
 func Routes(api huma.API) {
 	group := huma.NewGroup(api, "/admin")
+	group.UseMiddleware(middlewares.RateLimit(api, 120))
 	group.UseMiddleware(middlewares.Auth(api, true))
 
 	huma.Get(group, "/issues", GetIssues)
