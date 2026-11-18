@@ -26,7 +26,12 @@ func TestGetIssues(t *testing.T) {
 	session := tests.CreateSession(user, t)
 
 	t.Run("should use default values", func(t *testing.T) {
-		openIssue, err := tests.CreateIssueWithStatus(t, user, issue.StatusOpen)
+		openIssue, err := tests.CreateIssueWithStatus(
+			t,
+			user,
+			issue.StatusOpen,
+			0,
+		)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -34,6 +39,7 @@ func TestGetIssues(t *testing.T) {
 			t,
 			user,
 			issue.StatusOpen,
+			0,
 		)
 		if err != nil {
 			t.Fatal(err)
@@ -42,6 +48,7 @@ func TestGetIssues(t *testing.T) {
 			t,
 			user,
 			issue.StatusClosed,
+			0,
 		); err != nil {
 			t.Fatal(err)
 		}
@@ -82,6 +89,56 @@ func TestGetIssues(t *testing.T) {
 		}
 	})
 
+	t.Run("should sort by upvotes", func(t *testing.T) {
+		_, err := tests.CreateIssueWithStatus(
+			t,
+			user,
+			issue.StatusOpen,
+			1,
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = tests.CreateIssueWithStatus(
+			t,
+			user,
+			issue.StatusOpen,
+			3,
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		res := api.Get(
+			"/issues?orderBy=upvotes",
+			tests.GetCookie(session.ID),
+		)
+		if res.Code != http.StatusOK {
+			t.Fatalf("expected status %d got %d", http.StatusOK, res.Code)
+		}
+
+		var body utils.CursorPaginatedResponse[dtos.Issue]
+		if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+			t.Fatal(err)
+		}
+		if len(body.Items) < 2 {
+			t.Fatalf("expected at least 2 issues got %d", len(body.Items))
+		}
+		if body.Items[0].Upvotes != 3 {
+			t.Fatalf(
+				"expected most upvoted issue with 3 upvotes, got %d",
+				body.Items[0].Upvotes,
+			)
+		}
+		if body.Items[1].Upvotes != 1 {
+			t.Fatalf(
+				"expected most upvoted issue with 1 upvote, got %d",
+				body.Items[1].Upvotes,
+			)
+		}
+	})
+
 	t.Run("should paginate with cursor", func(t *testing.T) {
 		var issueIDs []int64
 		for range 3 {
@@ -89,6 +146,7 @@ func TestGetIssues(t *testing.T) {
 				t,
 				user,
 				issue.StatusInReview,
+				0,
 			)
 			if err != nil {
 				t.Fatal(err)
@@ -228,6 +286,18 @@ func TestGetIssues(t *testing.T) {
 
 	t.Run("should reject invalid status", func(t *testing.T) {
 		res := api.Get("/issues?status=invalid", tests.GetCookie(session.ID))
+
+		if res.Code != http.StatusUnprocessableEntity {
+			t.Fatalf(
+				"expected status %d got %d",
+				http.StatusUnprocessableEntity,
+				res.Code,
+			)
+		}
+	})
+
+	t.Run("should reject invalid orderBy", func(t *testing.T) {
+		res := api.Get("/issues?orderBy=invalid", tests.GetCookie(session.ID))
 
 		if res.Code != http.StatusUnprocessableEntity {
 			t.Fatalf(
