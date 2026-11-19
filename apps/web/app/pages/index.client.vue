@@ -60,12 +60,19 @@ const onSubmit = handleSubmit((data) => {
   })
 })
 
-const { isFetching, error, data } = useGetIssuesInfinite({
-  query: {
-    limit: 100n,
-    search: route.query.search?.toString()
-  }
-})
+const query = {
+  limit: 100n,
+  search: route.query.search?.toString()
+}
+
+const {
+  isPending,
+  error,
+  data,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage
+} = useGetIssuesInfinite({ query })
 
 const config = useRuntimeConfig()
 
@@ -73,16 +80,15 @@ const issues = computed(
   () => data.value?.pages.flatMap((page) => page.items ?? []) ?? []
 )
 
-const { isPending, mutate, variables } = usePostIssuesByIdUpvote({
+const {
+  isPending: isUpvoting,
+  mutate,
+  variables
+} = usePostIssuesByIdUpvote({
   mutation: {
     onSuccess(data) {
       queryClient.setQueryData<InfiniteData<GetIssuesStatus200>>(
-        getIssuesInfiniteQueryKey({
-          query: {
-            limit: 100n,
-            search: route.query.search?.toString()
-          }
-        }),
+        getIssuesInfiniteQueryKey({ query }),
         (old) => {
           if (!old) return old
 
@@ -122,13 +128,7 @@ function onUpvote(issue: Issue) {
 
 <template>
   <div class="mx-auto flex flex-col w-full max-w-5xl gap-5 px-4">
-    <Spinner v-if="isFetching || !data" class="self-center" />
-
-    <span v-else-if="error" class="text-red-400">
-      Ocorreu um erro inesperado...
-    </span>
-
-    <div v-else class="flex w-full flex-col gap-5">
+    <div class="flex w-full flex-col gap-5">
       <form class="flex w-full flex-col gap-2" @submit.prevent="onSubmit">
         <div class="flex flex-wrap gap-2">
           <div class="relative min-w-0 flex-1">
@@ -160,56 +160,73 @@ function onUpvote(issue: Issue) {
 
       <CreateIssueDialog />
 
-      <Card v-for="issue in issues" :key="issue.id" class="w-full">
-        <CardHeader>
-          <div class="flex flex-wrap gap-1" v-if="issue.author">
-            <span>{{ issue.author.displayName }}</span>
-            <span class="text-muted-foreground">
-              @{{ issue.author.username }}
-            </span>
-          </div>
-          <CardTitle>{{ issue.title }}</CardTitle>
-          <CardDescription>{{ issue.description }}</CardDescription>
-        </CardHeader>
+      <Spinner v-if="isPending || !data" class="self-center" />
 
-        <CardContent class="flex flex-col gap-4">
-          <NuxtImg
-            v-if="issue.images?.length"
-            :src="`${config.public.cdnUrl}/issues/${issue.id}/${issue.images[0]}`"
-            :alt="issue.title"
-            class="aspect-video w-full rounded-xl object-cover"
-          />
+      <span v-else-if="error" class="text-red-400">
+        Ocorreu um erro inesperado...
+      </span>
 
-          <Button
-            variant="ghost"
-            class="self-end"
-            @click="onUpvote(issue)"
-            :disabled="isPending && variables?.path.id === BigInt(issue.id)"
-          >
-            <Spinner
-              v-if="isPending && variables?.path.id === BigInt(issue.id)"
-            />
-            <div v-else class="flex gap-1 items-center">
-              <ThumbsUp
-                :class="
-                  issue.hasUpvoted
-                    ? `${isDark ? 'fill-white' : 'fill-black'}`
-                    : ''
-                "
-              />
-              <span>
-                {{ issue.upvotes }}
+      <div v-else v-for="issue in issues" :key="issue.id">
+        <Card class="w-full">
+          <CardHeader>
+            <div class="flex flex-wrap gap-1" v-if="issue.author">
+              <span>{{ issue.author.displayName }}</span>
+              <span class="text-muted-foreground">
+                @{{ issue.author.username }}
               </span>
             </div>
-          </Button>
-        </CardContent>
-      </Card>
+            <CardTitle>{{ issue.title }}</CardTitle>
+            <CardDescription>{{ issue.description }}</CardDescription>
+          </CardHeader>
 
-      <Card v-if="!issues.length" class="w-full">
-        <CardContent class="py-6 text-center text-muted-foreground">
-          Nenhuma ocorrência encontrada para a pesquisa.
-        </CardContent>
-      </Card>
+          <CardContent class="flex flex-col gap-4">
+            <NuxtImg
+              v-if="issue.images?.length"
+              :src="`${config.public.cdnUrl}/issues/${issue.id}/${issue.images[0]}`"
+              :alt="issue.title"
+              class="aspect-video w-full rounded-xl object-cover"
+            />
+
+            <Button
+              variant="ghost"
+              class="self-end"
+              @click="onUpvote(issue)"
+              :disabled="isUpvoting && variables?.path.id === BigInt(issue.id)"
+            >
+              <Spinner
+                v-if="isUpvoting && variables?.path.id === BigInt(issue.id)"
+              />
+              <div v-else class="flex gap-1 items-center">
+                <ThumbsUp
+                  :class="
+                    issue.hasUpvoted
+                      ? `${isDark ? 'fill-white' : 'fill-black'}`
+                      : ''
+                  "
+                />
+                <span>
+                  {{ issue.upvotes }}
+                </span>
+              </div>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card v-if="!issues.length" class="w-full">
+          <CardContent class="py-6 text-center text-muted-foreground">
+            Nenhuma ocorrência encontrada para a pesquisa.
+          </CardContent>
+        </Card>
+      </div>
+
+      <Button
+        v-if="!isPending"
+        :disabled="!hasNextPage || isFetchingNextPage"
+        @click="fetchNextPage"
+      >
+        <Spinner v-if="isFetchingNextPage" />
+        <span v-else>Carregar mais</span>
+      </Button>
     </div>
   </div>
 </template>
