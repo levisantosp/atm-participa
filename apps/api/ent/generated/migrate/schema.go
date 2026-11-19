@@ -3,6 +3,7 @@
 package migrate
 
 import (
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql/schema"
 	"entgo.io/ent/schema/field"
 )
@@ -95,6 +96,26 @@ var (
 				Name:    "issue_user_id",
 				Unique:  false,
 				Columns: []*schema.Column{IssuesColumns[7]},
+			},
+			{
+				Name:    "issue_status_id",
+				Unique:  false,
+				Columns: []*schema.Column{IssuesColumns[3], IssuesColumns[0]},
+				Annotation: &entsql.IndexAnnotation{
+					DescColumns: map[string]bool{
+						IssuesColumns[0].Name: true,
+					},
+				},
+			},
+			{
+				Name:    "issue_upvotes",
+				Unique:  false,
+				Columns: []*schema.Column{IssuesColumns[4]},
+				Annotation: &entsql.IndexAnnotation{
+					DescColumns: map[string]bool{
+						IssuesColumns[4].Name: true,
+					},
+				},
 			},
 		},
 	}
