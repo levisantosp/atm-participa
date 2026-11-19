@@ -6,6 +6,7 @@ import {
   LogOut,
   Moon,
   Sun,
+  Trophy,
   User2
 } from '@lucide/vue'
 import { getAuthMeQueryKey } from 'api-client'
@@ -42,6 +43,11 @@ const dropItems = {
       label: 'Página principal',
       href: '/',
       icon: Home
+    },
+    {
+      label: 'Ranking',
+      href: '/ranking',
+      icon: Trophy
     }
   ]
 } as const
