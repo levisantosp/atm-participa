@@ -6,6 +6,7 @@ import { useForm } from 'vee-validate'
 import { z } from 'zod'
 import CreateIssueDialog from './create-issue-dialog.vue'
 import Issues from './issues.vue'
+import Ranking from './ranking.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -50,7 +51,7 @@ const onSubmit = handleSubmit((data) => {
         <div class="flex flex-wrap gap-2">
           <div class="relative min-w-0 flex-1">
             <Search
-              class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground max-w-5xl"
             />
             <Input
               v-model="search"
@@ -76,7 +77,18 @@ const onSubmit = handleSubmit((data) => {
       </form>
 
       <CreateIssueDialog />
-      <Issues />
+
+      <div class="relative w-full">
+        <div class="flex w-full flex-col gap-5">
+          <Issues />
+        </div>
+
+        <aside
+          class="absolute left-full top-0 ml-5 w-[calc((100vw-100%)/2-3.75rem)] hidden 2xl:block"
+        >
+          <Ranking />
+        </aside>
+      </div>
     </div>
   </div>
 </template>
