@@ -2,7 +2,7 @@
 import {
   CircleUserIcon,
   History,
-  HouseIcon,
+  Home,
   LogOut,
   Moon,
   Sun,
@@ -17,24 +17,12 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
   Spinner,
   Switch
 } from 'ui'
 import { auth } from '~/lib/auth'
 import { queryClient } from '~/lib/query-client'
 import { isDark } from '~/lib/theme'
-
-const navItems = [
-  {
-    label: 'Página principal',
-    icon: HouseIcon,
-    href: '/'
-  }
-] as const
 
 const dropItems = {
   account: [
@@ -47,6 +35,13 @@ const dropItems = {
       label: 'Histórico',
       href: '/historico',
       icon: History
+    }
+  ],
+  nav: [
+    {
+      label: 'Página principal',
+      href: '/',
+      icon: Home
     }
   ]
 } as const
@@ -68,17 +63,7 @@ function setTheme(v: boolean) {
 </script>
 
 <template>
-  <div class="flex w-full items-center justify-between">
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem v-for="item in navItems" :key="item.href">
-          <NavigationMenuLink as-child>
-            <NuxtLink :to="item.href">{{ item.label }}</NuxtLink>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
-
+  <div class="flex w-full items-center justify-end">
     <DropdownMenu>
       <DropdownMenuTrigger as-child>
         <Button variant="ghost">
@@ -87,6 +72,21 @@ function setTheme(v: boolean) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Navegação</DropdownMenuLabel>
+
+          <NuxtLink
+            v-for="item in dropItems.nav"
+            :key="item.href"
+            :to="item.href"
+          >
+            <DropdownMenuItem class="cursor-pointer">
+              <component :is="item.icon" />
+              {{ item.label }}
+            </DropdownMenuItem>
+          </NuxtLink>
+        </DropdownMenuGroup>
+
         <DropdownMenuGroup>
           <DropdownMenuLabel>Conta</DropdownMenuLabel>
 
