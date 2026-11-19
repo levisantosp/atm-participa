@@ -49,7 +49,7 @@ const { isPending, data, error } = useGetIssues({
 
           <TableBody>
             <TableRow v-if="!data.items?.length">
-              <TableCell class="text-center text-muted-foreground" colspan="1">
+              <TableCell class="text-center text-muted-foreground" colspan="3">
                 Nenhuma ocorrência encontrada
               </TableCell>
             </TableRow>
