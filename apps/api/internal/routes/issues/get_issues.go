@@ -43,7 +43,7 @@ func GetIssues(
 	} else {
 		query = query.Order(
 			issue.ByUpvotes(sql.OrderDesc()),
-			issue.ByID(sql.OrderAsc()),
+			issue.ByID(sql.OrderDesc()),
 		)
 	}
 
