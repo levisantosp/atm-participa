@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Trophy } from '@lucide/vue'
-import { useGetIssues, useGetIssuesInfinite } from 'api-client'
+import { useGetIssuesInfinite } from 'api-client'
 import {
   Button,
   Card,
@@ -26,7 +25,8 @@ const {
   isFetchingNextPage
 } = useGetIssuesInfinite({
   query: {
-    orderBy: 'upvotes'
+    orderBy: 'upvotes',
+    limit: 10n
   }
 })
 
