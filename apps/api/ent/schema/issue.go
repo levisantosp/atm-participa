@@ -47,5 +47,8 @@ func (Issue) Edges() []ent.Edge {
 func (Issue) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Edges("user"),
+		index.Fields("status", "id").Annotations(entsql.DescColumns("id")),
+		index.Fields("upvotes", "id").
+			Annotations(entsql.DescColumns("upvotes", "id")),
 	}
 }

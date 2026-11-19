@@ -41,7 +41,10 @@ func GetIssues(
 	if input.OrderBy == "id" {
 		query = query.Order(issue.ByID(sql.OrderDesc()))
 	} else {
-		query = query.Order(issue.ByUpvotes(sql.OrderDesc()))
+		query = query.Order(
+			issue.ByUpvotes(sql.OrderDesc()),
+			issue.ByID(sql.OrderDesc()),
+		)
 	}
 
 	if input.Search != "" {
