@@ -108,11 +108,13 @@ var (
 				},
 			},
 			{
-				Name:    "issue_upvotes",
+				Name:    "issue_upvotes_id",
 				Unique:  false,
-				Columns: []*schema.Column{IssuesColumns[4]},
+				Columns: []*schema.Column{IssuesColumns[4], IssuesColumns[0]},
 				Annotation: &entsql.IndexAnnotation{
 					DescColumns: map[string]bool{
+						IssuesColumns[0].Name: true,
+
 						IssuesColumns[4].Name: true,
 					},
 				},
