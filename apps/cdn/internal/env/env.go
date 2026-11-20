@@ -17,7 +17,7 @@ type TEnv struct {
 	CloudflareR2Bucket      string `zog:"CLOUDFLARE_R2_BUCKET"`
 }
 
-var Env TEnv
+var Data TEnv
 
 func LoadEnv(envFile string) {
 	_ = godotenv.Overload(envFile)
@@ -31,7 +31,7 @@ func LoadEnv(envFile string) {
 		"CloudflareR2Bucket":      zog.String().Required(),
 	})
 
-	err := schema.Parse(zenv.NewDataProvider(), &Env)
+	err := schema.Parse(zenv.NewDataProvider(), &Data)
 	if err != nil {
 		log.Fatal(err)
 	}
