@@ -7,12 +7,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/danielgtaylor/huma/v2"
-	"github.com/danielgtaylor/huma/v2/adapters/humachi"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated"
 	errs "github.com/levisantosp/atm-participa/pkg/infra/errors"
 	"github.com/levisantosp/atm-participa/pkg/infra/redis"
@@ -24,31 +25,37 @@ type Response struct {
 	Body        []byte `json:"body"`
 }
 
+type humaContext huma.Context
+
 type Recorder struct {
-	http.ResponseWriter
-	status int
-	body   bytes.Buffer
+	humaContext
+	status      int
+	body        bytes.Buffer
+	writer      io.Writer
+	contentType string
 }
 
-func (r *Recorder) WriteHeader(status int) {
-	if r.status != 0 {
-		return
-	}
+func (r *Recorder) BodyWriter() io.Writer {
+	return r
+}
 
+func (r *Recorder) SetStatus(status int) {
 	r.status = status
-	r.ResponseWriter.WriteHeader(status)
+	r.humaContext.SetStatus(status)
+}
+
+func (r *Recorder) SetHeader(name, value string) {
+	r.humaContext.SetHeader(name, value)
+	if strings.EqualFold(name, "content-type") {
+		r.contentType = value
+	}
 }
 
 func (r *Recorder) Write(body []byte) (int, error) {
-	if r.status == 0 {
-		r.WriteHeader(http.StatusOK)
-	}
-
-	n, err := r.ResponseWriter.Write(body)
+	n, err := r.writer.Write(body)
 	if n > 0 {
 		_, _ = r.body.Write(body[:n])
 	}
-
 	return n, err
 }
 
@@ -76,16 +83,12 @@ func Cache(
 			var res Response
 
 			if json.Unmarshal(raw, &res) == nil {
-				_, writer := humachi.Unwrap(ctx)
+				println("bateu no cache")
+				ctx.SetHeader("content-type", res.ContentType)
+				ctx.SetHeader("x-cache", "hit")
+				ctx.SetStatus(res.Status)
 
-				if res.ContentType != "" {
-					writer.Header().Set("content-type", res.ContentType)
-				}
-
-				writer.Header().Set("x-cache", "hit")
-				writer.WriteHeader(res.Status)
-
-				if _, err := writer.Write(res.Body); err != nil {
+				if _, err := ctx.BodyWriter().Write(res.Body); err != nil {
 					huma.WriteErr(
 						api,
 						ctx,
@@ -108,16 +111,16 @@ func Cache(
 			return
 		}
 
-		req, writer := humachi.Unwrap(ctx)
-		rec := &Recorder{
-			ResponseWriter: writer,
-			status:         http.StatusOK,
-		}
-		rec.Header().Set("x-cache", "miss")
-		wrappedCtx := humachi.NewContext(ctx.Operation(), req, rec)
-		wrappedCtx = huma.WithContext(wrappedCtx, ctx.Context())
+		println("sem cache")
 
-		next(wrappedCtx)
+		ctx.SetHeader("x-cache", "miss")
+		rec := &Recorder{
+			humaContext: ctx,
+			status:      http.StatusOK,
+			writer:      ctx.BodyWriter(),
+		}
+
+		next(rec)
 
 		if rec.status != http.StatusOK {
 			return
@@ -125,7 +128,7 @@ func Cache(
 
 		data, err := json.Marshal(Response{
 			Status:      rec.status,
-			ContentType: rec.Header().Get("content-type"),
+			ContentType: rec.contentType,
 			Body:        rec.body.Bytes(),
 		})
 		if err != nil {
