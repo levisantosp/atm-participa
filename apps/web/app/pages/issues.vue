@@ -2,6 +2,7 @@
 import { ThumbsUp } from '@lucide/vue'
 import type { InfiniteData } from '@tanstack/vue-query'
 import {
+  getIssues,
   getIssuesInfiniteQueryKey,
   useGetIssuesInfinite,
   usePostIssuesByIdUpvote,
@@ -22,11 +23,6 @@ import { isDark } from '~/lib/theme'
 
 const route = useRoute()
 
-const query = {
-  limit: 100n,
-  search: route.query.search?.toString()
-}
-
 const {
   isPending,
   error,
@@ -34,7 +30,26 @@ const {
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage
-} = useGetIssuesInfinite({ query })
+} = useGetIssuesInfinite(
+  {
+    query: computed(() => ({
+      limit: 100n,
+      search: route.query.search?.toString()
+    }))
+  },
+  {
+    query: {
+      queryFn: ({ queryKey, pageParam, signal }) =>
+        getIssues({
+          query: {
+            ...toValue(queryKey[1]),
+            cursor: typeof pageParam === 'number' ? pageParam : undefined
+          },
+          signal
+        }).unwrap()
+    }
+  }
+)
 
 const config = useRuntimeConfig()
 
@@ -50,7 +65,12 @@ const {
   mutation: {
     onSuccess(data) {
       queryClient.setQueryData<InfiniteData<GetIssuesStatus200>>(
-        getIssuesInfiniteQueryKey({ query }),
+        getIssuesInfiniteQueryKey({
+          query: {
+            limit: 100n,
+            search: route.query.search?.toString()
+          }
+        }),
         (old) => {
           if (!old) return old
 
