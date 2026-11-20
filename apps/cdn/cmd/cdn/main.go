@@ -13,6 +13,7 @@ import (
 	"github.com/levisantosp/atm-participa/apps/cdn/internal/r2"
 	"github.com/levisantosp/atm-participa/apps/cdn/internal/routes"
 	"github.com/levisantosp/atm-participa/pkg/infra/errors"
+	"github.com/levisantosp/atm-participa/pkg/infra/redis"
 )
 
 func main() {
@@ -21,6 +22,8 @@ func main() {
 	if err := r2.Connect(context.Background()); err != nil {
 		log.Fatal(err)
 	}
+
+	redis.Connect(env.Data.RedisAddr, env.Data.RedisPassword)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
