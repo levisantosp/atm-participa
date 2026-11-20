@@ -78,7 +78,9 @@ services:
     container_name: cdn-atm-participa
     restart: unless-stopped
     env_file:
-      - ./apps/api/.env
+      - ./apps/cdn/.env
+    environment:
+      - REDIS_ADDR=redis:6379
     ports:
       - '3336:3336'
 
