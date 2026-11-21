@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/danielgtaylor/huma/v2"
-	"github.com/levisantosp/atm-participa/apps/api/ent/generated"
 	errs "github.com/levisantosp/atm-participa/pkg/infra/errors"
 	"github.com/levisantosp/atm-participa/pkg/infra/redis"
 )
@@ -69,21 +68,15 @@ func Cache(
 			return
 		}
 
-		var userID *int64
-
-		if user, ok := ctx.Context().Value(userCtxKey).(*generated.User); ok &&
-			ctx.Operation().OperationID == "get-issues" {
-			userID = &user.ID
-		}
-
 		url := ctx.URL()
-		key := hash(url.RequestURI(), userID)
+		sum := sha256.Sum256([]byte(url.RequestURI()))
+		key := hex.EncodeToString(sum[:])
+
 		raw, err := redis.Client.Get(ctx.Context(), key).Bytes()
 		if err == nil {
 			var res Response
 
 			if json.Unmarshal(raw, &res) == nil {
-				println("bateu no cache")
 				ctx.SetHeader("content-type", res.ContentType)
 				ctx.SetHeader("x-cache", "hit")
 				ctx.SetStatus(res.Status)
@@ -110,8 +103,6 @@ func Cache(
 			)
 			return
 		}
-
-		println("sem cache")
 
 		ctx.SetHeader("x-cache", "miss")
 		rec := &Recorder{
