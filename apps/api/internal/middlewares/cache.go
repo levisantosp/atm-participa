@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -133,15 +132,4 @@ func Cache(
 			return
 		}
 	}
-}
-
-func hash(url string, userID *int64) string {
-	sum := sha256.Sum256([]byte(url))
-	hash := hex.EncodeToString(sum[:])
-
-	if userID == nil {
-		return hash
-	}
-
-	return fmt.Sprintf("user:%d:%s", *userID, hash)
 }
