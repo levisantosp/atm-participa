@@ -75,16 +75,20 @@ func TestGetIssues(t *testing.T) {
 			t.Fatalf("expected 2 open issues got %d", len(body.Items))
 		}
 
-		hasUpvotedByID := make(map[string]bool, len(body.Items))
+		upvotesByID := make(map[string]int64, len(body.Items))
 		for _, item := range body.Items {
-			hasUpvotedByID[item.ID] = item.HasUpvoted
+			upvotesByID[item.ID] = item.Upvotes
 		}
-		if !hasUpvotedByID[fmt.Sprint(openIssue.ID)] {
-			t.Fatal("expected hasUpvoted to be true for the upvoted issue")
+		if upvotesByID[fmt.Sprint(openIssue.ID)] != 1 {
+			t.Fatalf(
+				"expected upvoted issue to have 1 upvote, got %d",
+				upvotesByID[fmt.Sprint(openIssue.ID)],
+			)
 		}
-		if hasUpvotedByID[fmt.Sprint(unvotedIssue.ID)] {
-			t.Fatal(
-				"expected hasUpvoted to be false for the issue without an upvote",
+		if upvotesByID[fmt.Sprint(unvotedIssue.ID)] != 0 {
+			t.Fatalf(
+				"expected unvoted issue to have 0 upvotes, got %d",
+				upvotesByID[fmt.Sprint(unvotedIssue.ID)],
 			)
 		}
 	})
