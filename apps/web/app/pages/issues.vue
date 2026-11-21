@@ -5,6 +5,7 @@ import {
   getIssues,
   getIssuesInfiniteQueryKey,
   useGetIssuesInfinite,
+  useGetUsersByUserIdUpvotes,
   usePostIssuesByIdUpvote,
   type GetIssuesStatus200,
   type Issue
@@ -18,6 +19,7 @@ import {
   CardTitle,
   Spinner
 } from 'ui'
+import { auth } from '~/lib/auth'
 import { queryClient } from '~/lib/query-client'
 import { isDark } from '~/lib/theme'
 
@@ -57,6 +59,48 @@ const issues = computed(
   () => data.value?.pages.flatMap((page) => page.items ?? []) ?? []
 )
 
+const { data: sessionData, isPending: isSessionPending } = auth.useSession()
+
+const { data: upvotesData, isFetching: isFetchingUpvotes } =
+  useGetUsersByUserIdUpvotes(
+    {
+      path: computed(() => ({
+        userId: BigInt(sessionData.value?.userId ?? 0)
+      })),
+      query: computed(() => ({
+        issuesIds: issues.value.slice(0, 100).map((issue) => BigInt(issue.id)),
+        limit: 100n
+      }))
+    },
+    {
+      query: {
+        enabled: computed(
+          () =>
+            Boolean(data.value) &&
+            !isSessionPending.value &&
+            Boolean(sessionData.value?.userId) &&
+            issues.value.length > 0
+        )
+      }
+    }
+  )
+
+const upvotedIssueIDs = computed(
+  () => new Set(upvotesData.value?.items?.map((upvote) => upvote.issueId) ?? [])
+)
+
+const locallyUpvotedIssueIDs = ref(new Set<string>())
+
+const issuesWithVotes = computed(() =>
+  issues.value.map((issue) =>
+    Object.assign({}, issue, {
+      hasUpvoted:
+        upvotedIssueIDs.value.has(issue.id) ||
+        locallyUpvotedIssueIDs.value.has(issue.id)
+    })
+  )
+)
+
 const {
   isPending: isUpvoting,
   mutate,
@@ -64,6 +108,11 @@ const {
 } = usePostIssuesByIdUpvote({
   mutation: {
     onSuccess(data) {
+      locallyUpvotedIssueIDs.value = new Set([
+        ...locallyUpvotedIssueIDs.value,
+        data.id
+      ])
+
       queryClient.setQueryData<InfiniteData<GetIssuesStatus200>>(
         getIssuesInfiniteQueryKey({
           query: {
@@ -83,7 +132,6 @@ const {
                     i.id === data.id
                       ? {
                           ...i,
-                          hasUpvoted: true,
                           upvotes: data.upvotes
                         }
                       : i
@@ -97,7 +145,7 @@ const {
   }
 })
 
-function onUpvote(issue: Issue) {
+function onUpvote(issue: Issue & { hasUpvoted: boolean }) {
   if (!issue.hasUpvoted) {
     mutate({
       path: {
@@ -115,7 +163,7 @@ function onUpvote(issue: Issue) {
     Ocorreu um erro inesperado...
   </span>
 
-  <div v-else v-for="issue in issues" :key="issue.id">
+  <div v-else v-for="issue in issuesWithVotes" :key="issue.id">
     <Card class="w-full">
       <CardHeader>
         <div class="flex flex-wrap gap-1" v-if="issue.author">
@@ -140,10 +188,16 @@ function onUpvote(issue: Issue) {
           variant="ghost"
           class="self-end"
           @click="onUpvote(issue)"
-          :disabled="isUpvoting && variables?.path.id === BigInt(issue.id)"
+          :disabled="
+            isFetchingUpvotes ||
+            (isUpvoting && variables?.path.id === BigInt(issue.id))
+          "
         >
           <Spinner
-            v-if="isUpvoting && variables?.path.id === BigInt(issue.id)"
+            v-if="
+              isFetchingUpvotes ||
+              (isUpvoting && variables?.path.id === BigInt(issue.id))
+            "
           />
           <div v-else class="flex gap-1 items-center">
             <ThumbsUp
