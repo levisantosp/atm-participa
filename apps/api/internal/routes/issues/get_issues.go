@@ -4,12 +4,9 @@ import (
 	"context"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/levisantosp/atm-participa/apps/api/ent/generated"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/issue"
-	"github.com/levisantosp/atm-participa/apps/api/ent/generated/upvote"
 	"github.com/levisantosp/atm-participa/apps/api/internal/db"
 	"github.com/levisantosp/atm-participa/apps/api/internal/dtos"
-	"github.com/levisantosp/atm-participa/apps/api/internal/middlewares"
 	"github.com/levisantosp/atm-participa/apps/api/internal/utils"
 )
 
@@ -23,13 +20,8 @@ func GetIssues(
 		OrderBy string       `query:"orderBy" enum:"id,upvotes" default:"id"`
 	},
 ) (*Output[utils.CursorPaginatedResponse[dtos.Issue]], error) {
-	user := middlewares.MustGetUserFromContext(ctx)
-
 	query := db.Client.Issue.Query().
 		WithIssueFiles().
-		WithIssueUpvotes(func(uq *generated.UpvoteQuery) {
-			uq.Where(upvote.UserID(user.ID))
-		}).
 		WithUser().
 		Where(issue.StatusEQ(input.Status)).
 		Limit(input.Limit + 1)
