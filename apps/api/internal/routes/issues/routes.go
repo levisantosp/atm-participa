@@ -34,4 +34,5 @@ func Routes(api huma.API) {
 	huma.Post(group, "/{id}/upvote", UpvoteIssue)
 	huma.Delete(group, "/{id}", DeleteIssue)
 	huma.Put(group, "/{id}", EditIssue)
+	huma.Get(group, "/{id}", GetIssue)
 }
