@@ -192,7 +192,14 @@ const statusInfo = (status: string) => {
               >
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-2">
-                    <h3 class="font-semibold">{{ issue.title }}</h3>
+                    <h3 class="font-semibold">
+                      <NuxtLink
+                        :href="`/ocorrencias/${issue.id}`"
+                        class="cursor-pointer hover:text-blue-400 transition duration-200"
+                      >
+                        {{ issue.title }}
+                      </NuxtLink>
+                    </h3>
                     <span
                       class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset"
                       :class="statusInfo(issue.status).class"
@@ -279,7 +286,14 @@ const statusInfo = (status: string) => {
                 class="py-5 first:pt-0 last:pb-0"
               >
                 <div class="flex flex-wrap items-center gap-2">
-                  <h3 class="font-semibold">{{ item.issue.title }}</h3>
+                  <h3 class="font-semibold">
+                    <NuxtLink
+                      :href="`/ocorrencias/${item.issue.id}`"
+                      class="cursor-pointer hover:text-blue-400 transition duration-200"
+                    >
+                      {{ item.issue.title }}
+                    </NuxtLink>
+                  </h3>
                   <span
                     class="rounded-full px-2.5 py-1 text-xs ring-1"
                     :class="statusInfo(item.issue.status).class"

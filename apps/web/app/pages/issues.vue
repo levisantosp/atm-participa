@@ -172,7 +172,14 @@ function onUpvote(issue: Issue & { hasUpvoted: boolean }) {
             @{{ issue.author.username }}
           </span>
         </div>
-        <CardTitle>{{ issue.title }}</CardTitle>
+
+        <NuxtLink :href="`/ocorrencias/${issue.id}`">
+          <CardTitle
+            class="cursor-pointer hover:text-blue-400 transition duration-200"
+          >
+            {{ issue.title }}
+          </CardTitle>
+        </NuxtLink>
         <CardDescription>{{ issue.description }}</CardDescription>
       </CardHeader>
 
