@@ -30,6 +30,8 @@ const allowedImageTypes = new Set([
   'image/gif'
 ])
 
+const cepPattern = /^[0-9]{5}-?[0-9]{3}$/
+
 const createIssueSchema = z.object({
   title: z
     .string()
@@ -39,6 +41,9 @@ const createIssueSchema = z.object({
     .string()
     .min(10, 'A descrição deve ter pelo menos 10 caracteres')
     .max(65_000, 'A descrição deve ter no máximo 65.000 caracteres'),
+  cep: z.string('Informe o CEP').regex(cepPattern, 'Informe um CEP válido'),
+  address: z.string('Informe o endereço').trim().min(1, 'Informe o endereço'),
+  neighborhood: z.string('Informe o bairro').trim().min(1, 'Informe o bairro'),
   file: z
     .instanceof(File)
     .refine(
@@ -60,10 +65,61 @@ const { defineField, errors, handleSubmit, resetForm, setFieldValue } = useForm(
 
 const [title, titleAttrs] = defineField('title')
 const [description, descriptionAttrs] = defineField('description')
+const [cep, cepAttrs] = defineField('cep')
+const [address, addressAttrs] = defineField('address')
+const [neighborhood, neighborhoodAttrs] = defineField('neighborhood')
+const isFetchingCep = ref(false)
 const imageInput = ref<HTMLInputElement | null>(null)
 const isCreateIssueDialogOpen = ref(false)
 
-const createIssueMutation = useCreateIssue({
+watch(cep, async (value, previous, onCleanup) => {
+  if (
+    previous &&
+    cepPattern.test(previous) &&
+    previous.replace('-', '') !== value?.replace('-', '')
+  ) {
+    address.value = ''
+    neighborhood.value = ''
+  }
+  if (!value || !cepPattern.test(value)) return
+
+  const controller = new AbortController()
+  onCleanup(() => {
+    controller.abort()
+    isFetchingCep.value = false
+  })
+  isFetchingCep.value = true
+  try {
+    const data = await $fetch<{
+      logradouro?: string
+      bairro?: string
+      erro?: boolean | string
+    }>(`https://viacep.com.br/ws/${value.replace('-', '')}/json/`, {
+      signal: controller.signal,
+      timeout: 6000,
+      retry: 0
+    })
+    if (controller.signal.aborted) return
+    if (data.erro) {
+      toast.error(
+        'CEP não encontrado. Confira o CEP ou preencha o endereço e o bairro.'
+      )
+      return
+    }
+    address.value = data.logradouro ?? ''
+    neighborhood.value = data.bairro ?? ''
+  } catch {
+    if (!controller.signal.aborted) {
+      toast.error(
+        'Não foi possível consultar o CEP. Preencha o endereço e o bairro.'
+      )
+    }
+  } finally {
+    if (!controller.signal.aborted) isFetchingCep.value = false
+  }
+})
+
+const { mutate, isPending } = useCreateIssue({
   mutation: {
     onSuccess(issue) {
       queryClient.setQueryData<InfiniteData<GetIssuesStatus200>>(
@@ -100,13 +156,15 @@ const createIssueMutation = useCreateIssue({
     }
   }
 })
-const { isPending: isCreatingIssue } = createIssueMutation
 
 const createIssue = handleSubmit((formData) => {
-  createIssueMutation.mutate({
+  mutate({
     body: {
       title: formData.title,
       description: formData.description,
+      cep: formData.cep,
+      address: formData.address,
+      neighborhood: formData.neighborhood,
       ...(formData.file ? { file: formData.file } : {})
     }
   })
@@ -183,6 +241,55 @@ watch(isCreateIssueDialogOpen, (isOpen) => {
           </div>
 
           <div class="grid gap-2">
+            <Label for="issue-cep">CEP</Label>
+            <Input
+              id="issue-cep"
+              v-model="cep"
+              v-bind="cepAttrs"
+              placeholder="00000-000"
+              inputmode="numeric"
+              :aria-invalid="!!errors.cep"
+            />
+            <span v-if="errors.cep" class="text-sm text-red-400">
+              {{ errors.cep }}
+            </span>
+            <span
+              v-if="isFetchingCep"
+              role="status"
+              class="text-xs text-muted-foreground"
+              >Consultando CEP…</span
+            >
+          </div>
+
+          <div class="grid gap-2">
+            <Label for="issue-address">Endereço</Label>
+            <Input
+              id="issue-address"
+              v-model="address"
+              v-bind="addressAttrs"
+              :disabled="isFetchingCep"
+              :aria-invalid="!!errors.address"
+            />
+            <span v-if="errors.address" class="text-sm text-red-400">
+              {{ errors.address }}
+            </span>
+          </div>
+
+          <div class="grid gap-2">
+            <Label for="issue-neighborhood">Bairro</Label>
+            <Input
+              id="issue-neighborhood"
+              v-model="neighborhood"
+              v-bind="neighborhoodAttrs"
+              :disabled="isFetchingCep"
+              :aria-invalid="!!errors.neighborhood"
+            />
+            <span v-if="errors.neighborhood" class="text-sm text-red-400">
+              {{ errors.neighborhood }}
+            </span>
+          </div>
+
+          <div class="grid gap-2">
             <Label for="issue-image">Imagem (opcional)</Label>
             <Input
               id="issue-image"
@@ -206,7 +313,7 @@ watch(isCreateIssueDialogOpen, (isOpen) => {
         <Button
           type="button"
           variant="outline"
-          :disabled="isCreatingIssue"
+          :disabled="isPending"
           @click="isCreateIssueDialogOpen = false"
         >
           Cancelar
@@ -215,9 +322,9 @@ watch(isCreateIssueDialogOpen, (isOpen) => {
           type="submit"
           form="create-issue"
           class="w-40"
-          :disabled="isCreatingIssue"
+          :disabled="isPending || isFetchingCep"
         >
-          <Spinner v-if="isCreatingIssue" />
+          <Spinner v-if="isPending" />
           <span v-else>Enviar ocorrência</span>
         </Button>
       </DialogFooter>
