@@ -108,6 +108,12 @@ func TestBanUser(t *testing.T) {
 				res.Code,
 			)
 		}
+		if res := api.Get(
+			"/admin/users",
+			tests.GetCookie(session.ID),
+		); res.Code != http.StatusUnauthorized {
+			t.Fatalf("expected revoked session to return 401, got %d", res.Code)
+		}
 		saved := db.Client.User.GetX(t.Context(), user.ID)
 		if saved.Banned == nil || !*saved.Banned || saved.BannedAt == nil ||
 			saved.BanEndsAt == nil || !saved.BanEndsAt.Equal(endsAt) {

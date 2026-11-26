@@ -104,11 +104,21 @@ func TestUnbanUser(t *testing.T) {
 				SetNillableBanEndsAt(tc.endsAt).
 				ExecX(t.Context())
 
+			session := tests.CreateSession(user, t)
 			res := api.Post(path, tests.GetCookie(adminSession.ID))
 			if res.Code != http.StatusOK {
 				t.Fatalf(
 					"expected status %d got %d",
 					http.StatusOK,
+					res.Code,
+				)
+			}
+			if res := api.Get(
+				"/admin/users",
+				tests.GetCookie(session.ID),
+			); res.Code != http.StatusUnauthorized {
+				t.Fatalf(
+					"expected revoked session to return 401, got %d",
 					res.Code,
 				)
 			}
