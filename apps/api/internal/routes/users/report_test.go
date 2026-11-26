@@ -23,6 +23,8 @@ func TestReportUser(t *testing.T) {
 	session := tests.CreateSession(user, t)
 	path := fmt.Sprintf("/users/%d/report", target.ID)
 
+	const reason = "Conteúdo ofensivo"
+
 	t.Run("should reject unauthenticated request", func(t *testing.T) {
 		res := api.Post(path)
 		if res.Code != http.StatusUnauthorized {
@@ -35,27 +37,10 @@ func TestReportUser(t *testing.T) {
 	})
 
 	t.Run("should reject an invalid user id", func(t *testing.T) {
-		res := api.Post("/users/0/report", tests.GetCookie(session.ID))
-		if res.Code != http.StatusUnprocessableEntity {
-			t.Fatalf(
-				"expected status %d got %d",
-				http.StatusUnprocessableEntity,
-				res.Code,
-			)
-		}
-	})
-
-	t.Run("should return not found for a missing user", func(t *testing.T) {
-		res := api.Post("/users/999999999/report", tests.GetCookie(session.ID))
-		if res.Code != http.StatusNotFound {
-			t.Fatalf("expected status %d got %d", http.StatusNotFound, res.Code)
-		}
-	})
-
-	t.Run("should reject reporting yourself", func(t *testing.T) {
 		res := api.Post(
-			fmt.Sprintf("/users/%d/report", user.ID),
+			"/users/0/report",
 			tests.GetCookie(session.ID),
+			map[string]any{"reason": reason},
 		)
 		if res.Code != http.StatusUnprocessableEntity {
 			t.Fatalf(
@@ -66,8 +51,51 @@ func TestReportUser(t *testing.T) {
 		}
 	})
 
+	t.Run("should return not found for a missing user", func(t *testing.T) {
+		res := api.Post(
+			"/users/999999999/report",
+			tests.GetCookie(session.ID),
+			map[string]any{"reason": reason},
+		)
+		if res.Code != http.StatusNotFound {
+			t.Fatalf("expected status %d got %d", http.StatusNotFound, res.Code)
+		}
+	})
+
+	t.Run("should reject reporting yourself", func(t *testing.T) {
+		res := api.Post(
+			fmt.Sprintf("/users/%d/report", user.ID),
+			tests.GetCookie(session.ID),
+			map[string]any{"reason": reason},
+		)
+		if res.Code != http.StatusUnprocessableEntity {
+			t.Fatalf(
+				"expected status %d got %d",
+				http.StatusUnprocessableEntity,
+				res.Code,
+			)
+		}
+	})
+
+	t.Run("should reject missing or blank reason", func(t *testing.T) {
+		for _, body := range []map[string]any{{}, {"reason": "   "}} {
+			res := api.Post(path, tests.GetCookie(session.ID), body)
+			if res.Code != http.StatusUnprocessableEntity {
+				t.Fatalf(
+					"expected status %d got %d",
+					http.StatusUnprocessableEntity,
+					res.Code,
+				)
+			}
+		}
+	})
+
 	t.Run("should report another user", func(t *testing.T) {
-		res := api.Post(path, tests.GetCookie(session.ID))
+		res := api.Post(
+			path,
+			tests.GetCookie(session.ID),
+			map[string]any{"reason": reason},
+		)
 		if res.Code != http.StatusCreated {
 			t.Fatalf("expected status %d got %d", http.StatusCreated, res.Code)
 		}
@@ -75,6 +103,9 @@ func TestReportUser(t *testing.T) {
 		saved, err := user.QueryReports().Only(t.Context())
 		if err != nil {
 			t.Fatal(err)
+		}
+		if saved.Reason != reason {
+			t.Errorf("expected reason %q got %q", reason, saved.Reason)
 		}
 		if saved.UserID == nil || *saved.UserID != user.ID {
 			t.Errorf("expected user id %d, got %v", user.ID, saved)

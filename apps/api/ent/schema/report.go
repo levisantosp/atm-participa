@@ -3,6 +3,7 @@ package schema
 import (
 	"context"
 	"errors"
+	"regexp"
 	"time"
 
 	"entgo.io/ent"
@@ -27,6 +28,7 @@ func (Report) Fields() []ent.Field {
 		field.Int64("target_issue_id").Optional().Nillable().Immutable(),
 		field.Enum("entity").Values("user", "issue").Immutable(),
 		field.Int64("entity_id").Immutable(),
+		field.Text("reason").Match(regexp.MustCompile(`\S`)),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}

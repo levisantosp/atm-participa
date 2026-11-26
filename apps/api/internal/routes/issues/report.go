@@ -13,7 +13,10 @@ import (
 func Report(
 	ctx context.Context,
 	input *struct {
-		ID int64 `path:"id" minimum:"1"`
+		ID   int64 `path:"id" minimum:"1"`
+		Body struct {
+			Reason string `json:"reason" pattern:"\\S"`
+		}
 	},
 ) (*struct{}, error) {
 	user := middlewares.MustGetUserFromContext(ctx)
@@ -26,6 +29,7 @@ func Report(
 
 		return tx.Report.Create().
 			SetUserID(user.ID).
+			SetReason(input.Body.Reason).
 			SetEntity(report.EntityIssue).
 			SetEntityID(issue.ID).
 			SetTargetIssue(issue).

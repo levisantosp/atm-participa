@@ -26,6 +26,8 @@ const (
 	FieldEntity = "entity"
 	// FieldEntityID holds the string denoting the entity_id field in the database.
 	FieldEntityID = "entity_id"
+	// FieldReason holds the string denoting the reason field in the database.
+	FieldReason = "reason"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -69,6 +71,7 @@ var Columns = []string{
 	FieldTargetIssueID,
 	FieldEntity,
 	FieldEntityID,
+	FieldReason,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -90,6 +93,8 @@ func ValidColumn(column string) bool {
 //	import _ "github.com/levisantosp/atm-participa/apps/api/ent/generated/runtime"
 var (
 	Hooks [1]ent.Hook
+	// ReasonValidator is a validator for the "reason" field. It is called by the builders before save.
+	ReasonValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -152,6 +157,11 @@ func ByEntity(opts ...sql.OrderTermOption) OrderOption {
 // ByEntityID orders the results by the entity_id field.
 func ByEntityID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEntityID, opts...).ToFunc()
+}
+
+// ByReason orders the results by the reason field.
+func ByReason(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReason, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

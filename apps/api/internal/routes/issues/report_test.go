@@ -29,6 +29,8 @@ func TestReportIssue(t *testing.T) {
 	}
 	path := fmt.Sprintf("/issues/%d/report", issue.ID)
 
+	const reason = "Conteúdo ofensivo"
+
 	t.Run("should reject unauthenticated request", func(t *testing.T) {
 		res := api.Post(path)
 		if res.Code != http.StatusUnauthorized {
@@ -41,7 +43,11 @@ func TestReportIssue(t *testing.T) {
 	})
 
 	t.Run("should reject an invalid issue id", func(t *testing.T) {
-		res := api.Post("/issues/0/report", tests.GetCookie(session.ID))
+		res := api.Post(
+			"/issues/0/report",
+			tests.GetCookie(session.ID),
+			map[string]any{"reason": reason},
+		)
 		if res.Code != http.StatusUnprocessableEntity {
 			t.Fatalf(
 				"expected status %d got %d",
@@ -52,14 +58,35 @@ func TestReportIssue(t *testing.T) {
 	})
 
 	t.Run("should return not found for a missing issue", func(t *testing.T) {
-		res := api.Post("/issues/999999999/report", tests.GetCookie(session.ID))
+		res := api.Post(
+			"/issues/999999999/report",
+			tests.GetCookie(session.ID),
+			map[string]any{"reason": reason},
+		)
 		if res.Code != http.StatusNotFound {
 			t.Fatalf("expected status %d got %d", http.StatusNotFound, res.Code)
 		}
 	})
 
+	t.Run("should reject missing or blank reason", func(t *testing.T) {
+		for _, body := range []map[string]any{{}, {"reason": "   "}} {
+			res := api.Post(path, tests.GetCookie(session.ID), body)
+			if res.Code != http.StatusUnprocessableEntity {
+				t.Fatalf(
+					"expected status %d got %d",
+					http.StatusUnprocessableEntity,
+					res.Code,
+				)
+			}
+		}
+	})
+
 	t.Run("should report an issue", func(t *testing.T) {
-		res := api.Post(path, tests.GetCookie(session.ID))
+		res := api.Post(
+			path,
+			tests.GetCookie(session.ID),
+			map[string]any{"reason": reason},
+		)
 		if res.Code != http.StatusCreated {
 			t.Fatalf("expected status %d got %d", http.StatusCreated, res.Code)
 		}
@@ -67,6 +94,9 @@ func TestReportIssue(t *testing.T) {
 		saved, err := db.Client.Report.Query().Only(t.Context())
 		if err != nil {
 			t.Fatal(err)
+		}
+		if saved.Reason != reason {
+			t.Errorf("expected reason %q got %q", reason, saved.Reason)
 		}
 		if saved.UserID == nil || *saved.UserID != user.ID {
 			t.Errorf("expected user id %d, got %v", user.ID, saved)

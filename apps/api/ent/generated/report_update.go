@@ -28,6 +28,20 @@ func (_u *ReportUpdate) Where(ps ...predicate.Report) *ReportUpdate {
 	return _u
 }
 
+// SetReason sets the "reason" field.
+func (_u *ReportUpdate) SetReason(v string) *ReportUpdate {
+	_u.mutation.SetReason(v)
+	return _u
+}
+
+// SetNillableReason sets the "reason" field if the given value is not nil.
+func (_u *ReportUpdate) SetNillableReason(v *string) *ReportUpdate {
+	if v != nil {
+		_u.SetReason(*v)
+	}
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *ReportUpdate) SetUpdatedAt(v time.Time) *ReportUpdate {
 	_u.mutation.SetUpdatedAt(v)
@@ -81,7 +95,20 @@ func (_u *ReportUpdate) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *ReportUpdate) check() error {
+	if v, ok := _u.mutation.Reason(); ok {
+		if err := report.ReasonValidator(v); err != nil {
+			return &ValidationError{Name: "reason", err: fmt.Errorf(`generated: validator failed for field "Report.reason": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (_u *ReportUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(report.Table, report.Columns, sqlgraph.NewFieldSpec(report.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -89,6 +116,9 @@ func (_u *ReportUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.Reason(); ok {
+		_spec.SetField(report.FieldReason, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(report.FieldUpdatedAt, field.TypeTime, value)
@@ -111,6 +141,20 @@ type ReportUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *ReportMutation
+}
+
+// SetReason sets the "reason" field.
+func (_u *ReportUpdateOne) SetReason(v string) *ReportUpdateOne {
+	_u.mutation.SetReason(v)
+	return _u
+}
+
+// SetNillableReason sets the "reason" field if the given value is not nil.
+func (_u *ReportUpdateOne) SetNillableReason(v *string) *ReportUpdateOne {
+	if v != nil {
+		_u.SetReason(*v)
+	}
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -179,7 +223,20 @@ func (_u *ReportUpdateOne) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *ReportUpdateOne) check() error {
+	if v, ok := _u.mutation.Reason(); ok {
+		if err := report.ReasonValidator(v); err != nil {
+			return &ValidationError{Name: "reason", err: fmt.Errorf(`generated: validator failed for field "Report.reason": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (_u *ReportUpdateOne) sqlSave(ctx context.Context) (_node *Report, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(report.Table, report.Columns, sqlgraph.NewFieldSpec(report.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
@@ -204,6 +261,9 @@ func (_u *ReportUpdateOne) sqlSave(ctx context.Context) (_node *Report, err erro
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.Reason(); ok {
+		_spec.SetField(report.FieldReason, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(report.FieldUpdatedAt, field.TypeTime, value)
