@@ -70,6 +70,21 @@ func Description(v string) predicate.Issue {
 	return predicate.Issue(sql.FieldEQ(FieldDescription, v))
 }
 
+// Cep applies equality check predicate on the "cep" field. It's identical to CepEQ.
+func Cep(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldEQ(FieldCep, v))
+}
+
+// Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
+func Address(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldEQ(FieldAddress, v))
+}
+
+// Neighborhood applies equality check predicate on the "neighborhood" field. It's identical to NeighborhoodEQ.
+func Neighborhood(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldEQ(FieldNeighborhood, v))
+}
+
 // Upvotes applies equality check predicate on the "upvotes" field. It's identical to UpvotesEQ.
 func Upvotes(v int64) predicate.Issue {
 	return predicate.Issue(sql.FieldEQ(FieldUpvotes, v))
@@ -243,6 +258,201 @@ func DescriptionEqualFold(v string) predicate.Issue {
 // DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
 func DescriptionContainsFold(v string) predicate.Issue {
 	return predicate.Issue(sql.FieldContainsFold(FieldDescription, v))
+}
+
+// CepEQ applies the EQ predicate on the "cep" field.
+func CepEQ(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldEQ(FieldCep, v))
+}
+
+// CepNEQ applies the NEQ predicate on the "cep" field.
+func CepNEQ(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldNEQ(FieldCep, v))
+}
+
+// CepIn applies the In predicate on the "cep" field.
+func CepIn(vs ...string) predicate.Issue {
+	return predicate.Issue(sql.FieldIn(FieldCep, vs...))
+}
+
+// CepNotIn applies the NotIn predicate on the "cep" field.
+func CepNotIn(vs ...string) predicate.Issue {
+	return predicate.Issue(sql.FieldNotIn(FieldCep, vs...))
+}
+
+// CepGT applies the GT predicate on the "cep" field.
+func CepGT(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldGT(FieldCep, v))
+}
+
+// CepGTE applies the GTE predicate on the "cep" field.
+func CepGTE(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldGTE(FieldCep, v))
+}
+
+// CepLT applies the LT predicate on the "cep" field.
+func CepLT(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldLT(FieldCep, v))
+}
+
+// CepLTE applies the LTE predicate on the "cep" field.
+func CepLTE(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldLTE(FieldCep, v))
+}
+
+// CepContains applies the Contains predicate on the "cep" field.
+func CepContains(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldContains(FieldCep, v))
+}
+
+// CepHasPrefix applies the HasPrefix predicate on the "cep" field.
+func CepHasPrefix(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldHasPrefix(FieldCep, v))
+}
+
+// CepHasSuffix applies the HasSuffix predicate on the "cep" field.
+func CepHasSuffix(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldHasSuffix(FieldCep, v))
+}
+
+// CepEqualFold applies the EqualFold predicate on the "cep" field.
+func CepEqualFold(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldEqualFold(FieldCep, v))
+}
+
+// CepContainsFold applies the ContainsFold predicate on the "cep" field.
+func CepContainsFold(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldContainsFold(FieldCep, v))
+}
+
+// AddressEQ applies the EQ predicate on the "address" field.
+func AddressEQ(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldEQ(FieldAddress, v))
+}
+
+// AddressNEQ applies the NEQ predicate on the "address" field.
+func AddressNEQ(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldNEQ(FieldAddress, v))
+}
+
+// AddressIn applies the In predicate on the "address" field.
+func AddressIn(vs ...string) predicate.Issue {
+	return predicate.Issue(sql.FieldIn(FieldAddress, vs...))
+}
+
+// AddressNotIn applies the NotIn predicate on the "address" field.
+func AddressNotIn(vs ...string) predicate.Issue {
+	return predicate.Issue(sql.FieldNotIn(FieldAddress, vs...))
+}
+
+// AddressGT applies the GT predicate on the "address" field.
+func AddressGT(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldGT(FieldAddress, v))
+}
+
+// AddressGTE applies the GTE predicate on the "address" field.
+func AddressGTE(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldGTE(FieldAddress, v))
+}
+
+// AddressLT applies the LT predicate on the "address" field.
+func AddressLT(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldLT(FieldAddress, v))
+}
+
+// AddressLTE applies the LTE predicate on the "address" field.
+func AddressLTE(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldLTE(FieldAddress, v))
+}
+
+// AddressContains applies the Contains predicate on the "address" field.
+func AddressContains(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldContains(FieldAddress, v))
+}
+
+// AddressHasPrefix applies the HasPrefix predicate on the "address" field.
+func AddressHasPrefix(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldHasPrefix(FieldAddress, v))
+}
+
+// AddressHasSuffix applies the HasSuffix predicate on the "address" field.
+func AddressHasSuffix(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldHasSuffix(FieldAddress, v))
+}
+
+// AddressEqualFold applies the EqualFold predicate on the "address" field.
+func AddressEqualFold(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldEqualFold(FieldAddress, v))
+}
+
+// AddressContainsFold applies the ContainsFold predicate on the "address" field.
+func AddressContainsFold(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldContainsFold(FieldAddress, v))
+}
+
+// NeighborhoodEQ applies the EQ predicate on the "neighborhood" field.
+func NeighborhoodEQ(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldEQ(FieldNeighborhood, v))
+}
+
+// NeighborhoodNEQ applies the NEQ predicate on the "neighborhood" field.
+func NeighborhoodNEQ(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldNEQ(FieldNeighborhood, v))
+}
+
+// NeighborhoodIn applies the In predicate on the "neighborhood" field.
+func NeighborhoodIn(vs ...string) predicate.Issue {
+	return predicate.Issue(sql.FieldIn(FieldNeighborhood, vs...))
+}
+
+// NeighborhoodNotIn applies the NotIn predicate on the "neighborhood" field.
+func NeighborhoodNotIn(vs ...string) predicate.Issue {
+	return predicate.Issue(sql.FieldNotIn(FieldNeighborhood, vs...))
+}
+
+// NeighborhoodGT applies the GT predicate on the "neighborhood" field.
+func NeighborhoodGT(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldGT(FieldNeighborhood, v))
+}
+
+// NeighborhoodGTE applies the GTE predicate on the "neighborhood" field.
+func NeighborhoodGTE(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldGTE(FieldNeighborhood, v))
+}
+
+// NeighborhoodLT applies the LT predicate on the "neighborhood" field.
+func NeighborhoodLT(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldLT(FieldNeighborhood, v))
+}
+
+// NeighborhoodLTE applies the LTE predicate on the "neighborhood" field.
+func NeighborhoodLTE(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldLTE(FieldNeighborhood, v))
+}
+
+// NeighborhoodContains applies the Contains predicate on the "neighborhood" field.
+func NeighborhoodContains(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldContains(FieldNeighborhood, v))
+}
+
+// NeighborhoodHasPrefix applies the HasPrefix predicate on the "neighborhood" field.
+func NeighborhoodHasPrefix(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldHasPrefix(FieldNeighborhood, v))
+}
+
+// NeighborhoodHasSuffix applies the HasSuffix predicate on the "neighborhood" field.
+func NeighborhoodHasSuffix(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldHasSuffix(FieldNeighborhood, v))
+}
+
+// NeighborhoodEqualFold applies the EqualFold predicate on the "neighborhood" field.
+func NeighborhoodEqualFold(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldEqualFold(FieldNeighborhood, v))
+}
+
+// NeighborhoodContainsFold applies the ContainsFold predicate on the "neighborhood" field.
+func NeighborhoodContainsFold(v string) predicate.Issue {
+	return predicate.Issue(sql.FieldContainsFold(FieldNeighborhood, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.

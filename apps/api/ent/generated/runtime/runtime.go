@@ -56,16 +56,28 @@ func init() {
 	issueDescDescription := issueFields[3].Descriptor()
 	// issue.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	issue.DescriptionValidator = issueDescDescription.Validators[0].(func(string) error)
+	// issueDescCep is the schema descriptor for cep field.
+	issueDescCep := issueFields[4].Descriptor()
+	// issue.CepValidator is a validator for the "cep" field. It is called by the builders before save.
+	issue.CepValidator = issueDescCep.Validators[0].(func(string) error)
+	// issueDescAddress is the schema descriptor for address field.
+	issueDescAddress := issueFields[5].Descriptor()
+	// issue.AddressValidator is a validator for the "address" field. It is called by the builders before save.
+	issue.AddressValidator = issueDescAddress.Validators[0].(func(string) error)
+	// issueDescNeighborhood is the schema descriptor for neighborhood field.
+	issueDescNeighborhood := issueFields[6].Descriptor()
+	// issue.NeighborhoodValidator is a validator for the "neighborhood" field. It is called by the builders before save.
+	issue.NeighborhoodValidator = issueDescNeighborhood.Validators[0].(func(string) error)
 	// issueDescUpvotes is the schema descriptor for upvotes field.
-	issueDescUpvotes := issueFields[5].Descriptor()
+	issueDescUpvotes := issueFields[8].Descriptor()
 	// issue.DefaultUpvotes holds the default value on creation for the upvotes field.
 	issue.DefaultUpvotes = issueDescUpvotes.Default.(int64)
 	// issueDescCreatedAt is the schema descriptor for created_at field.
-	issueDescCreatedAt := issueFields[6].Descriptor()
+	issueDescCreatedAt := issueFields[9].Descriptor()
 	// issue.DefaultCreatedAt holds the default value on creation for the created_at field.
 	issue.DefaultCreatedAt = issueDescCreatedAt.Default.(func() time.Time)
 	// issueDescUpdatedAt is the schema descriptor for updated_at field.
-	issueDescUpdatedAt := issueFields[7].Descriptor()
+	issueDescUpdatedAt := issueFields[10].Descriptor()
 	// issue.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	issue.DefaultUpdatedAt = issueDescUpdatedAt.Default.(func() time.Time)
 	// issue.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

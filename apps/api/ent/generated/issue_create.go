@@ -49,6 +49,24 @@ func (_c *IssueCreate) SetDescription(v string) *IssueCreate {
 	return _c
 }
 
+// SetCep sets the "cep" field.
+func (_c *IssueCreate) SetCep(v string) *IssueCreate {
+	_c.mutation.SetCep(v)
+	return _c
+}
+
+// SetAddress sets the "address" field.
+func (_c *IssueCreate) SetAddress(v string) *IssueCreate {
+	_c.mutation.SetAddress(v)
+	return _c
+}
+
+// SetNeighborhood sets the "neighborhood" field.
+func (_c *IssueCreate) SetNeighborhood(v string) *IssueCreate {
+	_c.mutation.SetNeighborhood(v)
+	return _c
+}
+
 // SetStatus sets the "status" field.
 func (_c *IssueCreate) SetStatus(v issue.Status) *IssueCreate {
 	_c.mutation.SetStatus(v)
@@ -217,6 +235,30 @@ func (_c *IssueCreate) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`generated: validator failed for field "Issue.description": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.Cep(); !ok {
+		return &ValidationError{Name: "cep", err: errors.New(`generated: missing required field "Issue.cep"`)}
+	}
+	if v, ok := _c.mutation.Cep(); ok {
+		if err := issue.CepValidator(v); err != nil {
+			return &ValidationError{Name: "cep", err: fmt.Errorf(`generated: validator failed for field "Issue.cep": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Address(); !ok {
+		return &ValidationError{Name: "address", err: errors.New(`generated: missing required field "Issue.address"`)}
+	}
+	if v, ok := _c.mutation.Address(); ok {
+		if err := issue.AddressValidator(v); err != nil {
+			return &ValidationError{Name: "address", err: fmt.Errorf(`generated: validator failed for field "Issue.address": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Neighborhood(); !ok {
+		return &ValidationError{Name: "neighborhood", err: errors.New(`generated: missing required field "Issue.neighborhood"`)}
+	}
+	if v, ok := _c.mutation.Neighborhood(); ok {
+		if err := issue.NeighborhoodValidator(v); err != nil {
+			return &ValidationError{Name: "neighborhood", err: fmt.Errorf(`generated: validator failed for field "Issue.neighborhood": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`generated: missing required field "Issue.status"`)}
 	}
@@ -273,6 +315,18 @@ func (_c *IssueCreate) createSpec() (*Issue, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Description(); ok {
 		_spec.SetField(issue.FieldDescription, field.TypeString, value)
 		_node.Description = value
+	}
+	if value, ok := _c.mutation.Cep(); ok {
+		_spec.SetField(issue.FieldCep, field.TypeString, value)
+		_node.Cep = value
+	}
+	if value, ok := _c.mutation.Address(); ok {
+		_spec.SetField(issue.FieldAddress, field.TypeString, value)
+		_node.Address = value
+	}
+	if value, ok := _c.mutation.Neighborhood(); ok {
+		_spec.SetField(issue.FieldNeighborhood, field.TypeString, value)
+		_node.Neighborhood = value
 	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(issue.FieldStatus, field.TypeEnum, value)

@@ -18,9 +18,12 @@ func CreateIssue(
 	ctx context.Context,
 	input *struct {
 		RawBody huma.MultipartFormFiles[struct {
-			Title       string        `form:"title" maxLength:"72" minLength:"3"`
-			Description string        `form:"description" maxLength:"65000" minLength:"10"`
-			File        huma.FormFile `form:"file" contentType:"image/png,image/jpeg,image/webp,image/gif" required:"false"`
+			Title        string        `form:"title" maxLength:"72" minLength:"3"`
+			Description  string        `form:"description" maxLength:"65000" minLength:"10"`
+			CEP          string        `form:"cep" required:"true" pattern:"^[0-9]{5}-?[0-9]{3}$"`
+			Address      string        `form:"address" required:"true"`
+			Neighborhood string        `form:"neighborhood" required:"true"`
+			File         huma.FormFile `form:"file" contentType:"image/png,image/jpeg,image/webp,image/gif" required:"false"`
 		}]
 	},
 ) (*Output[dtos.Issue], error) {
@@ -40,6 +43,9 @@ func CreateIssue(
 			issue, err := tx.Issue.Create().
 				SetTitle(body.Title).
 				SetDescription(body.Description).
+				SetCep(body.CEP).
+				SetAddress(body.Address).
+				SetNeighborhood(body.Neighborhood).
 				SetUserID(userCtx.ID).
 				Save(ctx)
 			if err != nil {

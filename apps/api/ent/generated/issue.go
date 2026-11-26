@@ -24,6 +24,12 @@ type Issue struct {
 	Title string `json:"title,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// Cep holds the value of the "cep" field.
+	Cep string `json:"cep,omitempty"`
+	// Address holds the value of the "address" field.
+	Address string `json:"address,omitempty"`
+	// Neighborhood holds the value of the "neighborhood" field.
+	Neighborhood string `json:"neighborhood,omitempty"`
 	// Status holds the value of the "status" field.
 	Status issue.Status `json:"status,omitempty"`
 	// Upvotes holds the value of the "upvotes" field.
@@ -87,7 +93,7 @@ func (*Issue) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case issue.FieldID, issue.FieldUserID, issue.FieldUpvotes:
 			values[i] = new(sql.NullInt64)
-		case issue.FieldTitle, issue.FieldDescription, issue.FieldStatus:
+		case issue.FieldTitle, issue.FieldDescription, issue.FieldCep, issue.FieldAddress, issue.FieldNeighborhood, issue.FieldStatus:
 			values[i] = new(sql.NullString)
 		case issue.FieldCreatedAt, issue.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -129,6 +135,24 @@ func (_m *Issue) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				_m.Description = value.String
+			}
+		case issue.FieldCep:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field cep", values[i])
+			} else if value.Valid {
+				_m.Cep = value.String
+			}
+		case issue.FieldAddress:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field address", values[i])
+			} else if value.Valid {
+				_m.Address = value.String
+			}
+		case issue.FieldNeighborhood:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field neighborhood", values[i])
+			} else if value.Valid {
+				_m.Neighborhood = value.String
 			}
 		case issue.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -213,6 +237,15 @@ func (_m *Issue) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(_m.Description)
+	builder.WriteString(", ")
+	builder.WriteString("cep=")
+	builder.WriteString(_m.Cep)
+	builder.WriteString(", ")
+	builder.WriteString("address=")
+	builder.WriteString(_m.Address)
+	builder.WriteString(", ")
+	builder.WriteString("neighborhood=")
+	builder.WriteString(_m.Neighborhood)
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Status))

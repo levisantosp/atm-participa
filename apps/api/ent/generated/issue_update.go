@@ -79,6 +79,48 @@ func (_u *IssueUpdate) SetNillableDescription(v *string) *IssueUpdate {
 	return _u
 }
 
+// SetCep sets the "cep" field.
+func (_u *IssueUpdate) SetCep(v string) *IssueUpdate {
+	_u.mutation.SetCep(v)
+	return _u
+}
+
+// SetNillableCep sets the "cep" field if the given value is not nil.
+func (_u *IssueUpdate) SetNillableCep(v *string) *IssueUpdate {
+	if v != nil {
+		_u.SetCep(*v)
+	}
+	return _u
+}
+
+// SetAddress sets the "address" field.
+func (_u *IssueUpdate) SetAddress(v string) *IssueUpdate {
+	_u.mutation.SetAddress(v)
+	return _u
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (_u *IssueUpdate) SetNillableAddress(v *string) *IssueUpdate {
+	if v != nil {
+		_u.SetAddress(*v)
+	}
+	return _u
+}
+
+// SetNeighborhood sets the "neighborhood" field.
+func (_u *IssueUpdate) SetNeighborhood(v string) *IssueUpdate {
+	_u.mutation.SetNeighborhood(v)
+	return _u
+}
+
+// SetNillableNeighborhood sets the "neighborhood" field if the given value is not nil.
+func (_u *IssueUpdate) SetNillableNeighborhood(v *string) *IssueUpdate {
+	if v != nil {
+		_u.SetNeighborhood(*v)
+	}
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *IssueUpdate) SetStatus(v issue.Status) *IssueUpdate {
 	_u.mutation.SetStatus(v)
@@ -256,6 +298,21 @@ func (_u *IssueUpdate) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`generated: validator failed for field "Issue.description": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Cep(); ok {
+		if err := issue.CepValidator(v); err != nil {
+			return &ValidationError{Name: "cep", err: fmt.Errorf(`generated: validator failed for field "Issue.cep": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Address(); ok {
+		if err := issue.AddressValidator(v); err != nil {
+			return &ValidationError{Name: "address", err: fmt.Errorf(`generated: validator failed for field "Issue.address": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Neighborhood(); ok {
+		if err := issue.NeighborhoodValidator(v); err != nil {
+			return &ValidationError{Name: "neighborhood", err: fmt.Errorf(`generated: validator failed for field "Issue.neighborhood": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Status(); ok {
 		if err := issue.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`generated: validator failed for field "Issue.status": %w`, err)}
@@ -281,6 +338,15 @@ func (_u *IssueUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(issue.FieldDescription, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Cep(); ok {
+		_spec.SetField(issue.FieldCep, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Address(); ok {
+		_spec.SetField(issue.FieldAddress, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Neighborhood(); ok {
+		_spec.SetField(issue.FieldNeighborhood, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(issue.FieldStatus, field.TypeEnum, value)
@@ -481,6 +547,48 @@ func (_u *IssueUpdateOne) SetNillableDescription(v *string) *IssueUpdateOne {
 	return _u
 }
 
+// SetCep sets the "cep" field.
+func (_u *IssueUpdateOne) SetCep(v string) *IssueUpdateOne {
+	_u.mutation.SetCep(v)
+	return _u
+}
+
+// SetNillableCep sets the "cep" field if the given value is not nil.
+func (_u *IssueUpdateOne) SetNillableCep(v *string) *IssueUpdateOne {
+	if v != nil {
+		_u.SetCep(*v)
+	}
+	return _u
+}
+
+// SetAddress sets the "address" field.
+func (_u *IssueUpdateOne) SetAddress(v string) *IssueUpdateOne {
+	_u.mutation.SetAddress(v)
+	return _u
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (_u *IssueUpdateOne) SetNillableAddress(v *string) *IssueUpdateOne {
+	if v != nil {
+		_u.SetAddress(*v)
+	}
+	return _u
+}
+
+// SetNeighborhood sets the "neighborhood" field.
+func (_u *IssueUpdateOne) SetNeighborhood(v string) *IssueUpdateOne {
+	_u.mutation.SetNeighborhood(v)
+	return _u
+}
+
+// SetNillableNeighborhood sets the "neighborhood" field if the given value is not nil.
+func (_u *IssueUpdateOne) SetNillableNeighborhood(v *string) *IssueUpdateOne {
+	if v != nil {
+		_u.SetNeighborhood(*v)
+	}
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *IssueUpdateOne) SetStatus(v issue.Status) *IssueUpdateOne {
 	_u.mutation.SetStatus(v)
@@ -671,6 +779,21 @@ func (_u *IssueUpdateOne) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`generated: validator failed for field "Issue.description": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Cep(); ok {
+		if err := issue.CepValidator(v); err != nil {
+			return &ValidationError{Name: "cep", err: fmt.Errorf(`generated: validator failed for field "Issue.cep": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Address(); ok {
+		if err := issue.AddressValidator(v); err != nil {
+			return &ValidationError{Name: "address", err: fmt.Errorf(`generated: validator failed for field "Issue.address": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Neighborhood(); ok {
+		if err := issue.NeighborhoodValidator(v); err != nil {
+			return &ValidationError{Name: "neighborhood", err: fmt.Errorf(`generated: validator failed for field "Issue.neighborhood": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Status(); ok {
 		if err := issue.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`generated: validator failed for field "Issue.status": %w`, err)}
@@ -713,6 +836,15 @@ func (_u *IssueUpdateOne) sqlSave(ctx context.Context) (_node *Issue, err error)
 	}
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(issue.FieldDescription, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Cep(); ok {
+		_spec.SetField(issue.FieldCep, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Address(); ok {
+		_spec.SetField(issue.FieldAddress, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Neighborhood(); ok {
+		_spec.SetField(issue.FieldNeighborhood, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(issue.FieldStatus, field.TypeEnum, value)

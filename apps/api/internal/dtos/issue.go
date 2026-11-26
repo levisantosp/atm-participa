@@ -9,15 +9,18 @@ import (
 )
 
 type Issue struct {
-	ID          string       `json:"id"`
-	Title       string       `json:"title"`
-	Description string       `json:"description"`
-	Status      issue.Status `json:"status"`
-	Upvotes     int64        `json:"upvotes"`
-	Images      []*string    `json:"images,omitempty"`
-	Author      *User        `json:"author,omitempty"`
-	CreatedAt   time.Time    `json:"createdAt"`
-	UpdatedAt   time.Time    `json:"updatedAt"`
+	ID           string       `json:"id"`
+	Title        string       `json:"title"`
+	Description  string       `json:"description"`
+	CEP          string       `json:"cep"`
+	Address      string       `json:"address"`
+	Neighborhood string       `json:"neighborhood"`
+	Status       issue.Status `json:"status"`
+	Upvotes      int64        `json:"upvotes"`
+	Images       []*string    `json:"images,omitempty"`
+	Author       *User        `json:"author,omitempty"`
+	CreatedAt    time.Time    `json:"createdAt"`
+	UpdatedAt    time.Time    `json:"updatedAt"`
 }
 
 func IssueFrom(issue *generated.Issue) Issue {
@@ -33,15 +36,18 @@ func IssueFrom(issue *generated.Issue) Issue {
 	}
 
 	return Issue{
-		ID:          strconv.FormatInt(issue.ID, 10),
-		Title:       issue.Title,
-		Description: issue.Description,
-		Status:      issue.Status,
-		Upvotes:     issue.Upvotes,
-		Images:      images,
-		Author:      author,
-		CreatedAt:   issue.CreatedAt,
-		UpdatedAt:   issue.UpdatedAt,
+		ID:           strconv.FormatInt(issue.ID, 10),
+		Title:        issue.Title,
+		Description:  issue.Description,
+		CEP:          issue.Cep,
+		Address:      issue.Address,
+		Neighborhood: issue.Neighborhood,
+		Status:       issue.Status,
+		Upvotes:      issue.Upvotes,
+		Images:       images,
+		Author:       author,
+		CreatedAt:    issue.CreatedAt,
+		UpdatedAt:    issue.UpdatedAt,
 	}
 }
 

@@ -21,6 +21,12 @@ const (
 	FieldTitle = "title"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldCep holds the string denoting the cep field in the database.
+	FieldCep = "cep"
+	// FieldAddress holds the string denoting the address field in the database.
+	FieldAddress = "address"
+	// FieldNeighborhood holds the string denoting the neighborhood field in the database.
+	FieldNeighborhood = "neighborhood"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldUpvotes holds the string denoting the upvotes field in the database.
@@ -66,6 +72,9 @@ var Columns = []string{
 	FieldUserID,
 	FieldTitle,
 	FieldDescription,
+	FieldCep,
+	FieldAddress,
+	FieldNeighborhood,
 	FieldStatus,
 	FieldUpvotes,
 	FieldCreatedAt,
@@ -87,6 +96,12 @@ var (
 	TitleValidator func(string) error
 	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	DescriptionValidator func(string) error
+	// CepValidator is a validator for the "cep" field. It is called by the builders before save.
+	CepValidator func(string) error
+	// AddressValidator is a validator for the "address" field. It is called by the builders before save.
+	AddressValidator func(string) error
+	// NeighborhoodValidator is a validator for the "neighborhood" field. It is called by the builders before save.
+	NeighborhoodValidator func(string) error
 	// DefaultUpvotes holds the default value on creation for the "upvotes" field.
 	DefaultUpvotes int64
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
@@ -145,6 +160,21 @@ func ByTitle(opts ...sql.OrderTermOption) OrderOption {
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByCep orders the results by the cep field.
+func ByCep(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCep, opts...).ToFunc()
+}
+
+// ByAddress orders the results by the address field.
+func ByAddress(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAddress, opts...).ToFunc()
+}
+
+// ByNeighborhood orders the results by the neighborhood field.
+func ByNeighborhood(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNeighborhood, opts...).ToFunc()
 }
 
 // ByStatus orders the results by the status field.

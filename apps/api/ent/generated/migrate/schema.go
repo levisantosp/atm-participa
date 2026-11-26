@@ -72,6 +72,9 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true},
 		{Name: "title", Type: field.TypeString, Size: 72},
 		{Name: "description", Type: field.TypeString, Size: 65000},
+		{Name: "cep", Type: field.TypeString},
+		{Name: "address", Type: field.TypeString},
+		{Name: "neighborhood", Type: field.TypeString},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"open", "closed", "in_review"}, Default: "open"},
 		{Name: "upvotes", Type: field.TypeInt64, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
@@ -86,7 +89,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "issues_users_issues",
-				Columns:    []*schema.Column{IssuesColumns[7]},
+				Columns:    []*schema.Column{IssuesColumns[10]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -95,12 +98,12 @@ var (
 			{
 				Name:    "issue_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{IssuesColumns[7]},
+				Columns: []*schema.Column{IssuesColumns[10]},
 			},
 			{
 				Name:    "issue_status_id",
 				Unique:  false,
-				Columns: []*schema.Column{IssuesColumns[3], IssuesColumns[0]},
+				Columns: []*schema.Column{IssuesColumns[6], IssuesColumns[0]},
 				Annotation: &entsql.IndexAnnotation{
 					DescColumns: map[string]bool{
 						IssuesColumns[0].Name: true,
@@ -110,12 +113,12 @@ var (
 			{
 				Name:    "issue_upvotes_id",
 				Unique:  false,
-				Columns: []*schema.Column{IssuesColumns[4], IssuesColumns[0]},
+				Columns: []*schema.Column{IssuesColumns[7], IssuesColumns[0]},
 				Annotation: &entsql.IndexAnnotation{
 					DescColumns: map[string]bool{
 						IssuesColumns[0].Name: true,
 
-						IssuesColumns[4].Name: true,
+						IssuesColumns[7].Name: true,
 					},
 				},
 			},

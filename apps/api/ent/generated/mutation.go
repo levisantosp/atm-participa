@@ -1169,6 +1169,9 @@ type IssueMutation struct {
 	id                   *int64
 	title                *string
 	description          *string
+	cep                  *string
+	address              *string
+	neighborhood         *string
 	status               *issue.Status
 	upvotes              *int64
 	addupvotes           *int64
@@ -1411,6 +1414,114 @@ func (m *IssueMutation) OldDescription(ctx context.Context) (v string, err error
 // ResetDescription resets all changes to the "description" field.
 func (m *IssueMutation) ResetDescription() {
 	m.description = nil
+}
+
+// SetCep sets the "cep" field.
+func (m *IssueMutation) SetCep(s string) {
+	m.cep = &s
+}
+
+// Cep returns the value of the "cep" field in the mutation.
+func (m *IssueMutation) Cep() (r string, exists bool) {
+	v := m.cep
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCep returns the old "cep" field's value of the Issue entity.
+// If the Issue object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IssueMutation) OldCep(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCep is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCep requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCep: %w", err)
+	}
+	return oldValue.Cep, nil
+}
+
+// ResetCep resets all changes to the "cep" field.
+func (m *IssueMutation) ResetCep() {
+	m.cep = nil
+}
+
+// SetAddress sets the "address" field.
+func (m *IssueMutation) SetAddress(s string) {
+	m.address = &s
+}
+
+// Address returns the value of the "address" field in the mutation.
+func (m *IssueMutation) Address() (r string, exists bool) {
+	v := m.address
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddress returns the old "address" field's value of the Issue entity.
+// If the Issue object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IssueMutation) OldAddress(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAddress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAddress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddress: %w", err)
+	}
+	return oldValue.Address, nil
+}
+
+// ResetAddress resets all changes to the "address" field.
+func (m *IssueMutation) ResetAddress() {
+	m.address = nil
+}
+
+// SetNeighborhood sets the "neighborhood" field.
+func (m *IssueMutation) SetNeighborhood(s string) {
+	m.neighborhood = &s
+}
+
+// Neighborhood returns the value of the "neighborhood" field in the mutation.
+func (m *IssueMutation) Neighborhood() (r string, exists bool) {
+	v := m.neighborhood
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNeighborhood returns the old "neighborhood" field's value of the Issue entity.
+// If the Issue object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IssueMutation) OldNeighborhood(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNeighborhood is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNeighborhood requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNeighborhood: %w", err)
+	}
+	return oldValue.Neighborhood, nil
+}
+
+// ResetNeighborhood resets all changes to the "neighborhood" field.
+func (m *IssueMutation) ResetNeighborhood() {
+	m.neighborhood = nil
 }
 
 // SetStatus sets the "status" field.
@@ -1746,7 +1857,7 @@ func (m *IssueMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *IssueMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 10)
 	if m.user != nil {
 		fields = append(fields, issue.FieldUserID)
 	}
@@ -1755,6 +1866,15 @@ func (m *IssueMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, issue.FieldDescription)
+	}
+	if m.cep != nil {
+		fields = append(fields, issue.FieldCep)
+	}
+	if m.address != nil {
+		fields = append(fields, issue.FieldAddress)
+	}
+	if m.neighborhood != nil {
+		fields = append(fields, issue.FieldNeighborhood)
 	}
 	if m.status != nil {
 		fields = append(fields, issue.FieldStatus)
@@ -1782,6 +1902,12 @@ func (m *IssueMutation) Field(name string) (ent.Value, bool) {
 		return m.Title()
 	case issue.FieldDescription:
 		return m.Description()
+	case issue.FieldCep:
+		return m.Cep()
+	case issue.FieldAddress:
+		return m.Address()
+	case issue.FieldNeighborhood:
+		return m.Neighborhood()
 	case issue.FieldStatus:
 		return m.Status()
 	case issue.FieldUpvotes:
@@ -1805,6 +1931,12 @@ func (m *IssueMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldTitle(ctx)
 	case issue.FieldDescription:
 		return m.OldDescription(ctx)
+	case issue.FieldCep:
+		return m.OldCep(ctx)
+	case issue.FieldAddress:
+		return m.OldAddress(ctx)
+	case issue.FieldNeighborhood:
+		return m.OldNeighborhood(ctx)
 	case issue.FieldStatus:
 		return m.OldStatus(ctx)
 	case issue.FieldUpvotes:
@@ -1842,6 +1974,27 @@ func (m *IssueMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case issue.FieldCep:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCep(v)
+		return nil
+	case issue.FieldAddress:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddress(v)
+		return nil
+	case issue.FieldNeighborhood:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNeighborhood(v)
 		return nil
 	case issue.FieldStatus:
 		v, ok := value.(issue.Status)
@@ -1952,6 +2105,15 @@ func (m *IssueMutation) ResetField(name string) error {
 		return nil
 	case issue.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case issue.FieldCep:
+		m.ResetCep()
+		return nil
+	case issue.FieldAddress:
+		m.ResetAddress()
+		return nil
+	case issue.FieldNeighborhood:
+		m.ResetNeighborhood()
 		return nil
 	case issue.FieldStatus:
 		m.ResetStatus()

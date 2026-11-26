@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"regexp"
 	"time"
 
 	"entgo.io/ent"
@@ -22,6 +23,10 @@ func (Issue) Fields() []ent.Field {
 		field.Int64("user_id").Optional(),
 		field.String("title").MaxLen(72),
 		field.String("description").MaxLen(65_000),
+		field.String("cep").
+			Match(regexp.MustCompile(`^[0-9]{5}-?[0-9]{3}$`)),
+		field.String("address").NotEmpty(),
+		field.String("neighborhood").NotEmpty(),
 		field.Enum("status").
 			Values("open", "closed", "in_review").
 			Default("open"),

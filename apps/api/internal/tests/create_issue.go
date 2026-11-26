@@ -27,6 +27,9 @@ func CreateIssueWithStatus(
 	return db.Client.Issue.Create().
 		SetTitle(strings.Repeat("a", 20)).
 		SetDescription(strings.Repeat("a", 20)).
+		SetCep("68371-000").
+		SetAddress("Rua das Flores, 123").
+		SetNeighborhood("Centro").
 		SetStatus(status).
 		SetUpvotes(upvotes).
 		SetUserID(user.ID).
@@ -43,6 +46,9 @@ func CreateIssueWithImage(
 			issue, err := tx.Issue.Create().
 				SetTitle(strings.Repeat("a", 20)).
 				SetDescription(strings.Repeat("a", 20)).
+				SetCep("68371-000").
+				SetAddress("Rua das Flores, 123").
+				SetNeighborhood("Centro").
 				SetUserID(user.ID).
 				Save(t.Context())
 			if err != nil {

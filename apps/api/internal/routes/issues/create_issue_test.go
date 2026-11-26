@@ -43,6 +43,15 @@ func createMultipartBody(
 	if err := writer.WriteField("description", description); err != nil {
 		t.Fatal(err)
 	}
+	for field, value := range map[string]string{
+		"cep":          "68371-000",
+		"address":      "Rua das Flores, 123",
+		"neighborhood": "Centro",
+	} {
+		if err := writer.WriteField(field, value); err != nil {
+			t.Fatal(err)
+		}
+	}
 
 	header := make(textproto.MIMEHeader)
 	header.Set(
@@ -83,6 +92,15 @@ func createBody(
 
 	if err := writer.WriteField("description", description); err != nil {
 		t.Fatal(err)
+	}
+	for field, value := range map[string]string{
+		"cep":          "68371-000",
+		"address":      "Rua das Flores, 123",
+		"neighborhood": "Centro",
+	} {
+		if err := writer.WriteField(field, value); err != nil {
+			t.Fatal(err)
+		}
 	}
 
 	if err := writer.Close(); err != nil {
