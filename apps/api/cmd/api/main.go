@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/levisantosp/atm-participa/apps/api/internal/db"
 	"github.com/levisantosp/atm-participa/apps/api/internal/env"
+	"github.com/levisantosp/atm-participa/apps/api/internal/queue"
 	"github.com/levisantosp/atm-participa/apps/api/internal/r2"
 	"github.com/levisantosp/atm-participa/apps/api/internal/routes/admin"
 	"github.com/levisantosp/atm-participa/apps/api/internal/routes/auth"
@@ -30,6 +31,12 @@ func main() {
 		log.Fatal(err)
 	}
 	redis.Connect(env.Data.RedisAddr, env.Data.RedisPassword)
+
+	go func() {
+		if err := queue.Unban(context.Background()); err != nil {
+			panic(err)
+		}
+	}()
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)

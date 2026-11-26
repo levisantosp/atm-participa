@@ -9,6 +9,7 @@ import (
 	"github.com/levisantosp/atm-participa/apps/api/internal/db"
 	"github.com/levisantosp/atm-participa/apps/api/internal/dtos"
 	"github.com/levisantosp/atm-participa/apps/api/internal/middlewares"
+	"github.com/levisantosp/atm-participa/apps/api/internal/queue"
 )
 
 func BanUser(
@@ -28,20 +29,29 @@ func BanUser(
 	}
 
 	now := time.Now()
-	update := db.Client.User.UpdateOneID(input.ID).
-		SetBanned(true).
-		SetBannedAt(now)
-
-	if input.Body != nil && input.Body.BanEndsAt != nil {
-		if !input.Body.BanEndsAt.After(now) {
-			return nil, huma.Error422UnprocessableEntity(
-				"A data de término do banimento deve ser futura",
-			)
-		}
-		update.SetBanEndsAt(*input.Body.BanEndsAt)
+	if input.Body != nil && input.Body.BanEndsAt != nil &&
+		!input.Body.BanEndsAt.After(now) {
+		return nil, huma.Error422UnprocessableEntity(
+			"A data de término do banimento deve ser futura",
+		)
 	}
 
-	u, err := update.Save(ctx)
+	u, err := db.WithTx(ctx, func(tx *generated.Tx) (*generated.User, error) {
+		update := tx.User.UpdateOneID(input.ID).SetBanned(true).SetBannedAt(now)
+		if input.Body != nil {
+			update.SetNillableBanEndsAt(input.Body.BanEndsAt)
+		}
+		u, err := update.Save(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if u.BanEndsAt != nil {
+			if err := queue.ScheduleUnban(ctx, u.ID, *u.BanEndsAt); err != nil {
+				return nil, err
+			}
+		}
+		return u, nil
+	})
 	if err != nil {
 		if generated.IsNotFound(err) {
 			return nil, huma.Error404NotFound("Usuário não encontrado")
