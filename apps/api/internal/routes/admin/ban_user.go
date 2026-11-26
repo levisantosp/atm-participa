@@ -7,6 +7,7 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated"
 	"github.com/levisantosp/atm-participa/apps/api/internal/db"
+	"github.com/levisantosp/atm-participa/apps/api/internal/middlewares"
 )
 
 func BanUser(
@@ -18,6 +19,13 @@ func BanUser(
 		}
 	},
 ) (*struct{}, error) {
+	user := middlewares.MustGetUserFromContext(ctx)
+	if user.ID == input.ID {
+		return nil, huma.Error403Forbidden(
+			"Você não pode banir a própria conta",
+		)
+	}
+
 	now := time.Now()
 	update := db.Client.User.UpdateOneID(input.ID).
 		SetBanned(true).
