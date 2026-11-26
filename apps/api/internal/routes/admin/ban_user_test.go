@@ -101,10 +101,10 @@ func TestBanUser(t *testing.T) {
 			tests.GetCookie(adminSession.ID),
 			map[string]any{"banEndsAt": endsAt},
 		)
-		if res.Code != http.StatusNoContent {
+		if res.Code != http.StatusOK {
 			t.Fatalf(
 				"expected status %d got %d",
-				http.StatusNoContent,
+				http.StatusOK,
 				res.Code,
 			)
 		}
@@ -125,10 +125,10 @@ func TestBanUser(t *testing.T) {
 				path,
 				tests.GetCookie(adminSession.ID),
 			)
-			if res.Code != http.StatusNoContent {
+			if res.Code != http.StatusOK {
 				t.Fatalf(
 					"expected status %d got %d",
-					http.StatusNoContent,
+					http.StatusOK,
 					res.Code,
 				)
 			}

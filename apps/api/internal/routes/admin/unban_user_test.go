@@ -78,10 +78,10 @@ func TestUnbanUser(t *testing.T) {
 		"should succeed when the user is already unbanned",
 		func(t *testing.T) {
 			res := api.Post(path, tests.GetCookie(adminSession.ID))
-			if res.Code != http.StatusNoContent {
+			if res.Code != http.StatusOK {
 				t.Fatalf(
 					"expected status %d got %d",
-					http.StatusNoContent,
+					http.StatusOK,
 					res.Code,
 				)
 			}
@@ -105,10 +105,10 @@ func TestUnbanUser(t *testing.T) {
 				ExecX(t.Context())
 
 			res := api.Post(path, tests.GetCookie(adminSession.ID))
-			if res.Code != http.StatusNoContent {
+			if res.Code != http.StatusOK {
 				t.Fatalf(
 					"expected status %d got %d",
-					http.StatusNoContent,
+					http.StatusOK,
 					res.Code,
 				)
 			}
