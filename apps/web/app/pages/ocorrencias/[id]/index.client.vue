@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  ArrowLeftIcon,
   CalendarDaysIcon,
   CheckCircle2Icon,
   CircleDotIcon,
@@ -26,37 +25,35 @@ import {
   CardTitle,
   Spinner
 } from 'ui'
+import { toast } from 'vue-sonner'
 import { auth } from '~/lib/auth'
 import { queryClient } from '~/lib/query-client'
 
-definePageMeta({ layout: 'default' })
+definePageMeta({
+  layout: 'default'
+})
 
 const route = useRoute('ocorrencias-id')
 const router = useRouter()
 const config = useRuntimeConfig()
 const { data: session } = auth.useSession()
-const issueId = computed(() => {
-  const id = route.params.id
-  return /^\d+$/.test(id) ? BigInt(id) : null
-})
 
 const {
   data: issue,
   isPending,
-  isError,
-  error,
-  refetch
-} = useGetIssuesById(
-  {
-    path: computed(() => ({ id: issueId.value ?? 0n }))
-  },
-  {
-    query: {
-      enabled: computed(() => issueId.value !== null),
-      staleTime: 0
-    }
+  error
+} = useGetIssuesById({
+  path: computed(() => ({
+    id: BigInt(route.params.id)
+  }))
+})
+
+watch(error, (err) => {
+  if (err?.status === 404) {
+    toast.error('Ocorrência não encontrada')
+    router.back()
   }
-)
+})
 
 const { data: upvotes, isFetching: isFetchingUpvotes } =
   useGetUsersByUserIdUpvotes(
@@ -137,67 +134,28 @@ const statusInfo = computed(() => {
     : null
 })
 
-const isNotFound = computed(() => {
-  return issueId.value === null || error.value?.status === 404
-})
-
-function supportIssue() {
-  if (!session.value?.userId) {
-    void router.push('/sign-in')
-    return
-  }
-
+function upvote() {
   if (issue.value && !hasUpvoted.value && !isUpvoting.value) {
-    mutate({ path: { id: BigInt(issue.value.id) } })
+    mutate({
+      path: {
+        id: BigInt(issue.value.id)
+      }
+    })
   }
 }
 </script>
 
 <template>
   <div class="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 pb-12">
-    <header class="flex items-center gap-3">
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label="Voltar"
-        @click="router.back()"
-      >
-        <ArrowLeftIcon :size="20" />
-      </Button>
+    <header>
       <h1 class="text-xl font-bold tracking-tight sm:text-2xl">
         Detalhes da ocorrência
       </h1>
     </header>
 
-    <div
-      v-if="isPending && !isNotFound"
-      class="flex justify-center py-16"
-      role="status"
-      aria-label="Carregando ocorrência"
-    >
+    <div v-if="isPending" class="flex justify-center py-16">
       <Spinner />
     </div>
-
-    <Card v-else-if="isNotFound" class="border-dashed">
-      <CardContent class="flex flex-col items-center gap-3 py-12 text-center">
-        <p class="font-medium">Ocorrência não encontrada</p>
-        <p class="text-sm text-muted-foreground">
-          Este registro não existe ou não está disponível.
-        </p>
-        <Button variant="outline" @click="router.push('/')"
-          >Voltar para ocorrências</Button
-        >
-      </CardContent>
-    </Card>
-
-    <Card v-else-if="isError" class="border-dashed">
-      <CardContent class="flex flex-col items-center gap-3 py-12 text-center">
-        <p class="text-sm text-destructive">
-          Não foi possível carregar esta ocorrência.
-        </p>
-        <Button variant="outline" @click="refetch()">Tentar novamente</Button>
-      </CardContent>
-    </Card>
 
     <Card v-else-if="issue" class="w-full">
       <CardHeader>
@@ -251,7 +209,7 @@ function supportIssue() {
             :aria-disabled="isFetchingUpvotes || isUpvoting || hasUpvoted"
             :aria-pressed="hasUpvoted"
             :aria-label="`Apoiar ocorrência, total de apoios: ${issue.upvotes}`"
-            @click="supportIssue"
+            @click="upvote"
           >
             <Spinner v-if="isFetchingUpvotes || isUpvoting" />
             <span v-else class="flex items-center gap-1">
