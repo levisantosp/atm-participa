@@ -23,6 +23,7 @@ func Routes(api huma.API) {
 	huma.Get(group, "/users", GetUsers)
 	huma.Get(group, "/users/{id}", GetUser)
 	huma.Post(group, "/users/{id}/ban", BanUser)
+	huma.Post(group, "/users/{id}/unban", UnbanUser)
 	huma.Get(group, "/reports", GetReports)
 	huma.Get(group, "/reports/{id}", GetReport)
 }
