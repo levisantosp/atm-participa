@@ -85,6 +85,9 @@ func SignUpWithEmail(
 		Username:    user.Username,
 		DisplayName: user.DisplayName,
 		IsAdmin:     user.IsAdmin,
+		Banned:      user.Banned,
+		BannedAt:    user.BannedAt,
+		BanEndsAt:   user.BanEndsAt,
 	})
 	if err != nil {
 		return nil, err

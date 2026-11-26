@@ -53,13 +53,18 @@ func SignInWithEmail(
 
 	sessionId := hex.EncodeToString(sessionHash)
 
-	session, err := json.Marshal(middlewares.Session{
-		ID:          sessionId,
-		UserId:      strconv.FormatInt(account.Edges.User.ID, 10),
-		Username:    account.Edges.User.Username,
-		DisplayName: account.Edges.User.DisplayName,
-		IsAdmin:     account.Edges.User.IsAdmin,
-	})
+	session, err := json.Marshal(
+		middlewares.Session{
+			ID:          sessionId,
+			UserId:      strconv.FormatInt(account.Edges.User.ID, 10),
+			Username:    account.Edges.User.Username,
+			DisplayName: account.Edges.User.DisplayName,
+			IsAdmin:     account.Edges.User.IsAdmin,
+			Banned:      account.Edges.User.Banned,
+			BannedAt:    account.Edges.User.BannedAt,
+			BanEndsAt:   account.Edges.User.BanEndsAt,
+		},
+	)
 	if err != nil {
 		return nil, err
 	}

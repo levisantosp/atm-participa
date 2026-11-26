@@ -56,6 +56,9 @@ func EditMe(
 		Username:    user.Username,
 		DisplayName: user.DisplayName,
 		IsAdmin:     user.IsAdmin,
+		Banned:      user.Banned,
+		BannedAt:    user.BannedAt,
+		BanEndsAt:   user.BanEndsAt,
 	}
 
 	sessionJson, err := json.Marshal(session)
