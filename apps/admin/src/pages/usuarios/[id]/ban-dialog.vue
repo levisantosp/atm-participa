@@ -4,7 +4,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import {
   getAdminUsersByIdQueryKey,
   usePostAdminUsersByIdBan,
-  type GetAdminUsersByIdStatus200,
+  type GetAdminUsersByIdStatus200
 } from 'api-client'
 import dayjs from 'dayjs'
 import {
