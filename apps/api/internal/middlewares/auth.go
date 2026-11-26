@@ -12,6 +12,7 @@ import (
 	"github.com/levisantosp/atm-participa/apps/api/internal/db"
 	"github.com/levisantosp/atm-participa/pkg/infra/errors"
 	"github.com/levisantosp/atm-participa/pkg/infra/redis"
+	goredis "github.com/redis/go-redis/v9"
 )
 
 type Session struct {
@@ -116,8 +117,34 @@ func Auth(
 			return
 		}
 
-		if (user.Banned != nil && *user.Banned) ||
-			(adminOnly && !user.IsAdmin) {
+		if user.Banned != nil && *user.Banned {
+			session.Banned = user.Banned
+			session.BannedAt = user.BannedAt
+			session.BanEndsAt = user.BanEndsAt
+			data, err := json.Marshal(session)
+			if err == nil {
+				err = redis.Client.SetArgs(ctx.Context(), "session:"+cookie.Value, data,
+					goredis.SetArgs{
+						Mode:    "XX",
+						KeepTTL: true,
+					}).
+					Err()
+			}
+			if err != nil && err != redis.Nil {
+				huma.WriteErr(
+					api,
+					ctx,
+					http.StatusInternalServerError,
+					errors.InternalServerError,
+					err,
+				)
+				return
+			}
+			huma.WriteErr(api, ctx, http.StatusForbidden, errors.Forbidden)
+			return
+		}
+
+		if adminOnly && !user.IsAdmin {
 			huma.WriteErr(
 				api,
 				ctx,
