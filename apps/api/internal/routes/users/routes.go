@@ -1,6 +1,7 @@
 package users
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -19,6 +20,12 @@ func Routes(api huma.API) {
 
 	huma.Get(group, "/{userId}/issues", GetIssues)
 	huma.Get(group, "/{userId}/upvotes", GetUpvotes)
+	huma.Register(group, huma.Operation{
+		OperationID:   "report-user",
+		Method:        http.MethodPost,
+		Path:          "/{userId}/report",
+		DefaultStatus: http.StatusCreated,
+	}, Report)
 	huma.Delete(group, "", DeleteAccount)
 	huma.Put(group, "/me", EditMe)
 }
