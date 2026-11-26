@@ -72,6 +72,66 @@ func (_u *UserUpdate) SetNillableIsAdmin(v *bool) *UserUpdate {
 	return _u
 }
 
+// SetBanned sets the "banned" field.
+func (_u *UserUpdate) SetBanned(v bool) *UserUpdate {
+	_u.mutation.SetBanned(v)
+	return _u
+}
+
+// SetNillableBanned sets the "banned" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableBanned(v *bool) *UserUpdate {
+	if v != nil {
+		_u.SetBanned(*v)
+	}
+	return _u
+}
+
+// ClearBanned clears the value of the "banned" field.
+func (_u *UserUpdate) ClearBanned() *UserUpdate {
+	_u.mutation.ClearBanned()
+	return _u
+}
+
+// SetBannedAt sets the "banned_at" field.
+func (_u *UserUpdate) SetBannedAt(v time.Time) *UserUpdate {
+	_u.mutation.SetBannedAt(v)
+	return _u
+}
+
+// SetNillableBannedAt sets the "banned_at" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableBannedAt(v *time.Time) *UserUpdate {
+	if v != nil {
+		_u.SetBannedAt(*v)
+	}
+	return _u
+}
+
+// ClearBannedAt clears the value of the "banned_at" field.
+func (_u *UserUpdate) ClearBannedAt() *UserUpdate {
+	_u.mutation.ClearBannedAt()
+	return _u
+}
+
+// SetBanEndsAt sets the "ban_ends_at" field.
+func (_u *UserUpdate) SetBanEndsAt(v time.Time) *UserUpdate {
+	_u.mutation.SetBanEndsAt(v)
+	return _u
+}
+
+// SetNillableBanEndsAt sets the "ban_ends_at" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableBanEndsAt(v *time.Time) *UserUpdate {
+	if v != nil {
+		_u.SetBanEndsAt(*v)
+	}
+	return _u
+}
+
+// ClearBanEndsAt clears the value of the "ban_ends_at" field.
+func (_u *UserUpdate) ClearBanEndsAt() *UserUpdate {
+	_u.mutation.ClearBanEndsAt()
+	return _u
+}
+
 // SetEmail sets the "email" field.
 func (_u *UserUpdate) SetEmail(v string) *UserUpdate {
 	_u.mutation.SetEmail(v)
@@ -229,6 +289,24 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.IsAdmin(); ok {
 		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
 	}
+	if value, ok := _u.mutation.Banned(); ok {
+		_spec.SetField(user.FieldBanned, field.TypeBool, value)
+	}
+	if _u.mutation.BannedCleared() {
+		_spec.ClearField(user.FieldBanned, field.TypeBool)
+	}
+	if value, ok := _u.mutation.BannedAt(); ok {
+		_spec.SetField(user.FieldBannedAt, field.TypeTime, value)
+	}
+	if _u.mutation.BannedAtCleared() {
+		_spec.ClearField(user.FieldBannedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.BanEndsAt(); ok {
+		_spec.SetField(user.FieldBanEndsAt, field.TypeTime, value)
+	}
+	if _u.mutation.BanEndsAtCleared() {
+		_spec.ClearField(user.FieldBanEndsAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 	}
@@ -384,6 +462,66 @@ func (_u *UserUpdateOne) SetNillableIsAdmin(v *bool) *UserUpdateOne {
 	if v != nil {
 		_u.SetIsAdmin(*v)
 	}
+	return _u
+}
+
+// SetBanned sets the "banned" field.
+func (_u *UserUpdateOne) SetBanned(v bool) *UserUpdateOne {
+	_u.mutation.SetBanned(v)
+	return _u
+}
+
+// SetNillableBanned sets the "banned" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableBanned(v *bool) *UserUpdateOne {
+	if v != nil {
+		_u.SetBanned(*v)
+	}
+	return _u
+}
+
+// ClearBanned clears the value of the "banned" field.
+func (_u *UserUpdateOne) ClearBanned() *UserUpdateOne {
+	_u.mutation.ClearBanned()
+	return _u
+}
+
+// SetBannedAt sets the "banned_at" field.
+func (_u *UserUpdateOne) SetBannedAt(v time.Time) *UserUpdateOne {
+	_u.mutation.SetBannedAt(v)
+	return _u
+}
+
+// SetNillableBannedAt sets the "banned_at" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableBannedAt(v *time.Time) *UserUpdateOne {
+	if v != nil {
+		_u.SetBannedAt(*v)
+	}
+	return _u
+}
+
+// ClearBannedAt clears the value of the "banned_at" field.
+func (_u *UserUpdateOne) ClearBannedAt() *UserUpdateOne {
+	_u.mutation.ClearBannedAt()
+	return _u
+}
+
+// SetBanEndsAt sets the "ban_ends_at" field.
+func (_u *UserUpdateOne) SetBanEndsAt(v time.Time) *UserUpdateOne {
+	_u.mutation.SetBanEndsAt(v)
+	return _u
+}
+
+// SetNillableBanEndsAt sets the "ban_ends_at" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableBanEndsAt(v *time.Time) *UserUpdateOne {
+	if v != nil {
+		_u.SetBanEndsAt(*v)
+	}
+	return _u
+}
+
+// ClearBanEndsAt clears the value of the "ban_ends_at" field.
+func (_u *UserUpdateOne) ClearBanEndsAt() *UserUpdateOne {
+	_u.mutation.ClearBanEndsAt()
 	return _u
 }
 
@@ -573,6 +711,24 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	}
 	if value, ok := _u.mutation.IsAdmin(); ok {
 		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.Banned(); ok {
+		_spec.SetField(user.FieldBanned, field.TypeBool, value)
+	}
+	if _u.mutation.BannedCleared() {
+		_spec.ClearField(user.FieldBanned, field.TypeBool)
+	}
+	if value, ok := _u.mutation.BannedAt(); ok {
+		_spec.SetField(user.FieldBannedAt, field.TypeTime, value)
+	}
+	if _u.mutation.BannedAtCleared() {
+		_spec.ClearField(user.FieldBannedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.BanEndsAt(); ok {
+		_spec.SetField(user.FieldBanEndsAt, field.TypeTime, value)
+	}
+	if _u.mutation.BanEndsAtCleared() {
+		_spec.ClearField(user.FieldBanEndsAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)

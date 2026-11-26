@@ -70,6 +70,21 @@ func IsAdmin(v bool) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldIsAdmin, v))
 }
 
+// Banned applies equality check predicate on the "banned" field. It's identical to BannedEQ.
+func Banned(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBanned, v))
+}
+
+// BannedAt applies equality check predicate on the "banned_at" field. It's identical to BannedAtEQ.
+func BannedAt(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBannedAt, v))
+}
+
+// BanEndsAt applies equality check predicate on the "ban_ends_at" field. It's identical to BanEndsAtEQ.
+func BanEndsAt(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBanEndsAt, v))
+}
+
 // Email applies equality check predicate on the "email" field. It's identical to EmailEQ.
 func Email(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldEmail, v))
@@ -223,6 +238,126 @@ func IsAdminEQ(v bool) predicate.User {
 // IsAdminNEQ applies the NEQ predicate on the "is_admin" field.
 func IsAdminNEQ(v bool) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldIsAdmin, v))
+}
+
+// BannedEQ applies the EQ predicate on the "banned" field.
+func BannedEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBanned, v))
+}
+
+// BannedNEQ applies the NEQ predicate on the "banned" field.
+func BannedNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldBanned, v))
+}
+
+// BannedIsNil applies the IsNil predicate on the "banned" field.
+func BannedIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldBanned))
+}
+
+// BannedNotNil applies the NotNil predicate on the "banned" field.
+func BannedNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldBanned))
+}
+
+// BannedAtEQ applies the EQ predicate on the "banned_at" field.
+func BannedAtEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBannedAt, v))
+}
+
+// BannedAtNEQ applies the NEQ predicate on the "banned_at" field.
+func BannedAtNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldBannedAt, v))
+}
+
+// BannedAtIn applies the In predicate on the "banned_at" field.
+func BannedAtIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldBannedAt, vs...))
+}
+
+// BannedAtNotIn applies the NotIn predicate on the "banned_at" field.
+func BannedAtNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldBannedAt, vs...))
+}
+
+// BannedAtGT applies the GT predicate on the "banned_at" field.
+func BannedAtGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldBannedAt, v))
+}
+
+// BannedAtGTE applies the GTE predicate on the "banned_at" field.
+func BannedAtGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldBannedAt, v))
+}
+
+// BannedAtLT applies the LT predicate on the "banned_at" field.
+func BannedAtLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldBannedAt, v))
+}
+
+// BannedAtLTE applies the LTE predicate on the "banned_at" field.
+func BannedAtLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldBannedAt, v))
+}
+
+// BannedAtIsNil applies the IsNil predicate on the "banned_at" field.
+func BannedAtIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldBannedAt))
+}
+
+// BannedAtNotNil applies the NotNil predicate on the "banned_at" field.
+func BannedAtNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldBannedAt))
+}
+
+// BanEndsAtEQ applies the EQ predicate on the "ban_ends_at" field.
+func BanEndsAtEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBanEndsAt, v))
+}
+
+// BanEndsAtNEQ applies the NEQ predicate on the "ban_ends_at" field.
+func BanEndsAtNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldBanEndsAt, v))
+}
+
+// BanEndsAtIn applies the In predicate on the "ban_ends_at" field.
+func BanEndsAtIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldBanEndsAt, vs...))
+}
+
+// BanEndsAtNotIn applies the NotIn predicate on the "ban_ends_at" field.
+func BanEndsAtNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldBanEndsAt, vs...))
+}
+
+// BanEndsAtGT applies the GT predicate on the "ban_ends_at" field.
+func BanEndsAtGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldBanEndsAt, v))
+}
+
+// BanEndsAtGTE applies the GTE predicate on the "ban_ends_at" field.
+func BanEndsAtGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldBanEndsAt, v))
+}
+
+// BanEndsAtLT applies the LT predicate on the "ban_ends_at" field.
+func BanEndsAtLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldBanEndsAt, v))
+}
+
+// BanEndsAtLTE applies the LTE predicate on the "ban_ends_at" field.
+func BanEndsAtLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldBanEndsAt, v))
+}
+
+// BanEndsAtIsNil applies the IsNil predicate on the "ban_ends_at" field.
+func BanEndsAtIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldBanEndsAt))
+}
+
+// BanEndsAtNotNil applies the NotNil predicate on the "ban_ends_at" field.
+func BanEndsAtNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldBanEndsAt))
 }
 
 // EmailEQ applies the EQ predicate on the "email" field.

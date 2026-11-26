@@ -15,6 +15,9 @@ type File func(*sql.Selector)
 // Issue is the predicate function for issue builders.
 type Issue func(*sql.Selector)
 
+// Report is the predicate function for report builders.
+type Report func(*sql.Selector)
+
 // Upvote is the predicate function for upvote builders.
 type Upvote func(*sql.Selector)
 

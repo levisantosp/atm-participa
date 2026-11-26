@@ -45,6 +45,18 @@ func (f IssueFunc) Mutate(ctx context.Context, m generated.Mutation) (generated.
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.IssueMutation", m)
 }
 
+// The ReportFunc type is an adapter to allow the use of ordinary
+// function as Report mutator.
+type ReportFunc func(context.Context, *generated.ReportMutation) (generated.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ReportFunc) Mutate(ctx context.Context, m generated.Mutation) (generated.Value, error) {
+	if mv, ok := m.(*generated.ReportMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.ReportMutation", m)
+}
+
 // The UpvoteFunc type is an adapter to allow the use of ordinary
 // function as Upvote mutator.
 type UpvoteFunc func(context.Context, *generated.UpvoteMutation) (generated.Value, error)

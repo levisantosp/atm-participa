@@ -48,6 +48,48 @@ func (_c *UserCreate) SetNillableIsAdmin(v *bool) *UserCreate {
 	return _c
 }
 
+// SetBanned sets the "banned" field.
+func (_c *UserCreate) SetBanned(v bool) *UserCreate {
+	_c.mutation.SetBanned(v)
+	return _c
+}
+
+// SetNillableBanned sets the "banned" field if the given value is not nil.
+func (_c *UserCreate) SetNillableBanned(v *bool) *UserCreate {
+	if v != nil {
+		_c.SetBanned(*v)
+	}
+	return _c
+}
+
+// SetBannedAt sets the "banned_at" field.
+func (_c *UserCreate) SetBannedAt(v time.Time) *UserCreate {
+	_c.mutation.SetBannedAt(v)
+	return _c
+}
+
+// SetNillableBannedAt sets the "banned_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableBannedAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetBannedAt(*v)
+	}
+	return _c
+}
+
+// SetBanEndsAt sets the "ban_ends_at" field.
+func (_c *UserCreate) SetBanEndsAt(v time.Time) *UserCreate {
+	_c.mutation.SetBanEndsAt(v)
+	return _c
+}
+
+// SetNillableBanEndsAt sets the "ban_ends_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableBanEndsAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetBanEndsAt(*v)
+	}
+	return _c
+}
+
 // SetEmail sets the "email" field.
 func (_c *UserCreate) SetEmail(v string) *UserCreate {
 	_c.mutation.SetEmail(v)
@@ -239,6 +281,18 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.IsAdmin(); ok {
 		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
 		_node.IsAdmin = value
+	}
+	if value, ok := _c.mutation.Banned(); ok {
+		_spec.SetField(user.FieldBanned, field.TypeBool, value)
+		_node.Banned = &value
+	}
+	if value, ok := _c.mutation.BannedAt(); ok {
+		_spec.SetField(user.FieldBannedAt, field.TypeTime, value)
+		_node.BannedAt = &value
+	}
+	if value, ok := _c.mutation.BanEndsAt(); ok {
+		_spec.SetField(user.FieldBanEndsAt, field.TypeTime, value)
+		_node.BanEndsAt = &value
 	}
 	if value, ok := _c.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)

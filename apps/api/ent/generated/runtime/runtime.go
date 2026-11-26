@@ -8,6 +8,7 @@ import (
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/account"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/file"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/apps/api/ent/generated/report"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/upvote"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/user"
 	"github.com/levisantosp/atm-participa/apps/api/ent/schema"
@@ -69,6 +70,20 @@ func init() {
 	issue.DefaultUpdatedAt = issueDescUpdatedAt.Default.(func() time.Time)
 	// issue.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	issue.UpdateDefaultUpdatedAt = issueDescUpdatedAt.UpdateDefault.(func() time.Time)
+	reportHooks := schema.Report{}.Hooks()
+	report.Hooks[0] = reportHooks[0]
+	reportFields := schema.Report{}.Fields()
+	_ = reportFields
+	// reportDescCreatedAt is the schema descriptor for created_at field.
+	reportDescCreatedAt := reportFields[6].Descriptor()
+	// report.DefaultCreatedAt holds the default value on creation for the created_at field.
+	report.DefaultCreatedAt = reportDescCreatedAt.Default.(func() time.Time)
+	// reportDescUpdatedAt is the schema descriptor for updated_at field.
+	reportDescUpdatedAt := reportFields[7].Descriptor()
+	// report.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	report.DefaultUpdatedAt = reportDescUpdatedAt.Default.(func() time.Time)
+	// report.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	report.UpdateDefaultUpdatedAt = reportDescUpdatedAt.UpdateDefault.(func() time.Time)
 	upvoteFields := schema.Upvote{}.Fields()
 	_ = upvoteFields
 	// upvoteDescCreatedAt is the schema descriptor for created_at field.
@@ -90,11 +105,11 @@ func init() {
 	// user.DefaultIsAdmin holds the default value on creation for the is_admin field.
 	user.DefaultIsAdmin = userDescIsAdmin.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[5].Descriptor()
+	userDescCreatedAt := userFields[8].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[6].Descriptor()
+	userDescUpdatedAt := userFields[9].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

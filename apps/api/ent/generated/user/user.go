@@ -21,6 +21,12 @@ const (
 	FieldDisplayName = "display_name"
 	// FieldIsAdmin holds the string denoting the is_admin field in the database.
 	FieldIsAdmin = "is_admin"
+	// FieldBanned holds the string denoting the banned field in the database.
+	FieldBanned = "banned"
+	// FieldBannedAt holds the string denoting the banned_at field in the database.
+	FieldBannedAt = "banned_at"
+	// FieldBanEndsAt holds the string denoting the ban_ends_at field in the database.
+	FieldBanEndsAt = "ban_ends_at"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -55,6 +61,9 @@ var Columns = []string{
 	FieldUsername,
 	FieldDisplayName,
 	FieldIsAdmin,
+	FieldBanned,
+	FieldBannedAt,
+	FieldBanEndsAt,
 	FieldEmail,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -108,6 +117,21 @@ func ByDisplayName(opts ...sql.OrderTermOption) OrderOption {
 // ByIsAdmin orders the results by the is_admin field.
 func ByIsAdmin(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsAdmin, opts...).ToFunc()
+}
+
+// ByBanned orders the results by the banned field.
+func ByBanned(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBanned, opts...).ToFunc()
+}
+
+// ByBannedAt orders the results by the banned_at field.
+func ByBannedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannedAt, opts...).ToFunc()
+}
+
+// ByBanEndsAt orders the results by the ban_ends_at field.
+func ByBanEndsAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBanEndsAt, opts...).ToFunc()
 }
 
 // ByEmail orders the results by the email field.
