@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ClipboardList, Home } from '@lucide/vue'
+import { ClipboardList, Home, Users } from '@lucide/vue'
 import {
   Sidebar,
   SidebarContent,
@@ -25,6 +25,11 @@ const navItems = [
     label: 'Ocorrências',
     href: '/ocorrencias',
     icon: ClipboardList
+  },
+  {
+    label: 'Usuários',
+    href: '/usuarios',
+    icon: Users
   }
 ] as const
 </script>
@@ -47,8 +52,8 @@ const navItems = [
 
             <SidebarGroupContent>
               <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton as-child v-for="item in navItems">
+                <SidebarMenuItem v-for="item in navItems" :key="item.href">
+                  <SidebarMenuButton as-child>
                     <RouterLink :to="item.href">
                       <component :is="item.icon" />
                       <span>{{ item.label }}</span>

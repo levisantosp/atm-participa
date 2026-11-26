@@ -164,6 +164,9 @@ settings:
 
 catalogs:
   default:
+    '@internationalized/date':
+      specifier: ^3.12.4
+      version: 3.12.4
     '@kubb/plugin-axios':
       specifier: ^5.4.1
       version: 5.4.1
@@ -453,6 +456,9 @@ importers:
 
   pkg/ui:
     dependencies:
+      '@internationalized/date':
+        specifier: 'catalog:'
+        version: 3.12.4
       '@lucide/vue':
         specifier: 'catalog:'
         version: 1.47.0(vue@3.5.43(typescript@6.0.3))

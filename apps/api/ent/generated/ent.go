@@ -15,6 +15,7 @@ import (
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/account"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/file"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/apps/api/ent/generated/report"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/upvote"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/user"
 )
@@ -80,6 +81,7 @@ func checkColumn(t, c string) error {
 			account.Table: account.ValidColumn,
 			file.Table:    file.ValidColumn,
 			issue.Table:   issue.ValidColumn,
+			report.Table:  report.ValidColumn,
 			upvote.Table:  upvote.ValidColumn,
 			user.Table:    user.ValidColumn,
 		})

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/account"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/apps/api/ent/generated/report"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/user"
 )
 
@@ -44,6 +45,48 @@ func (_c *UserCreate) SetIsAdmin(v bool) *UserCreate {
 func (_c *UserCreate) SetNillableIsAdmin(v *bool) *UserCreate {
 	if v != nil {
 		_c.SetIsAdmin(*v)
+	}
+	return _c
+}
+
+// SetBanned sets the "banned" field.
+func (_c *UserCreate) SetBanned(v bool) *UserCreate {
+	_c.mutation.SetBanned(v)
+	return _c
+}
+
+// SetNillableBanned sets the "banned" field if the given value is not nil.
+func (_c *UserCreate) SetNillableBanned(v *bool) *UserCreate {
+	if v != nil {
+		_c.SetBanned(*v)
+	}
+	return _c
+}
+
+// SetBannedAt sets the "banned_at" field.
+func (_c *UserCreate) SetBannedAt(v time.Time) *UserCreate {
+	_c.mutation.SetBannedAt(v)
+	return _c
+}
+
+// SetNillableBannedAt sets the "banned_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableBannedAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetBannedAt(*v)
+	}
+	return _c
+}
+
+// SetBanEndsAt sets the "ban_ends_at" field.
+func (_c *UserCreate) SetBanEndsAt(v time.Time) *UserCreate {
+	_c.mutation.SetBanEndsAt(v)
+	return _c
+}
+
+// SetNillableBanEndsAt sets the "ban_ends_at" field if the given value is not nil.
+func (_c *UserCreate) SetNillableBanEndsAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetBanEndsAt(*v)
 	}
 	return _c
 }
@@ -116,6 +159,21 @@ func (_c *UserCreate) AddIssues(v ...*Issue) *UserCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddIssueIDs(ids...)
+}
+
+// AddReportIDs adds the "reports" edge to the Report entity by IDs.
+func (_c *UserCreate) AddReportIDs(ids ...int64) *UserCreate {
+	_c.mutation.AddReportIDs(ids...)
+	return _c
+}
+
+// AddReports adds the "reports" edges to the Report entity.
+func (_c *UserCreate) AddReports(v ...*Report) *UserCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddReportIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -240,6 +298,18 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
 		_node.IsAdmin = value
 	}
+	if value, ok := _c.mutation.Banned(); ok {
+		_spec.SetField(user.FieldBanned, field.TypeBool, value)
+		_node.Banned = &value
+	}
+	if value, ok := _c.mutation.BannedAt(); ok {
+		_spec.SetField(user.FieldBannedAt, field.TypeTime, value)
+		_node.BannedAt = &value
+	}
+	if value, ok := _c.mutation.BanEndsAt(); ok {
+		_spec.SetField(user.FieldBanEndsAt, field.TypeTime, value)
+		_node.BanEndsAt = &value
+	}
 	if value, ok := _c.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 		_node.Email = value
@@ -277,6 +347,22 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(issue.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ReportsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReportsTable,
+			Columns: []string{user.ReportsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(report.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

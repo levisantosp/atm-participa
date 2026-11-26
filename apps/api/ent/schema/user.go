@@ -25,6 +25,9 @@ func (User) Fields() []ent.Field {
 		field.String("username").Unique(),
 		field.String("display_name"),
 		field.Bool("is_admin").Default(false),
+		field.Bool("banned").Optional().Nillable(),
+		field.Time("banned_at").Optional().Nillable(),
+		field.Time("ban_ends_at").Optional().Nillable(),
 		field.String("email").Unique(),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
@@ -37,6 +40,7 @@ func (User) Edges() []ent.Edge {
 		edge.To("accounts", Account.Type).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.To("issues", Issue.Type),
+		edge.To("reports", Report.Type).Immutable(),
 	}
 }
 

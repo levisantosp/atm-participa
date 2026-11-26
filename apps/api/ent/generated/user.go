@@ -23,6 +23,12 @@ type User struct {
 	DisplayName string `json:"display_name,omitempty"`
 	// IsAdmin holds the value of the "is_admin" field.
 	IsAdmin bool `json:"is_admin,omitempty"`
+	// Banned holds the value of the "banned" field.
+	Banned *bool `json:"banned,omitempty"`
+	// BannedAt holds the value of the "banned_at" field.
+	BannedAt *time.Time `json:"banned_at,omitempty"`
+	// BanEndsAt holds the value of the "ban_ends_at" field.
+	BanEndsAt *time.Time `json:"ban_ends_at,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -41,9 +47,11 @@ type UserEdges struct {
 	Accounts []*Account `json:"accounts,omitempty"`
 	// Issues holds the value of the issues edge.
 	Issues []*Issue `json:"issues,omitempty"`
+	// Reports holds the value of the reports edge.
+	Reports []*Report `json:"reports,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // AccountsOrErr returns the Accounts value or an error if the edge
@@ -64,18 +72,27 @@ func (e UserEdges) IssuesOrErr() ([]*Issue, error) {
 	return nil, &NotLoadedError{edge: "issues"}
 }
 
+// ReportsOrErr returns the Reports value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ReportsOrErr() ([]*Report, error) {
+	if e.loadedTypes[2] {
+		return e.Reports, nil
+	}
+	return nil, &NotLoadedError{edge: "reports"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldIsAdmin:
+		case user.FieldIsAdmin, user.FieldBanned:
 			values[i] = new(sql.NullBool)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
 		case user.FieldUsername, user.FieldDisplayName, user.FieldEmail:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt, user.FieldUpdatedAt:
+		case user.FieldBannedAt, user.FieldBanEndsAt, user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -115,6 +132,27 @@ func (_m *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_admin", values[i])
 			} else if value.Valid {
 				_m.IsAdmin = value.Bool
+			}
+		case user.FieldBanned:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field banned", values[i])
+			} else if value.Valid {
+				_m.Banned = new(bool)
+				*_m.Banned = value.Bool
+			}
+		case user.FieldBannedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field banned_at", values[i])
+			} else if value.Valid {
+				_m.BannedAt = new(time.Time)
+				*_m.BannedAt = value.Time
+			}
+		case user.FieldBanEndsAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field ban_ends_at", values[i])
+			} else if value.Valid {
+				_m.BanEndsAt = new(time.Time)
+				*_m.BanEndsAt = value.Time
 			}
 		case user.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -157,6 +195,11 @@ func (_m *User) QueryIssues() *IssueQuery {
 	return NewUserClient(_m.config).QueryIssues(_m)
 }
 
+// QueryReports queries the "reports" edge of the User entity.
+func (_m *User) QueryReports() *ReportQuery {
+	return NewUserClient(_m.config).QueryReports(_m)
+}
+
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -188,6 +231,21 @@ func (_m *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_admin=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsAdmin))
+	builder.WriteString(", ")
+	if v := _m.Banned; v != nil {
+		builder.WriteString("banned=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.BannedAt; v != nil {
+		builder.WriteString("banned_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.BanEndsAt; v != nil {
+		builder.WriteString("ban_ends_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("email=")
 	builder.WriteString(_m.Email)

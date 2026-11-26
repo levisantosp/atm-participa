@@ -121,6 +121,44 @@ var (
 			},
 		},
 	}
+	// ReportsColumns holds the columns for the "reports" table.
+	ReportsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "entity", Type: field.TypeEnum, Enums: []string{"user", "issue"}},
+		{Name: "entity_id", Type: field.TypeInt64},
+		{Name: "reason", Type: field.TypeString, Size: 2147483647},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "target_user_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "target_issue_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
+	}
+	// ReportsTable holds the schema information for the "reports" table.
+	ReportsTable = &schema.Table{
+		Name:       "reports",
+		Columns:    ReportsColumns,
+		PrimaryKey: []*schema.Column{ReportsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "reports_users_target_user",
+				Columns:    []*schema.Column{ReportsColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "reports_issues_target_issue",
+				Columns:    []*schema.Column{ReportsColumns[7]},
+				RefColumns: []*schema.Column{IssuesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "reports_users_reports",
+				Columns:    []*schema.Column{ReportsColumns[8]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// UpvotesColumns holds the columns for the "upvotes" table.
 	UpvotesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
@@ -161,6 +199,9 @@ var (
 		{Name: "username", Type: field.TypeString, Unique: true},
 		{Name: "display_name", Type: field.TypeString},
 		{Name: "is_admin", Type: field.TypeBool, Default: false},
+		{Name: "banned", Type: field.TypeBool, Nullable: true},
+		{Name: "banned_at", Type: field.TypeTime, Nullable: true},
+		{Name: "ban_ends_at", Type: field.TypeTime, Nullable: true},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -176,6 +217,7 @@ var (
 		AccountsTable,
 		FilesTable,
 		IssuesTable,
+		ReportsTable,
 		UpvotesTable,
 		UsersTable,
 	}
@@ -185,5 +227,12 @@ func init() {
 	AccountsTable.ForeignKeys[0].RefTable = UsersTable
 	FilesTable.ForeignKeys[0].RefTable = IssuesTable
 	IssuesTable.ForeignKeys[0].RefTable = UsersTable
+	ReportsTable.ForeignKeys[0].RefTable = UsersTable
+	ReportsTable.ForeignKeys[1].RefTable = IssuesTable
+	ReportsTable.ForeignKeys[2].RefTable = UsersTable
+	ReportsTable.Annotation = &entsql.Annotation{}
+	ReportsTable.Annotation.Checks = map[string]string{
+		"report_target_matches_entity": "(\n\t\t\t\tentity = 'user' AND target_issue_id IS NULL\n\t\t\t\tAND (target_user_id IS NULL OR target_user_id = entity_id)\n\t\t\t) OR (\n\t\t\t\tentity = 'issue' AND target_user_id IS NULL\n\t\t\t\tAND (target_issue_id IS NULL OR target_issue_id = entity_id)\n\t\t\t)",
+	}
 	UpvotesTable.ForeignKeys[0].RefTable = IssuesTable
 }

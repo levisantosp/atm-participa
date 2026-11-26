@@ -18,12 +18,7 @@ func Routes(api huma.API) {
 	group.UseMiddleware(middlewares.Auth(api, false))
 	group.UseMiddleware(middlewares.Cache(api, 10*time.Second))
 
-	huma.Register(group, huma.Operation{
-		OperationID:   "get-issues",
-		Method:        http.MethodGet,
-		Path:          "",
-		DefaultStatus: http.StatusOK,
-	}, GetIssues)
+	huma.Get(group, "", GetIssues)
 	huma.Register(group, huma.Operation{
 		OperationID:   "create-issue",
 		Method:        http.MethodPost,
@@ -31,6 +26,12 @@ func Routes(api huma.API) {
 		DefaultStatus: http.StatusCreated,
 		MaxBodyBytes:  16_000_000,
 	}, CreateIssue)
+	huma.Register(group, huma.Operation{
+		OperationID:   "report-issue",
+		Method:        http.MethodPost,
+		Path:          "/{id}/report",
+		DefaultStatus: http.StatusCreated,
+	}, Report)
 	huma.Post(group, "/{id}/upvote", UpvoteIssue)
 	huma.Delete(group, "/{id}", DeleteIssue)
 	huma.Put(group, "/{id}", EditIssue)

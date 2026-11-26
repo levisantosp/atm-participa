@@ -19,6 +19,9 @@ func CreateSession(user *generated.User, t *testing.T) middlewares.Session {
 		Username:    user.Username,
 		DisplayName: user.DisplayName,
 		IsAdmin:     user.IsAdmin,
+		Banned:      user.Banned,
+		BannedAt:    user.BannedAt,
+		BanEndsAt:   user.BanEndsAt,
 	}
 
 	sessionJson, err := json.Marshal(session)
@@ -64,6 +67,9 @@ func CreateAdminSession(
 		Username:    user.Username,
 		DisplayName: user.DisplayName,
 		IsAdmin:     user.IsAdmin,
+		Banned:      user.Banned,
+		BannedAt:    user.BannedAt,
+		BanEndsAt:   user.BanEndsAt,
 	}
 
 	sessionJson, err := json.Marshal(session)

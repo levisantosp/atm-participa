@@ -5,20 +5,25 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated"
 	"github.com/levisantosp/atm-participa/apps/api/internal/db"
 	"github.com/levisantosp/atm-participa/pkg/infra/errors"
 	"github.com/levisantosp/atm-participa/pkg/infra/redis"
+	goredis "github.com/redis/go-redis/v9"
 )
 
 type Session struct {
-	ID          string `json:"id"`
-	UserId      string `json:"userId"`
-	Username    string `json:"username"`
-	DisplayName string `json:"displayName"`
-	IsAdmin     bool   `json:"isAdmin"`
+	ID          string     `json:"id"`
+	UserId      string     `json:"userId"`
+	Username    string     `json:"username"`
+	DisplayName string     `json:"displayName"`
+	IsAdmin     bool       `json:"isAdmin"`
+	Banned      *bool      `json:"banned"`
+	BannedAt    *time.Time `json:"bannedAt"`
+	BanEndsAt   *time.Time `json:"banEndsAt"`
 }
 
 type ctxKey int
@@ -112,6 +117,33 @@ func Auth(
 			return
 		}
 
+		if user.Banned != nil && *user.Banned {
+			session.Banned = user.Banned
+			session.BannedAt = user.BannedAt
+			session.BanEndsAt = user.BanEndsAt
+			data, err := json.Marshal(session)
+			if err == nil {
+				err = redis.Client.SetArgs(ctx.Context(), "session:"+cookie.Value, data,
+					goredis.SetArgs{
+						Mode:    "XX",
+						KeepTTL: true,
+					}).
+					Err()
+			}
+			if err != nil && err != redis.Nil {
+				huma.WriteErr(
+					api,
+					ctx,
+					http.StatusInternalServerError,
+					errors.InternalServerError,
+					err,
+				)
+				return
+			}
+			huma.WriteErr(api, ctx, http.StatusForbidden, errors.Forbidden)
+			return
+		}
+
 		if adminOnly && !user.IsAdmin {
 			huma.WriteErr(
 				api,
@@ -121,6 +153,13 @@ func Auth(
 			)
 			return
 		}
+
+		session.Username = user.Username
+		session.DisplayName = user.DisplayName
+		session.IsAdmin = user.IsAdmin
+		session.Banned = user.Banned
+		session.BannedAt = user.BannedAt
+		session.BanEndsAt = user.BanEndsAt
 
 		ctx = huma.WithValue(ctx, userCtxKey, user)
 		ctx = huma.WithValue(ctx, sessionCtxKey, session)
