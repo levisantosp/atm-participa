@@ -237,29 +237,83 @@ const statusInfo = (status: string) => {
         <Card>
           <CardHeader><CardTitle>Ocorrências apoiadas</CardTitle></CardHeader>
           <CardContent>
-            <div v-if="isUpvotesPending || (upvotes.length > 0 && areSupportedIssuesPending)" class="flex justify-center py-12" role="status"><Spinner /></div>
-            <div v-else-if="isUpvotesError || areSupportedIssuesError" class="rounded-xl border border-dashed p-8 text-center">
-              <p class="text-sm text-destructive">Não foi possível carregar as ocorrências apoiadas agora.</p>
-              <Button variant="outline" class="mt-4" @click="isUpvotesError ? refetchUpvotes() : refetchSupportedIssues()">Tentar novamente</Button>
+            <div
+              v-if="
+                isUpvotesPending ||
+                (upvotes.length > 0 && areSupportedIssuesPending)
+              "
+              class="flex justify-center py-12"
+              role="status"
+            >
+              <Spinner />
             </div>
-            <div v-else-if="upvotes.length === 0" class="flex flex-col items-center rounded-xl border border-dashed px-6 py-12 text-center">
+            <div
+              v-else-if="isUpvotesError || areSupportedIssuesError"
+              class="rounded-xl border border-dashed p-8 text-center"
+            >
+              <p class="text-sm text-destructive">
+                Não foi possível carregar as ocorrências apoiadas agora.
+              </p>
+              <Button
+                variant="outline"
+                class="mt-4"
+                @click="
+                  isUpvotesError ? refetchUpvotes() : refetchSupportedIssues()
+                "
+                >Tentar novamente</Button
+              >
+            </div>
+            <div
+              v-else-if="upvotes.length === 0"
+              class="flex flex-col items-center rounded-xl border border-dashed px-6 py-12 text-center"
+            >
               <HeartIcon :size="21" class="mb-3 text-rose-300" />
-              <p class="font-medium">Você ainda não apoiou nenhuma ocorrência</p>
+              <p class="font-medium">
+                Você ainda não apoiou nenhuma ocorrência
+              </p>
             </div>
             <div v-else class="flex flex-col divide-y">
-              <article v-for="item in supportedIssues" :key="item.upvote.id" class="py-5 first:pt-0 last:pb-0">
+              <article
+                v-for="item in supportedIssues"
+                :key="item.upvote.id"
+                class="py-5 first:pt-0 last:pb-0"
+              >
                 <div class="flex flex-wrap items-center gap-2">
                   <h3 class="font-semibold">{{ item.issue.title }}</h3>
-                  <span class="rounded-full px-2.5 py-1 text-xs ring-1" :class="statusInfo(item.issue.status).class">{{ statusInfo(item.issue.status).label }}</span>
+                  <span
+                    class="rounded-full px-2.5 py-1 text-xs ring-1"
+                    :class="statusInfo(item.issue.status).class"
+                    >{{ statusInfo(item.issue.status).label }}</span
+                  >
                 </div>
-                <p class="mt-1 line-clamp-2 text-sm text-muted-foreground">{{ item.issue.description }}</p>
-                <div class="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
-                  <span><HeartIcon :size="14" class="inline" /> Apoiada em {{ dayjs(item.upvote.createdAt).format('DD/MM/YYYY') }}</span>
-                  <span><CalendarDaysIcon :size="14" class="inline" /> Cadastrada em {{ dayjs(item.issue.createdAt).format('DD/MM/YYYY') }}</span>
+                <p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                  {{ item.issue.description }}
+                </p>
+                <div
+                  class="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground"
+                >
+                  <span
+                    ><HeartIcon :size="14" class="inline" /> Apoiada em
+                    {{
+                      dayjs(item.upvote.createdAt).format('DD/MM/YYYY')
+                    }}</span
+                  >
+                  <span
+                    ><CalendarDaysIcon :size="14" class="inline" /> Cadastrada
+                    em
+                    {{ dayjs(item.issue.createdAt).format('DD/MM/YYYY') }}</span
+                  >
                 </div>
               </article>
             </div>
-            <Button v-if="hasNextUpvotesPage && !isUpvotesError" variant="outline" class="mt-5 w-full" :disabled="isFetchingNextUpvotesPage" @click="fetchNextUpvotesPage()">Carregar mais</Button>
+            <Button
+              v-if="hasNextUpvotesPage && !isUpvotesError"
+              variant="outline"
+              class="mt-5 w-full"
+              :disabled="isFetchingNextUpvotesPage"
+              @click="fetchNextUpvotesPage()"
+              >Carregar mais</Button
+            >
           </CardContent>
         </Card>
       </TabsContent>
