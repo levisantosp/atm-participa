@@ -51,6 +51,27 @@ func TestBanUser(t *testing.T) {
 		}
 	})
 
+	t.Run("should forbid banning your own account", func(t *testing.T) {
+		res := api.Post(
+			fmt.Sprintf("/admin/users/%d/ban", admin.ID),
+			tests.GetCookie(adminSession.ID),
+			map[string]any{"banEndsAt": endsAt},
+		)
+		if res.Code != http.StatusForbidden {
+			t.Fatalf(
+				"expected status %d got %d",
+				http.StatusForbidden,
+				res.Code,
+			)
+		}
+
+		saved := db.Client.User.GetX(t.Context(), admin.ID)
+		if saved.Banned != nil || saved.BannedAt != nil ||
+			saved.BanEndsAt != nil {
+			t.Fatal("expected ban fields to remain unset")
+		}
+	})
+
 	t.Run("should return not found for a missing user", func(t *testing.T) {
 		res := api.Post(
 			"/admin/users/999999999/ban",
