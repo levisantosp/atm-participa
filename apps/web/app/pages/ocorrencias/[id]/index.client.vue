@@ -21,7 +21,7 @@ import { auth } from '~/lib/auth'
 
 definePageMeta({ layout: 'default' })
 
-const route = useRoute('/ocorrencias/[id]')
+const route = useRoute('ocorrencias-id')
 const router = useRouter()
 const config = useRuntimeConfig()
 const session = auth.useSession()
@@ -37,8 +37,14 @@ const {
   error,
   refetch
 } = useGetIssuesById(
-  { path: computed(() => ({ id: issueId.value ?? 0n })) },
-  { query: { enabled: computed(() => issueId.value !== null) } }
+  {
+    path: computed(() => ({ id: issueId.value ?? 0n }))
+  },
+  {
+    query: {
+      enabled: computed(() => issueId.value !== null)
+    }
+  }
 )
 
 const { data: upvotes, isFetching: isFetchingUpvotes } =
