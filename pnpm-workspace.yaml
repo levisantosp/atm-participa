@@ -44,6 +44,7 @@ catalog:
   api-client: workspace:*
   ui: workspace:*
   cn: ^0.5.1
+  '@internationalized/date': ^3.12.4
 cleanupUnusedCatalogs: true
 
 catalogMode: prefer

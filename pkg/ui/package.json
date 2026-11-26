@@ -19,6 +19,7 @@
     "build": "node scripts/build.js"
   },
   "dependencies": {
+    "@internationalized/date": "catalog:",
     "@lucide/vue": "catalog:",
     "@vueuse/core": "catalog:",
     "class-variance-authority": "catalog:",
