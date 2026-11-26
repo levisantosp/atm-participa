@@ -25,7 +25,7 @@ func Report(
 		}
 
 		return tx.Report.Create().
-			SetReporterID(user.ID).
+			SetUserID(user.ID).
 			SetEntity(report.EntityIssue).
 			SetEntityID(issue.ID).
 			SetTargetIssue(issue).

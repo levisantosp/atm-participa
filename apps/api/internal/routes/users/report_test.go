@@ -7,7 +7,6 @@ import (
 
 	"github.com/danielgtaylor/huma/v2/humatest"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/report"
-	"github.com/levisantosp/atm-participa/apps/api/internal/db"
 	"github.com/levisantosp/atm-participa/apps/api/internal/tests"
 
 	_ "github.com/levisantosp/atm-participa/apps/api/ent/generated/runtime"
@@ -20,8 +19,8 @@ func TestReportUser(t *testing.T) {
 	Routes(api)
 
 	target := tests.CreateUser(t)
-	reporter := tests.CreateAdminUser(t)
-	session := tests.CreateSession(reporter, t)
+	user := tests.CreateAdminUser(t)
+	session := tests.CreateSession(user, t)
 	path := fmt.Sprintf("/users/%d/report", target.ID)
 
 	t.Run("should reject unauthenticated request", func(t *testing.T) {
@@ -55,7 +54,7 @@ func TestReportUser(t *testing.T) {
 
 	t.Run("should reject reporting yourself", func(t *testing.T) {
 		res := api.Post(
-			fmt.Sprintf("/users/%d/report", reporter.ID),
+			fmt.Sprintf("/users/%d/report", user.ID),
 			tests.GetCookie(session.ID),
 		)
 		if res.Code != http.StatusUnprocessableEntity {
@@ -73,12 +72,12 @@ func TestReportUser(t *testing.T) {
 			t.Fatalf("expected status %d got %d", http.StatusCreated, res.Code)
 		}
 
-		saved, err := db.Client.Report.Query().Only(t.Context())
+		saved, err := user.QueryReports().Only(t.Context())
 		if err != nil {
 			t.Fatal(err)
 		}
-		if saved.ReporterID == nil || *saved.ReporterID != reporter.ID {
-			t.Errorf("expected reporter id %d, got %v", reporter.ID, saved)
+		if saved.UserID == nil || *saved.UserID != user.ID {
+			t.Errorf("expected user id %d, got %v", user.ID, saved)
 		}
 		if saved.Entity != report.EntityUser || saved.EntityID != target.ID {
 			t.Errorf(

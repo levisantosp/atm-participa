@@ -16,24 +16,24 @@ func Report(
 		UserID int64 `path:"userId" minimum:"1"`
 	},
 ) (*struct{}, error) {
-	reporter := middlewares.MustGetUserFromContext(ctx)
-	if reporter.ID == input.UserID {
+	user := middlewares.MustGetUserFromContext(ctx)
+	if user.ID == input.UserID {
 		return nil, huma.Error422UnprocessableEntity(
 			"Você não pode denunciar a si mesmo",
 		)
 	}
 
 	_, err := db.WithTx(ctx, func(tx *generated.Tx) (*generated.Report, error) {
-		user, err := tx.User.Get(ctx, input.UserID)
+		target, err := tx.User.Get(ctx, input.UserID)
 		if err != nil {
 			return nil, err
 		}
 
 		return tx.Report.Create().
-			SetReporterID(reporter.ID).
+			SetUserID(user.ID).
 			SetEntity(report.EntityUser).
-			SetEntityID(user.ID).
-			SetTargetUser(user).
+			SetEntityID(target.ID).
+			SetTargetUser(target).
 			Save(ctx)
 	})
 	if err != nil {

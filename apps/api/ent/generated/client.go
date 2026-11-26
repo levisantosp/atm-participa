@@ -832,15 +832,15 @@ func (c *ReportClient) GetX(ctx context.Context, id int64) *Report {
 	return obj
 }
 
-// QueryReporter queries the reporter edge of a Report.
-func (c *ReportClient) QueryReporter(_m *Report) *UserQuery {
+// QueryUser queries the user edge of a Report.
+func (c *ReportClient) QueryUser(_m *Report) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(report.Table, report.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, report.ReporterTable, report.ReporterColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, report.UserTable, report.UserColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1188,6 +1188,22 @@ func (c *UserClient) QueryIssues(_m *User) *IssueQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(issue.Table, issue.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.IssuesTable, user.IssuesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReports queries the reports edge of a User.
+func (c *UserClient) QueryReports(_m *User) *ReportQuery {
+	query := (&ReportClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(report.Table, report.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReportsTable, user.ReportsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil

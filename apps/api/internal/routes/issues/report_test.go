@@ -20,8 +20,8 @@ func TestReportIssue(t *testing.T) {
 	Routes(api)
 
 	author := tests.CreateUser(t)
-	reporter := tests.CreateAdminUser(t)
-	session := tests.CreateSession(reporter, t)
+	user := tests.CreateAdminUser(t)
+	session := tests.CreateSession(user, t)
 
 	issue, err := tests.CreateIssue(t, author)
 	if err != nil {
@@ -68,8 +68,8 @@ func TestReportIssue(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if saved.ReporterID == nil || *saved.ReporterID != reporter.ID {
-			t.Errorf("expected reporter id %d, got %v", reporter.ID, saved)
+		if saved.UserID == nil || *saved.UserID != user.ID {
+			t.Errorf("expected user id %d, got %v", user.ID, saved)
 		}
 		if saved.Entity != report.EntityIssue || saved.EntityID != issue.ID {
 			t.Errorf(

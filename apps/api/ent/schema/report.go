@@ -22,7 +22,7 @@ type Report struct {
 func (Report) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id"),
-		field.Int64("reporter_id").Optional().Nillable().Immutable(),
+		field.Int64("user_id").Optional().Nillable().Immutable(),
 		field.Int64("target_user_id").Optional().Nillable().Immutable(),
 		field.Int64("target_issue_id").Optional().Nillable().Immutable(),
 		field.Enum("entity").Values("user", "issue").Immutable(),
@@ -35,8 +35,9 @@ func (Report) Fields() []ent.Field {
 // Edges of the Report.
 func (Report) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("reporter", User.Type).
-			Field("reporter_id").Unique().Immutable().
+		edge.From("user", User.Type).
+			Ref("reports").
+			Field("user_id").Unique().Immutable().
 			Annotations(entsql.OnDelete(entsql.SetNull)),
 		edge.To("target_user", User.Type).
 			Field("target_user_id").Unique().Immutable().

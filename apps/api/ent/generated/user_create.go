@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/account"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/issue"
+	"github.com/levisantosp/atm-participa/apps/api/ent/generated/report"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/user"
 )
 
@@ -158,6 +159,21 @@ func (_c *UserCreate) AddIssues(v ...*Issue) *UserCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddIssueIDs(ids...)
+}
+
+// AddReportIDs adds the "reports" edge to the Report entity by IDs.
+func (_c *UserCreate) AddReportIDs(ids ...int64) *UserCreate {
+	_c.mutation.AddReportIDs(ids...)
+	return _c
+}
+
+// AddReports adds the "reports" edges to the Report entity.
+func (_c *UserCreate) AddReports(v ...*Report) *UserCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddReportIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -331,6 +347,22 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(issue.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ReportsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReportsTable,
+			Columns: []string{user.ReportsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(report.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

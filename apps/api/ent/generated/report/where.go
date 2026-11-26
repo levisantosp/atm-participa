@@ -55,9 +55,9 @@ func IDLTE(id int64) predicate.Report {
 	return predicate.Report(sql.FieldLTE(FieldID, id))
 }
 
-// ReporterID applies equality check predicate on the "reporter_id" field. It's identical to ReporterIDEQ.
-func ReporterID(v int64) predicate.Report {
-	return predicate.Report(sql.FieldEQ(FieldReporterID, v))
+// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
+func UserID(v int64) predicate.Report {
+	return predicate.Report(sql.FieldEQ(FieldUserID, v))
 }
 
 // TargetUserID applies equality check predicate on the "target_user_id" field. It's identical to TargetUserIDEQ.
@@ -85,34 +85,34 @@ func UpdatedAt(v time.Time) predicate.Report {
 	return predicate.Report(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
-// ReporterIDEQ applies the EQ predicate on the "reporter_id" field.
-func ReporterIDEQ(v int64) predicate.Report {
-	return predicate.Report(sql.FieldEQ(FieldReporterID, v))
+// UserIDEQ applies the EQ predicate on the "user_id" field.
+func UserIDEQ(v int64) predicate.Report {
+	return predicate.Report(sql.FieldEQ(FieldUserID, v))
 }
 
-// ReporterIDNEQ applies the NEQ predicate on the "reporter_id" field.
-func ReporterIDNEQ(v int64) predicate.Report {
-	return predicate.Report(sql.FieldNEQ(FieldReporterID, v))
+// UserIDNEQ applies the NEQ predicate on the "user_id" field.
+func UserIDNEQ(v int64) predicate.Report {
+	return predicate.Report(sql.FieldNEQ(FieldUserID, v))
 }
 
-// ReporterIDIn applies the In predicate on the "reporter_id" field.
-func ReporterIDIn(vs ...int64) predicate.Report {
-	return predicate.Report(sql.FieldIn(FieldReporterID, vs...))
+// UserIDIn applies the In predicate on the "user_id" field.
+func UserIDIn(vs ...int64) predicate.Report {
+	return predicate.Report(sql.FieldIn(FieldUserID, vs...))
 }
 
-// ReporterIDNotIn applies the NotIn predicate on the "reporter_id" field.
-func ReporterIDNotIn(vs ...int64) predicate.Report {
-	return predicate.Report(sql.FieldNotIn(FieldReporterID, vs...))
+// UserIDNotIn applies the NotIn predicate on the "user_id" field.
+func UserIDNotIn(vs ...int64) predicate.Report {
+	return predicate.Report(sql.FieldNotIn(FieldUserID, vs...))
 }
 
-// ReporterIDIsNil applies the IsNil predicate on the "reporter_id" field.
-func ReporterIDIsNil() predicate.Report {
-	return predicate.Report(sql.FieldIsNull(FieldReporterID))
+// UserIDIsNil applies the IsNil predicate on the "user_id" field.
+func UserIDIsNil() predicate.Report {
+	return predicate.Report(sql.FieldIsNull(FieldUserID))
 }
 
-// ReporterIDNotNil applies the NotNil predicate on the "reporter_id" field.
-func ReporterIDNotNil() predicate.Report {
-	return predicate.Report(sql.FieldNotNull(FieldReporterID))
+// UserIDNotNil applies the NotNil predicate on the "user_id" field.
+func UserIDNotNil() predicate.Report {
+	return predicate.Report(sql.FieldNotNull(FieldUserID))
 }
 
 // TargetUserIDEQ applies the EQ predicate on the "target_user_id" field.
@@ -315,21 +315,21 @@ func UpdatedAtLTE(v time.Time) predicate.Report {
 	return predicate.Report(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// HasReporter applies the HasEdge predicate on the "reporter" edge.
-func HasReporter() predicate.Report {
+// HasUser applies the HasEdge predicate on the "user" edge.
+func HasUser() predicate.Report {
 	return predicate.Report(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ReporterTable, ReporterColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasReporterWith applies the HasEdge predicate on the "reporter" edge with a given conditions (other predicates).
-func HasReporterWith(preds ...predicate.User) predicate.Report {
+// HasUserWith applies the HasEdge predicate on the "user" edge with a given conditions (other predicates).
+func HasUserWith(preds ...predicate.User) predicate.Report {
 	return predicate.Report(func(s *sql.Selector) {
-		step := newReporterStep()
+		step := newUserStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

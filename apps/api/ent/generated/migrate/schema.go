@@ -128,9 +128,9 @@ var (
 		{Name: "entity_id", Type: field.TypeInt64},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "reporter_id", Type: field.TypeInt64, Nullable: true},
 		{Name: "target_user_id", Type: field.TypeInt64, Nullable: true},
 		{Name: "target_issue_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// ReportsTable holds the schema information for the "reports" table.
 	ReportsTable = &schema.Table{
@@ -139,21 +139,21 @@ var (
 		PrimaryKey: []*schema.Column{ReportsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "reports_users_reporter",
+				Symbol:     "reports_users_target_user",
 				Columns:    []*schema.Column{ReportsColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "reports_users_target_user",
+				Symbol:     "reports_issues_target_issue",
 				Columns:    []*schema.Column{ReportsColumns[6]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
+				RefColumns: []*schema.Column{IssuesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "reports_issues_target_issue",
+				Symbol:     "reports_users_reports",
 				Columns:    []*schema.Column{ReportsColumns[7]},
-				RefColumns: []*schema.Column{IssuesColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -227,8 +227,8 @@ func init() {
 	FilesTable.ForeignKeys[0].RefTable = IssuesTable
 	IssuesTable.ForeignKeys[0].RefTable = UsersTable
 	ReportsTable.ForeignKeys[0].RefTable = UsersTable
-	ReportsTable.ForeignKeys[1].RefTable = UsersTable
-	ReportsTable.ForeignKeys[2].RefTable = IssuesTable
+	ReportsTable.ForeignKeys[1].RefTable = IssuesTable
+	ReportsTable.ForeignKeys[2].RefTable = UsersTable
 	ReportsTable.Annotation = &entsql.Annotation{}
 	ReportsTable.Annotation.Checks = map[string]string{
 		"report_target_matches_entity": "(\n\t\t\t\tentity = 'user' AND target_issue_id IS NULL\n\t\t\t\tAND (target_user_id IS NULL OR target_user_id = entity_id)\n\t\t\t) OR (\n\t\t\t\tentity = 'issue' AND target_user_id IS NULL\n\t\t\t\tAND (target_issue_id IS NULL OR target_issue_id = entity_id)\n\t\t\t)",

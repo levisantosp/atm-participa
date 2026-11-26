@@ -40,6 +40,7 @@ func (User) Edges() []ent.Edge {
 		edge.To("accounts", Account.Type).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.To("issues", Issue.Type),
+		edge.To("reports", Report.Type).Immutable(),
 	}
 }
 

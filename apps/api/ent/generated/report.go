@@ -19,8 +19,8 @@ type Report struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int64 `json:"id,omitempty"`
-	// ReporterID holds the value of the "reporter_id" field.
-	ReporterID *int64 `json:"reporter_id,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID *int64 `json:"user_id,omitempty"`
 	// TargetUserID holds the value of the "target_user_id" field.
 	TargetUserID *int64 `json:"target_user_id,omitempty"`
 	// TargetIssueID holds the value of the "target_issue_id" field.
@@ -41,8 +41,8 @@ type Report struct {
 
 // ReportEdges holds the relations/edges for other nodes in the graph.
 type ReportEdges struct {
-	// Reporter holds the value of the reporter edge.
-	Reporter *User `json:"reporter,omitempty"`
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
 	// TargetUser holds the value of the target_user edge.
 	TargetUser *User `json:"target_user,omitempty"`
 	// TargetIssue holds the value of the target_issue edge.
@@ -52,15 +52,15 @@ type ReportEdges struct {
 	loadedTypes [3]bool
 }
 
-// ReporterOrErr returns the Reporter value or an error if the edge
+// UserOrErr returns the User value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e ReportEdges) ReporterOrErr() (*User, error) {
-	if e.Reporter != nil {
-		return e.Reporter, nil
+func (e ReportEdges) UserOrErr() (*User, error) {
+	if e.User != nil {
+		return e.User, nil
 	} else if e.loadedTypes[0] {
 		return nil, &NotFoundError{label: user.Label}
 	}
-	return nil, &NotLoadedError{edge: "reporter"}
+	return nil, &NotLoadedError{edge: "user"}
 }
 
 // TargetUserOrErr returns the TargetUser value or an error if the edge
@@ -90,7 +90,7 @@ func (*Report) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case report.FieldID, report.FieldReporterID, report.FieldTargetUserID, report.FieldTargetIssueID, report.FieldEntityID:
+		case report.FieldID, report.FieldUserID, report.FieldTargetUserID, report.FieldTargetIssueID, report.FieldEntityID:
 			values[i] = new(sql.NullInt64)
 		case report.FieldEntity:
 			values[i] = new(sql.NullString)
@@ -117,12 +117,12 @@ func (_m *Report) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int64(value.Int64)
-		case report.FieldReporterID:
+		case report.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field reporter_id", values[i])
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				_m.ReporterID = new(int64)
-				*_m.ReporterID = value.Int64
+				_m.UserID = new(int64)
+				*_m.UserID = value.Int64
 			}
 		case report.FieldTargetUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -175,9 +175,9 @@ func (_m *Report) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QueryReporter queries the "reporter" edge of the Report entity.
-func (_m *Report) QueryReporter() *UserQuery {
-	return NewReportClient(_m.config).QueryReporter(_m)
+// QueryUser queries the "user" edge of the Report entity.
+func (_m *Report) QueryUser() *UserQuery {
+	return NewReportClient(_m.config).QueryUser(_m)
 }
 
 // QueryTargetUser queries the "target_user" edge of the Report entity.
@@ -213,8 +213,8 @@ func (_m *Report) String() string {
 	var builder strings.Builder
 	builder.WriteString("Report(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
-	if v := _m.ReporterID; v != nil {
-		builder.WriteString("reporter_id=")
+	if v := _m.UserID; v != nil {
+		builder.WriteString("user_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

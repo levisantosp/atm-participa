@@ -22,16 +22,16 @@ type ReportCreate struct {
 	hooks    []Hook
 }
 
-// SetReporterID sets the "reporter_id" field.
-func (_c *ReportCreate) SetReporterID(v int64) *ReportCreate {
-	_c.mutation.SetReporterID(v)
+// SetUserID sets the "user_id" field.
+func (_c *ReportCreate) SetUserID(v int64) *ReportCreate {
+	_c.mutation.SetUserID(v)
 	return _c
 }
 
-// SetNillableReporterID sets the "reporter_id" field if the given value is not nil.
-func (_c *ReportCreate) SetNillableReporterID(v *int64) *ReportCreate {
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (_c *ReportCreate) SetNillableUserID(v *int64) *ReportCreate {
 	if v != nil {
-		_c.SetReporterID(*v)
+		_c.SetUserID(*v)
 	}
 	return _c
 }
@@ -110,9 +110,9 @@ func (_c *ReportCreate) SetID(v int64) *ReportCreate {
 	return _c
 }
 
-// SetReporter sets the "reporter" edge to the User entity.
-func (_c *ReportCreate) SetReporter(v *User) *ReportCreate {
-	return _c.SetReporterID(v.ID)
+// SetUser sets the "user" edge to the User entity.
+func (_c *ReportCreate) SetUser(v *User) *ReportCreate {
+	return _c.SetUserID(v.ID)
 }
 
 // SetTargetUser sets the "target_user" edge to the User entity.
@@ -246,12 +246,12 @@ func (_c *ReportCreate) createSpec() (*Report, *sqlgraph.CreateSpec) {
 		_spec.SetField(report.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if nodes := _c.mutation.ReporterIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   report.ReporterTable,
-			Columns: []string{report.ReporterColumn},
+			Inverse: true,
+			Table:   report.UserTable,
+			Columns: []string{report.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt64),
@@ -260,7 +260,7 @@ func (_c *ReportCreate) createSpec() (*Report, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ReporterID = &nodes[0]
+		_node.UserID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.TargetUserIDs(); len(nodes) > 0 {

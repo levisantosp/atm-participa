@@ -15,6 +15,7 @@ import (
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/account"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/issue"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/predicate"
+	"github.com/levisantosp/atm-participa/apps/api/ent/generated/report"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/user"
 )
 
@@ -27,6 +28,7 @@ type UserQuery struct {
 	predicates   []predicate.User
 	withAccounts *AccountQuery
 	withIssues   *IssueQuery
+	withReports  *ReportQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -100,6 +102,28 @@ func (_q *UserQuery) QueryIssues() *IssueQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(issue.Table, issue.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.IssuesTable, user.IssuesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReports chains the current query on the "reports" edge.
+func (_q *UserQuery) QueryReports() *ReportQuery {
+	query := (&ReportClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(report.Table, report.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReportsTable, user.ReportsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -301,6 +325,7 @@ func (_q *UserQuery) Clone() *UserQuery {
 		predicates:   append([]predicate.User{}, _q.predicates...),
 		withAccounts: _q.withAccounts.Clone(),
 		withIssues:   _q.withIssues.Clone(),
+		withReports:  _q.withReports.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -326,6 +351,17 @@ func (_q *UserQuery) WithIssues(opts ...func(*IssueQuery)) *UserQuery {
 		opt(query)
 	}
 	_q.withIssues = query
+	return _q
+}
+
+// WithReports tells the query-builder to eager-load the nodes that are connected to
+// the "reports" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithReports(opts ...func(*ReportQuery)) *UserQuery {
+	query := (&ReportClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withReports = query
 	return _q
 }
 
@@ -407,9 +443,10 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = _q.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			_q.withAccounts != nil,
 			_q.withIssues != nil,
+			_q.withReports != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -441,6 +478,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := _q.loadIssues(ctx, query, nodes,
 			func(n *User) { n.Edges.Issues = []*Issue{} },
 			func(n *User, e *Issue) { n.Edges.Issues = append(n.Edges.Issues, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withReports; query != nil {
+		if err := _q.loadReports(ctx, query, nodes,
+			func(n *User) { n.Edges.Reports = []*Report{} },
+			func(n *User, e *Report) { n.Edges.Reports = append(n.Edges.Reports, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -503,6 +547,40 @@ func (_q *UserQuery) loadIssues(ctx context.Context, query *IssueQuery, nodes []
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+
+func (_q *UserQuery) loadReports(ctx context.Context, query *ReportQuery, nodes []*User, init func(*User), assign func(*User, *Report)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(report.FieldUserID)
+	}
+	query.Where(predicate.Report(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ReportsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

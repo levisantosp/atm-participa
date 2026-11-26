@@ -16,8 +16,8 @@ const (
 	Label = "report"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldReporterID holds the string denoting the reporter_id field in the database.
-	FieldReporterID = "reporter_id"
+	// FieldUserID holds the string denoting the user_id field in the database.
+	FieldUserID = "user_id"
 	// FieldTargetUserID holds the string denoting the target_user_id field in the database.
 	FieldTargetUserID = "target_user_id"
 	// FieldTargetIssueID holds the string denoting the target_issue_id field in the database.
@@ -30,21 +30,21 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeReporter holds the string denoting the reporter edge name in mutations.
-	EdgeReporter = "reporter"
+	// EdgeUser holds the string denoting the user edge name in mutations.
+	EdgeUser = "user"
 	// EdgeTargetUser holds the string denoting the target_user edge name in mutations.
 	EdgeTargetUser = "target_user"
 	// EdgeTargetIssue holds the string denoting the target_issue edge name in mutations.
 	EdgeTargetIssue = "target_issue"
 	// Table holds the table name of the report in the database.
 	Table = "reports"
-	// ReporterTable is the table that holds the reporter relation/edge.
-	ReporterTable = "reports"
-	// ReporterInverseTable is the table name for the User entity.
+	// UserTable is the table that holds the user relation/edge.
+	UserTable = "reports"
+	// UserInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
-	ReporterInverseTable = "users"
-	// ReporterColumn is the table column denoting the reporter relation/edge.
-	ReporterColumn = "reporter_id"
+	UserInverseTable = "users"
+	// UserColumn is the table column denoting the user relation/edge.
+	UserColumn = "user_id"
 	// TargetUserTable is the table that holds the target_user relation/edge.
 	TargetUserTable = "reports"
 	// TargetUserInverseTable is the table name for the User entity.
@@ -64,7 +64,7 @@ const (
 // Columns holds all SQL columns for report fields.
 var Columns = []string{
 	FieldID,
-	FieldReporterID,
+	FieldUserID,
 	FieldTargetUserID,
 	FieldTargetIssueID,
 	FieldEntity,
@@ -129,9 +129,9 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByReporterID orders the results by the reporter_id field.
-func ByReporterID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldReporterID, opts...).ToFunc()
+// ByUserID orders the results by the user_id field.
+func ByUserID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }
 
 // ByTargetUserID orders the results by the target_user_id field.
@@ -164,10 +164,10 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByReporterField orders the results by reporter field.
-func ByReporterField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByUserField orders the results by user field.
+func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newReporterStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newUserStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -185,11 +185,11 @@ func ByTargetIssueField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-func newReporterStep() *sqlgraph.Step {
+func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ReporterInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, ReporterTable, ReporterColumn),
+		sqlgraph.To(UserInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }
 

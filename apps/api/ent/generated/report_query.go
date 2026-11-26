@@ -24,7 +24,7 @@ type ReportQuery struct {
 	order           []report.OrderOption
 	inters          []Interceptor
 	predicates      []predicate.Report
-	withReporter    *UserQuery
+	withUser        *UserQuery
 	withTargetUser  *UserQuery
 	withTargetIssue *IssueQuery
 	// intermediate query (i.e. traversal path).
@@ -63,8 +63,8 @@ func (_q *ReportQuery) Order(o ...report.OrderOption) *ReportQuery {
 	return _q
 }
 
-// QueryReporter chains the current query on the "reporter" edge.
-func (_q *ReportQuery) QueryReporter() *UserQuery {
+// QueryUser chains the current query on the "user" edge.
+func (_q *ReportQuery) QueryUser() *UserQuery {
 	query := (&UserClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
@@ -77,7 +77,7 @@ func (_q *ReportQuery) QueryReporter() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(report.Table, report.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, report.ReporterTable, report.ReporterColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, report.UserTable, report.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -321,7 +321,7 @@ func (_q *ReportQuery) Clone() *ReportQuery {
 		order:           append([]report.OrderOption{}, _q.order...),
 		inters:          append([]Interceptor{}, _q.inters...),
 		predicates:      append([]predicate.Report{}, _q.predicates...),
-		withReporter:    _q.withReporter.Clone(),
+		withUser:        _q.withUser.Clone(),
 		withTargetUser:  _q.withTargetUser.Clone(),
 		withTargetIssue: _q.withTargetIssue.Clone(),
 		// clone intermediate query.
@@ -330,14 +330,14 @@ func (_q *ReportQuery) Clone() *ReportQuery {
 	}
 }
 
-// WithReporter tells the query-builder to eager-load the nodes that are connected to
-// the "reporter" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *ReportQuery) WithReporter(opts ...func(*UserQuery)) *ReportQuery {
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *ReportQuery) WithUser(opts ...func(*UserQuery)) *ReportQuery {
 	query := (&UserClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withReporter = query
+	_q.withUser = query
 	return _q
 }
 
@@ -369,12 +369,12 @@ func (_q *ReportQuery) WithTargetIssue(opts ...func(*IssueQuery)) *ReportQuery {
 // Example:
 //
 //	var v []struct {
-//		ReporterID int64 `json:"reporter_id,omitempty"`
+//		UserID int64 `json:"user_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Report.Query().
-//		GroupBy(report.FieldReporterID).
+//		GroupBy(report.FieldUserID).
 //		Aggregate(generated.Count()).
 //		Scan(ctx, &v)
 func (_q *ReportQuery) GroupBy(field string, fields ...string) *ReportGroupBy {
@@ -392,11 +392,11 @@ func (_q *ReportQuery) GroupBy(field string, fields ...string) *ReportGroupBy {
 // Example:
 //
 //	var v []struct {
-//		ReporterID int64 `json:"reporter_id,omitempty"`
+//		UserID int64 `json:"user_id,omitempty"`
 //	}
 //
 //	client.Report.Query().
-//		Select(report.FieldReporterID).
+//		Select(report.FieldUserID).
 //		Scan(ctx, &v)
 func (_q *ReportQuery) Select(fields ...string) *ReportSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
@@ -442,7 +442,7 @@ func (_q *ReportQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Repor
 		nodes       = []*Report{}
 		_spec       = _q.querySpec()
 		loadedTypes = [3]bool{
-			_q.withReporter != nil,
+			_q.withUser != nil,
 			_q.withTargetUser != nil,
 			_q.withTargetIssue != nil,
 		}
@@ -465,9 +465,9 @@ func (_q *ReportQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Repor
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withReporter; query != nil {
-		if err := _q.loadReporter(ctx, query, nodes, nil,
-			func(n *Report, e *User) { n.Edges.Reporter = e }); err != nil {
+	if query := _q.withUser; query != nil {
+		if err := _q.loadUser(ctx, query, nodes, nil,
+			func(n *Report, e *User) { n.Edges.User = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -486,14 +486,14 @@ func (_q *ReportQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Repor
 	return nodes, nil
 }
 
-func (_q *ReportQuery) loadReporter(ctx context.Context, query *UserQuery, nodes []*Report, init func(*Report), assign func(*Report, *User)) error {
+func (_q *ReportQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Report, init func(*Report), assign func(*Report, *User)) error {
 	ids := make([]int64, 0, len(nodes))
 	nodeids := make(map[int64][]*Report)
 	for i := range nodes {
-		if nodes[i].ReporterID == nil {
+		if nodes[i].UserID == nil {
 			continue
 		}
-		fk := *nodes[i].ReporterID
+		fk := *nodes[i].UserID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -510,7 +510,7 @@ func (_q *ReportQuery) loadReporter(ctx context.Context, query *UserQuery, nodes
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "reporter_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -610,8 +610,8 @@ func (_q *ReportQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if _q.withReporter != nil {
-			_spec.Node.AddColumnOnce(report.FieldReporterID)
+		if _q.withUser != nil {
+			_spec.Node.AddColumnOnce(report.FieldUserID)
 		}
 		if _q.withTargetUser != nil {
 			_spec.Node.AddColumnOnce(report.FieldTargetUserID)
