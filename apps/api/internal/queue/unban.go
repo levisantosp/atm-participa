@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -111,12 +112,33 @@ func Unban(ctx context.Context) (err error) {
 					return nil, err
 				}
 
-				return nil, tx.User.Update().
+				updated, err := tx.User.Update().
 					Where(user.IDEQ(payload.UserID), user.BannedEQ(true), user.BanEndsAtLTE(time.Now())).
 					ClearBanned().
 					ClearBannedAt().
 					ClearBanEndsAt().
-					Exec(ctx)
+					Save(ctx)
+				if err != nil || updated == 0 {
+					return nil, err
+				}
+
+				raw := strconv.FormatInt(payload.UserID, 10)
+				keys := []string{"user_sessions:" + raw}
+				sessionsIDs, err := redis.Client.ZRange(ctx, keys[0], 0, -1).
+					Result()
+				if err != nil {
+					return nil, err
+				}
+
+				for _, id := range sessionsIDs {
+					keys = append(keys, "session:"+id)
+				}
+
+				if err := redis.Client.Unlink(ctx, keys...).Err(); err != nil {
+					return nil, err
+				}
+
+				return nil, nil
 			})
 		},
 		&bullmq.WorkerOptions{

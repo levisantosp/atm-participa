@@ -2,7 +2,10 @@ package admin
 
 import (
 	"context"
+	"strconv"
 	"time"
+
+	"github.com/levisantosp/atm-participa/pkg/infra/redis"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated"
@@ -50,6 +53,22 @@ func BanUser(
 				return nil, err
 			}
 		}
+
+		raw := strconv.FormatInt(u.ID, 10)
+		keys := []string{"user_sessions:" + raw}
+		sessionsIDs, err := redis.Client.ZRange(ctx, keys[0], 0, -1).Result()
+		if err != nil {
+			return nil, err
+		}
+
+		for _, id := range sessionsIDs {
+			keys = append(keys, "session:"+id)
+		}
+
+		if err := redis.Client.Unlink(ctx, keys...).Err(); err != nil {
+			return nil, err
+		}
+
 		return u, nil
 	})
 	if err != nil {
