@@ -1,7 +1,15 @@
 <script setup lang="ts">
-import { useGetAdminReportsById } from 'api-client'
+import { SearchCheck } from '@lucide/vue'
+import {
+  getAdminReportsByIdQueryKey,
+  getAdminReportsInfiniteQueryKey,
+  useGetAdminReportsById,
+  type GetAdminReportsByIdStatus200,
+  usePatchAdminReportsById
+} from 'api-client'
 import dayjs from 'dayjs'
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
@@ -12,6 +20,7 @@ import {
 import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
+import { queryClient } from '@/lib/query'
 
 const route = useRoute('/denuncias/[id]/')
 const router = useRouter()
@@ -20,6 +29,24 @@ const { isFetching, data, error } = useGetAdminReportsById({
   path: computed(() => ({
     id: BigInt(route.params.id)
   }))
+})
+
+const { isPending, mutate } = usePatchAdminReportsById({
+  mutation: {
+    onSuccess(data, { path }) {
+      queryClient.setQueryData<GetAdminReportsByIdStatus200>(
+        getAdminReportsByIdQueryKey({ path }),
+        (current) => ({
+          ...current,
+          ...data
+        })
+      )
+
+      queryClient.invalidateQueries({
+        queryKey: getAdminReportsInfiniteQueryKey()
+      })
+    }
+  }
 })
 
 watch(error, (err) => {
@@ -41,6 +68,24 @@ watch(error, (err) => {
     </RouterLink>
   </div>
   <div v-else class="mt-10 max-w-md md:max-w-4xl w-full flex flex-col gap-10">
+    <div class="flex justify-end">
+      <Button
+        :disabled="isPending"
+        @click="
+          mutate({
+            path: { id: BigInt(data.id) },
+            body: { status: data.status === 'open' ? 'closed' : 'open' }
+          })
+        "
+      >
+        <Spinner v-if="isPending" />
+        <SearchCheck v-else />
+        <span class="sr-only md:not-sr-only">
+          {{ data.status === 'open' ? 'Encerrar' : 'Reabrir' }}
+        </span>
+      </Button>
+    </div>
+
     <Card>
       <CardHeader>
         <CardTitle>Denúncia #{{ data.id }}</CardTitle>
