@@ -23,6 +23,12 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute('/denuncias/')
 const router = useRouter()
 
+const status = computed(() =>
+  route.query.status === 'open' || route.query.status === 'closed'
+    ? route.query.status
+    : undefined
+)
+
 const {
   isFetching,
   isFetchingNextPage,
@@ -37,6 +43,7 @@ const {
         route.query.entity === 'issue' || route.query.entity === 'user'
           ? route.query.entity
           : undefined,
+      status: status.value,
       limit: 20n
     }))
   },
@@ -65,7 +72,9 @@ const reports = computed(
 <template>
   <h1 class="font-bold text-xl md:text-2xl">Denúncias</h1>
 
-  <div class="mt-10 w-full max-w-md md:max-w-4xl">
+  <div
+    class="mt-10 flex w-full max-w-md flex-col gap-3 sm:flex-row md:max-w-4xl"
+  >
     <Select
       :model-value="route.query.entity?.toString() ?? 'all'"
       @update:model-value="
@@ -87,6 +96,31 @@ const reports = computed(
         <SelectItem value="all">Todos os tipos</SelectItem>
         <SelectItem value="issue">Ocorrências</SelectItem>
         <SelectItem value="user">Usuários</SelectItem>
+      </SelectContent>
+    </Select>
+
+    <Select
+      :model-value="status ?? 'all'"
+      @update:model-value="
+        router.push({
+          query: {
+            ...route.query,
+            status:
+              $event === 'open' || $event === 'closed' ? $event : undefined
+          }
+        })
+      "
+    >
+      <SelectTrigger
+        class="w-full sm:w-48"
+        aria-label="Filtrar por status da denúncia"
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">Todos os status</SelectItem>
+        <SelectItem value="open">Abertas</SelectItem>
+        <SelectItem value="closed">Encerradas</SelectItem>
       </SelectContent>
     </Select>
   </div>
