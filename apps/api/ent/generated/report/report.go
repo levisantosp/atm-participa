@@ -24,8 +24,6 @@ const (
 	FieldTargetIssueID = "target_issue_id"
 	// FieldEntity holds the string denoting the entity field in the database.
 	FieldEntity = "entity"
-	// FieldEntityID holds the string denoting the entity_id field in the database.
-	FieldEntityID = "entity_id"
 	// FieldReason holds the string denoting the reason field in the database.
 	FieldReason = "reason"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -70,7 +68,6 @@ var Columns = []string{
 	FieldTargetUserID,
 	FieldTargetIssueID,
 	FieldEntity,
-	FieldEntityID,
 	FieldReason,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -152,11 +149,6 @@ func ByTargetIssueID(opts ...sql.OrderTermOption) OrderOption {
 // ByEntity orders the results by the entity field.
 func ByEntity(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEntity, opts...).ToFunc()
-}
-
-// ByEntityID orders the results by the entity_id field.
-func ByEntityID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEntityID, opts...).ToFunc()
 }
 
 // ByReason orders the results by the reason field.

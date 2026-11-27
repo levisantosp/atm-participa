@@ -3,6 +3,7 @@ import { SearchAlert, SearchCheck } from '@lucide/vue'
 import {
   getAdminIssuesByIdQueryKey,
   useGetAdminIssuesById,
+  type GetAdminIssuesByIdStatus200,
   usePatchAdminIssuesById
 } from 'api-client'
 import {
@@ -14,7 +15,7 @@ import {
   CardTitle,
   Spinner
 } from 'ui'
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { env } from '@/env'
@@ -25,21 +26,17 @@ const route = useRoute('/ocorrencias/[id]/')
 const router = useRouter()
 
 const { isFetching, data, error } = useGetAdminIssuesById({
-  path: {
+  path: computed(() => ({
     id: BigInt(route.params.id)
-  }
+  }))
 })
 
 const { isPending, mutate } = usePatchAdminIssuesById({
   mutation: {
-    onSuccess(data) {
-      queryClient.setQueryData(
-        getAdminIssuesByIdQueryKey({
-          path: {
-            id: BigInt(route.params.id)
-          }
-        }),
-        data
+    onSuccess(data, { path }) {
+      queryClient.setQueryData<GetAdminIssuesByIdStatus200>(
+        getAdminIssuesByIdQueryKey({ path }),
+        (current) => (current ? { ...current, status: data.status } : data)
       )
     }
   }
@@ -122,6 +119,12 @@ watch(error, (err) => {
 
     <Card>
       <CardHeader>
+        <p v-if="data.author" class="text-sm text-muted-foreground">
+          Autor:
+          <RouterLink :to="`/usuarios/${data.author.id}`" class="underline">
+            {{ data.author.displayName }} (@{{ data.author.username }})
+          </RouterLink>
+        </p>
         <CardTitle>{{ data.title }}</CardTitle>
         <CardDescription>{{ data.description }}</CardDescription>
       </CardHeader>

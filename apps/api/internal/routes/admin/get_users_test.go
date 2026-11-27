@@ -58,6 +58,16 @@ func TestGetUsers(t *testing.T) {
 			[]int64{admin.ID, user.ID},
 		},
 		{
+			"should accept a single-character search",
+			"?search=a",
+			[]int64{admin.ID, user.ID},
+		},
+		{
+			"should search by user ID",
+			fmt.Sprintf("?search=%d", user.ID),
+			[]int64{user.ID},
+		},
+		{
 			"should search by username ignoring case",
 			"?search=ST-AD",
 			[]int64{admin.ID},
@@ -124,7 +134,7 @@ func TestGetUsers(t *testing.T) {
 	})
 
 	for _, query := range []string{
-		"limit=0", "limit=101", "cursor=0", "search=a",
+		"limit=0", "limit=101", "cursor=0",
 		"search=" + strings.Repeat("a", 101),
 	} {
 		t.Run("should reject "+query, func(t *testing.T) {

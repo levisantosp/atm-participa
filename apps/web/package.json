@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "oxlint && nuxt build",
+    "build": "oxlint && pn check && nuxt build",
     "start": "PORT=5174 node .output/server/index.mjs",
-    "dev": "pn -F api-client build && nuxt dev",
+    "dev": "pn -F api-client -F ui build && nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",

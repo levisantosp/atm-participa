@@ -24,7 +24,7 @@ const schema = z.object({
   search: z
     .string()
     .trim()
-    .min(2, 'Mínimo 2 caracteres')
+    .min(1, 'Mínimo 1 caractere')
     .max(100, 'Máximo 100 caracteres')
     .optional()
 })
@@ -100,8 +100,7 @@ const users = computed(
         v-model="search"
         v-bind="searchProps"
         type="search"
-        aria-label="Pesquisar por nome de usuário ou e-mail"
-        placeholder="Pesquisar por nome de usuário ou e-mail"
+        placeholder="Pesquisar por nome de usuário, ID ou e-mail"
       />
       <Button
         type="submit"

@@ -12,7 +12,7 @@ func CreateReport(
 	t *testing.T,
 	user *generated.User,
 	entity report.Entity,
-	entityID int64,
+	targetID int64,
 	reason string,
 ) *generated.Report {
 	t.Helper()
@@ -20,13 +20,12 @@ func CreateReport(
 	create := db.Client.Report.Create().
 		SetUserID(user.ID).
 		SetEntity(entity).
-		SetEntityID(entityID).
 		SetReason(reason)
 	if entity == report.EntityIssue {
-		create.SetTargetIssueID(entityID)
+		create.SetTargetIssueID(targetID)
 	}
 	if entity == report.EntityUser {
-		create.SetTargetUserID(entityID)
+		create.SetTargetUserID(targetID)
 	}
 
 	return create.SaveX(t.Context())
