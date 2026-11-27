@@ -42,6 +42,20 @@ func (_u *ReportUpdate) SetNillableReason(v *string) *ReportUpdate {
 	return _u
 }
 
+// SetStatus sets the "status" field.
+func (_u *ReportUpdate) SetStatus(v report.Status) *ReportUpdate {
+	_u.mutation.SetStatus(v)
+	return _u
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_u *ReportUpdate) SetNillableStatus(v *report.Status) *ReportUpdate {
+	if v != nil {
+		_u.SetStatus(*v)
+	}
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *ReportUpdate) SetUpdatedAt(v time.Time) *ReportUpdate {
 	_u.mutation.SetUpdatedAt(v)
@@ -102,6 +116,11 @@ func (_u *ReportUpdate) check() error {
 			return &ValidationError{Name: "reason", err: fmt.Errorf(`generated: validator failed for field "Report.reason": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Status(); ok {
+		if err := report.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`generated: validator failed for field "Report.status": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -119,6 +138,9 @@ func (_u *ReportUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Reason(); ok {
 		_spec.SetField(report.FieldReason, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(report.FieldStatus, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(report.FieldUpdatedAt, field.TypeTime, value)
@@ -153,6 +175,20 @@ func (_u *ReportUpdateOne) SetReason(v string) *ReportUpdateOne {
 func (_u *ReportUpdateOne) SetNillableReason(v *string) *ReportUpdateOne {
 	if v != nil {
 		_u.SetReason(*v)
+	}
+	return _u
+}
+
+// SetStatus sets the "status" field.
+func (_u *ReportUpdateOne) SetStatus(v report.Status) *ReportUpdateOne {
+	_u.mutation.SetStatus(v)
+	return _u
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_u *ReportUpdateOne) SetNillableStatus(v *report.Status) *ReportUpdateOne {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
 	return _u
 }
@@ -230,6 +266,11 @@ func (_u *ReportUpdateOne) check() error {
 			return &ValidationError{Name: "reason", err: fmt.Errorf(`generated: validator failed for field "Report.reason": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Status(); ok {
+		if err := report.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`generated: validator failed for field "Report.status": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -264,6 +305,9 @@ func (_u *ReportUpdateOne) sqlSave(ctx context.Context) (_node *Report, err erro
 	}
 	if value, ok := _u.mutation.Reason(); ok {
 		_spec.SetField(report.FieldReason, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(report.FieldStatus, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(report.FieldUpdatedAt, field.TypeTime, value)

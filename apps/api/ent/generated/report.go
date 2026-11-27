@@ -29,6 +29,8 @@ type Report struct {
 	Entity report.Entity `json:"entity,omitempty"`
 	// Reason holds the value of the "reason" field.
 	Reason string `json:"reason,omitempty"`
+	// Status holds the value of the "status" field.
+	Status report.Status `json:"status,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -92,7 +94,7 @@ func (*Report) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case report.FieldID, report.FieldUserID, report.FieldTargetUserID, report.FieldTargetIssueID:
 			values[i] = new(sql.NullInt64)
-		case report.FieldEntity, report.FieldReason:
+		case report.FieldEntity, report.FieldReason, report.FieldStatus:
 			values[i] = new(sql.NullString)
 		case report.FieldCreatedAt, report.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -149,6 +151,12 @@ func (_m *Report) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field reason", values[i])
 			} else if value.Valid {
 				_m.Reason = value.String
+			}
+		case report.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				_m.Status = report.Status(value.String)
 			}
 		case report.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -233,6 +241,9 @@ func (_m *Report) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("reason=")
 	builder.WriteString(_m.Reason)
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Status))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
