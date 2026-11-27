@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "pn -F api-client -F ui build && vite",
-    "build": "oxlint && vite build",
+    "build": "oxlint && pn check && vite build",
     "preview": "vite preview",
     "lint": "oxlint",
     "fmt": "oxfmt",
