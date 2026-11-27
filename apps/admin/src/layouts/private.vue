@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ClipboardList, Home, Users } from '@lucide/vue'
+import { ClipboardList, Home, SquareExclamationPoint, Users } from '@lucide/vue'
 import {
   Sidebar,
   SidebarContent,
@@ -30,6 +30,11 @@ const navItems = [
     label: 'Usuários',
     href: '/usuarios',
     icon: Users
+  },
+  {
+    label: 'Denúncias',
+    href: '/denuncias',
+    icon: SquareExclamationPoint
   }
 ] as const
 </script>
