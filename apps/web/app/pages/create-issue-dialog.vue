@@ -30,8 +30,6 @@ const allowedImageTypes = new Set([
   'image/gif'
 ])
 
-const cepPattern = /^[0-9]{5}-?[0-9]{3}$/
-
 const createIssueSchema = z.object({
   title: z
     .string()
@@ -41,7 +39,9 @@ const createIssueSchema = z.object({
     .string()
     .min(10, 'A descrição deve ter pelo menos 10 caracteres')
     .max(65_000, 'A descrição deve ter no máximo 65.000 caracteres'),
-  cep: z.string('Informe o CEP').regex(cepPattern, 'Informe um CEP válido'),
+  cep: z
+    .string('Informe o CEP')
+    .regex(/^[0-9]{5}-?[0-9]{3}$/, 'Informe um CEP válido'),
   address: z.string('Informe o endereço').trim().min(1, 'Informe o endereço'),
   neighborhood: z.string('Informe o bairro').trim().min(1, 'Informe o bairro'),
   file: z
@@ -73,22 +73,20 @@ const imageInput = ref<HTMLInputElement | null>(null)
 const isCreateIssueDialogOpen = ref(false)
 
 watch(cep, async (value, previous, onCleanup) => {
-  if (
-    previous &&
-    cepPattern.test(previous) &&
-    previous.replace('-', '') !== value?.replace('-', '')
-  ) {
+  if (previous && previous.replace('-', '') !== value?.replace('-', '')) {
     address.value = ''
     neighborhood.value = ''
   }
-  if (!value || !cepPattern.test(value)) return
+  if (!value) return
 
   const controller = new AbortController()
   onCleanup(() => {
     controller.abort()
     isFetchingCep.value = false
   })
+
   isFetchingCep.value = true
+
   try {
     const data = await $fetch<{
       logradouro?: string
@@ -115,7 +113,9 @@ watch(cep, async (value, previous, onCleanup) => {
       )
     }
   } finally {
-    if (!controller.signal.aborted) isFetchingCep.value = false
+    if (!controller.signal.aborted) {
+      isFetchingCep.value = false
+    }
   }
 })
 
