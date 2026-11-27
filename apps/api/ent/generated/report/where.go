@@ -70,11 +70,6 @@ func TargetIssueID(v int64) predicate.Report {
 	return predicate.Report(sql.FieldEQ(FieldTargetIssueID, v))
 }
 
-// EntityID applies equality check predicate on the "entity_id" field. It's identical to EntityIDEQ.
-func EntityID(v int64) predicate.Report {
-	return predicate.Report(sql.FieldEQ(FieldEntityID, v))
-}
-
 // Reason applies equality check predicate on the "reason" field. It's identical to ReasonEQ.
 func Reason(v string) predicate.Report {
 	return predicate.Report(sql.FieldEQ(FieldReason, v))
@@ -198,46 +193,6 @@ func EntityIn(vs ...Entity) predicate.Report {
 // EntityNotIn applies the NotIn predicate on the "entity" field.
 func EntityNotIn(vs ...Entity) predicate.Report {
 	return predicate.Report(sql.FieldNotIn(FieldEntity, vs...))
-}
-
-// EntityIDEQ applies the EQ predicate on the "entity_id" field.
-func EntityIDEQ(v int64) predicate.Report {
-	return predicate.Report(sql.FieldEQ(FieldEntityID, v))
-}
-
-// EntityIDNEQ applies the NEQ predicate on the "entity_id" field.
-func EntityIDNEQ(v int64) predicate.Report {
-	return predicate.Report(sql.FieldNEQ(FieldEntityID, v))
-}
-
-// EntityIDIn applies the In predicate on the "entity_id" field.
-func EntityIDIn(vs ...int64) predicate.Report {
-	return predicate.Report(sql.FieldIn(FieldEntityID, vs...))
-}
-
-// EntityIDNotIn applies the NotIn predicate on the "entity_id" field.
-func EntityIDNotIn(vs ...int64) predicate.Report {
-	return predicate.Report(sql.FieldNotIn(FieldEntityID, vs...))
-}
-
-// EntityIDGT applies the GT predicate on the "entity_id" field.
-func EntityIDGT(v int64) predicate.Report {
-	return predicate.Report(sql.FieldGT(FieldEntityID, v))
-}
-
-// EntityIDGTE applies the GTE predicate on the "entity_id" field.
-func EntityIDGTE(v int64) predicate.Report {
-	return predicate.Report(sql.FieldGTE(FieldEntityID, v))
-}
-
-// EntityIDLT applies the LT predicate on the "entity_id" field.
-func EntityIDLT(v int64) predicate.Report {
-	return predicate.Report(sql.FieldLT(FieldEntityID, v))
-}
-
-// EntityIDLTE applies the LTE predicate on the "entity_id" field.
-func EntityIDLTE(v int64) predicate.Report {
-	return predicate.Report(sql.FieldLTE(FieldEntityID, v))
 }
 
 // ReasonEQ applies the EQ predicate on the "reason" field.

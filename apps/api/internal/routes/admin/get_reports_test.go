@@ -97,8 +97,7 @@ func TestGetReports(t *testing.T) {
 				}
 				item := body.Items[0]
 				if item.ID != fmt.Sprint(id) ||
-					item.Entity != report.EntityIssue ||
-					item.EntityID != fmt.Sprint(issue.ID) {
+					item.Entity != report.EntityIssue {
 					t.Fatalf("unexpected report: %+v", item)
 				}
 				if i == 0 {

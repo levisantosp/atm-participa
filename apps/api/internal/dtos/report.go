@@ -13,7 +13,6 @@ type Report struct {
 	UserID    *string       `json:"userId"`
 	Author    *User         `json:"author,omitempty"`
 	Entity    report.Entity `json:"entity"`
-	EntityID  string        `json:"entityId"`
 	Reason    string        `json:"reason"`
 	CreatedAt time.Time     `json:"createdAt"`
 	UpdatedAt time.Time     `json:"updatedAt"`
@@ -23,7 +22,6 @@ func ReportFrom(r *generated.Report) Report {
 	item := Report{
 		ID:        strconv.FormatInt(r.ID, 10),
 		Entity:    r.Entity,
-		EntityID:  strconv.FormatInt(r.EntityID, 10),
 		Reason:    r.Reason,
 		CreatedAt: r.CreatedAt,
 		UpdatedAt: r.UpdatedAt,

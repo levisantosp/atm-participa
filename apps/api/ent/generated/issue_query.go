@@ -519,7 +519,6 @@ func (_q *IssueQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*I
 	}
 	return nil
 }
-
 func (_q *IssueQuery) loadIssueUpvotes(ctx context.Context, query *UpvoteQuery, nodes []*Issue, init func(*Issue), assign func(*Issue, *Upvote)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int64]*Issue)
@@ -550,7 +549,6 @@ func (_q *IssueQuery) loadIssueUpvotes(ctx context.Context, query *UpvoteQuery, 
 	}
 	return nil
 }
-
 func (_q *IssueQuery) loadIssueFiles(ctx context.Context, query *FileQuery, nodes []*Issue, init func(*Issue), assign func(*Issue, *File)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int64]*Issue)

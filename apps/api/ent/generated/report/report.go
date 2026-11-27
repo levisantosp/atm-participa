@@ -24,8 +24,6 @@ const (
 	FieldTargetIssueID = "target_issue_id"
 	// FieldEntity holds the string denoting the entity field in the database.
 	FieldEntity = "entity"
-	// FieldEntityID holds the string denoting the entity_id field in the database.
-	FieldEntityID = "entity_id"
 	// FieldReason holds the string denoting the reason field in the database.
 	FieldReason = "reason"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -70,7 +68,6 @@ var Columns = []string{
 	FieldTargetUserID,
 	FieldTargetIssueID,
 	FieldEntity,
-	FieldEntityID,
 	FieldReason,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -154,11 +151,6 @@ func ByEntity(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEntity, opts...).ToFunc()
 }
 
-// ByEntityID orders the results by the entity_id field.
-func ByEntityID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEntityID, opts...).ToFunc()
-}
-
 // ByReason orders the results by the reason field.
 func ByReason(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldReason, opts...).ToFunc()
@@ -194,7 +186,6 @@ func ByTargetIssueField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTargetIssueStep(), sql.OrderByField(field, opts...))
 	}
 }
-
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -202,7 +193,6 @@ func newUserStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }
-
 func newTargetUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -210,7 +200,6 @@ func newTargetUserStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, TargetUserTable, TargetUserColumn),
 	)
 }
-
 func newTargetIssueStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),

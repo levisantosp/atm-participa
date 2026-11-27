@@ -27,8 +27,6 @@ type Report struct {
 	TargetIssueID *int64 `json:"target_issue_id,omitempty"`
 	// Entity holds the value of the "entity" field.
 	Entity report.Entity `json:"entity,omitempty"`
-	// EntityID holds the value of the "entity_id" field.
-	EntityID int64 `json:"entity_id,omitempty"`
 	// Reason holds the value of the "reason" field.
 	Reason string `json:"reason,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -92,7 +90,7 @@ func (*Report) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case report.FieldID, report.FieldUserID, report.FieldTargetUserID, report.FieldTargetIssueID, report.FieldEntityID:
+		case report.FieldID, report.FieldUserID, report.FieldTargetUserID, report.FieldTargetIssueID:
 			values[i] = new(sql.NullInt64)
 		case report.FieldEntity, report.FieldReason:
 			values[i] = new(sql.NullString)
@@ -145,12 +143,6 @@ func (_m *Report) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field entity", values[i])
 			} else if value.Valid {
 				_m.Entity = report.Entity(value.String)
-			}
-		case report.FieldEntityID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field entity_id", values[i])
-			} else if value.Valid {
-				_m.EntityID = value.Int64
 			}
 		case report.FieldReason:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -238,9 +230,6 @@ func (_m *Report) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("entity=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Entity))
-	builder.WriteString(", ")
-	builder.WriteString("entity_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.EntityID))
 	builder.WriteString(", ")
 	builder.WriteString("reason=")
 	builder.WriteString(_m.Reason)

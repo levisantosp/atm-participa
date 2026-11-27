@@ -27,7 +27,6 @@ func (Report) Fields() []ent.Field {
 		field.Int64("target_user_id").Optional().Nillable().Immutable(),
 		field.Int64("target_issue_id").Optional().Nillable().Immutable(),
 		field.Enum("entity").Values("user", "issue").Immutable(),
-		field.Int64("entity_id").Immutable(),
 		field.Text("reason").Match(regexp.MustCompile(`\S`)),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
@@ -55,10 +54,8 @@ func (Report) Annotations() []schema.Annotation {
 		entsql.Checks(map[string]string{
 			"report_target_matches_entity": `(
 				entity = 'user' AND target_issue_id IS NULL
-				AND (target_user_id IS NULL OR target_user_id = entity_id)
 			) OR (
 				entity = 'issue' AND target_user_id IS NULL
-				AND (target_issue_id IS NULL OR target_issue_id = entity_id)
 			)`,
 		}),
 	}

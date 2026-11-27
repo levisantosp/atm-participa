@@ -2266,8 +2266,6 @@ type ReportMutation struct {
 	typ                 string
 	id                  *int64
 	entity              *report.Entity
-	entity_id           *int64
-	addentity_id        *int64
 	reason              *string
 	created_at          *time.Time
 	updated_at          *time.Time
@@ -2570,62 +2568,6 @@ func (m *ReportMutation) ResetEntity() {
 	m.entity = nil
 }
 
-// SetEntityID sets the "entity_id" field.
-func (m *ReportMutation) SetEntityID(i int64) {
-	m.entity_id = &i
-	m.addentity_id = nil
-}
-
-// EntityID returns the value of the "entity_id" field in the mutation.
-func (m *ReportMutation) EntityID() (r int64, exists bool) {
-	v := m.entity_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldEntityID returns the old "entity_id" field's value of the Report entity.
-// If the Report object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ReportMutation) OldEntityID(ctx context.Context) (v int64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldEntityID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldEntityID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEntityID: %w", err)
-	}
-	return oldValue.EntityID, nil
-}
-
-// AddEntityID adds i to the "entity_id" field.
-func (m *ReportMutation) AddEntityID(i int64) {
-	if m.addentity_id != nil {
-		*m.addentity_id += i
-	} else {
-		m.addentity_id = &i
-	}
-}
-
-// AddedEntityID returns the value that was added to the "entity_id" field in this mutation.
-func (m *ReportMutation) AddedEntityID() (r int64, exists bool) {
-	v := m.addentity_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetEntityID resets all changes to the "entity_id" field.
-func (m *ReportMutation) ResetEntityID() {
-	m.entity_id = nil
-	m.addentity_id = nil
-}
-
 // SetReason sets the "reason" field.
 func (m *ReportMutation) SetReason(s string) {
 	m.reason = &s
@@ -2849,7 +2791,7 @@ func (m *ReportMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ReportMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 7)
 	if m.user != nil {
 		fields = append(fields, report.FieldUserID)
 	}
@@ -2861,9 +2803,6 @@ func (m *ReportMutation) Fields() []string {
 	}
 	if m.entity != nil {
 		fields = append(fields, report.FieldEntity)
-	}
-	if m.entity_id != nil {
-		fields = append(fields, report.FieldEntityID)
 	}
 	if m.reason != nil {
 		fields = append(fields, report.FieldReason)
@@ -2890,8 +2829,6 @@ func (m *ReportMutation) Field(name string) (ent.Value, bool) {
 		return m.TargetIssueID()
 	case report.FieldEntity:
 		return m.Entity()
-	case report.FieldEntityID:
-		return m.EntityID()
 	case report.FieldReason:
 		return m.Reason()
 	case report.FieldCreatedAt:
@@ -2915,8 +2852,6 @@ func (m *ReportMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldTargetIssueID(ctx)
 	case report.FieldEntity:
 		return m.OldEntity(ctx)
-	case report.FieldEntityID:
-		return m.OldEntityID(ctx)
 	case report.FieldReason:
 		return m.OldReason(ctx)
 	case report.FieldCreatedAt:
@@ -2960,13 +2895,6 @@ func (m *ReportMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEntity(v)
 		return nil
-	case report.FieldEntityID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetEntityID(v)
-		return nil
 	case report.FieldReason:
 		v, ok := value.(string)
 		if !ok {
@@ -2996,9 +2924,6 @@ func (m *ReportMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *ReportMutation) AddedFields() []string {
 	var fields []string
-	if m.addentity_id != nil {
-		fields = append(fields, report.FieldEntityID)
-	}
 	return fields
 }
 
@@ -3007,8 +2932,6 @@ func (m *ReportMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *ReportMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case report.FieldEntityID:
-		return m.AddedEntityID()
 	}
 	return nil, false
 }
@@ -3018,13 +2941,6 @@ func (m *ReportMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ReportMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case report.FieldEntityID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddEntityID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Report numeric field %s", name)
 }
@@ -3084,9 +3000,6 @@ func (m *ReportMutation) ResetField(name string) error {
 		return nil
 	case report.FieldEntity:
 		m.ResetEntity()
-		return nil
-	case report.FieldEntityID:
-		m.ResetEntityID()
 		return nil
 	case report.FieldReason:
 		m.ResetReason()

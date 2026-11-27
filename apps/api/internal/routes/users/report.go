@@ -36,7 +36,6 @@ func Report(
 			SetUserID(user.ID).
 			SetReason(input.Body.Reason).
 			SetEntity(report.EntityUser).
-			SetEntityID(target.ID).
 			SetTargetUser(target).
 			Save(ctx)
 	})

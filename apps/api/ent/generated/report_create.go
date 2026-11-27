@@ -70,12 +70,6 @@ func (_c *ReportCreate) SetEntity(v report.Entity) *ReportCreate {
 	return _c
 }
 
-// SetEntityID sets the "entity_id" field.
-func (_c *ReportCreate) SetEntityID(v int64) *ReportCreate {
-	_c.mutation.SetEntityID(v)
-	return _c
-}
-
 // SetReason sets the "reason" field.
 func (_c *ReportCreate) SetReason(v string) *ReportCreate {
 	_c.mutation.SetReason(v)
@@ -195,9 +189,6 @@ func (_c *ReportCreate) check() error {
 			return &ValidationError{Name: "entity", err: fmt.Errorf(`generated: validator failed for field "Report.entity": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.EntityID(); !ok {
-		return &ValidationError{Name: "entity_id", err: errors.New(`generated: missing required field "Report.entity_id"`)}
-	}
 	if _, ok := _c.mutation.Reason(); !ok {
 		return &ValidationError{Name: "reason", err: errors.New(`generated: missing required field "Report.reason"`)}
 	}
@@ -247,10 +238,6 @@ func (_c *ReportCreate) createSpec() (*Report, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Entity(); ok {
 		_spec.SetField(report.FieldEntity, field.TypeEnum, value)
 		_node.Entity = value
-	}
-	if value, ok := _c.mutation.EntityID(); ok {
-		_spec.SetField(report.FieldEntityID, field.TypeInt64, value)
-		_node.EntityID = value
 	}
 	if value, ok := _c.mutation.Reason(); ok {
 		_spec.SetField(report.FieldReason, field.TypeString, value)

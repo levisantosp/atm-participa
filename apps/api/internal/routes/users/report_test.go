@@ -110,12 +110,11 @@ func TestReportUser(t *testing.T) {
 		if saved.UserID == nil || *saved.UserID != user.ID {
 			t.Errorf("expected user id %d, got %v", user.ID, saved)
 		}
-		if saved.Entity != report.EntityUser || saved.EntityID != target.ID {
+		if saved.Entity != report.EntityUser {
 			t.Errorf(
-				"expected user %d, got %s %d",
-				target.ID,
+				"expected entity %s, got %s",
+				report.EntityUser,
 				saved.Entity,
-				saved.EntityID,
 			)
 		}
 		if saved.TargetUserID == nil || *saved.TargetUserID != target.ID {
