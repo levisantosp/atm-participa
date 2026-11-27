@@ -93,7 +93,11 @@ const onSubmit = handleSubmit((data) =>
             <RadioGroup
               v-model="selected"
               @update:model-value="
-                (v) => setFieldValue('reason', v?.toString())
+                (v) =>
+                  setFieldValue(
+                    'reason',
+                    v === 'other' ? undefined : v?.toString()
+                  )
               "
             >
               <div v-for="(r, i) in reasons" class="flex items-center gap-1">
