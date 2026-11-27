@@ -66,7 +66,8 @@ func TestGetReport(t *testing.T) {
 				t.Fatal(err)
 			}
 			if body.ID != fmt.Sprint(target.ID) ||
-				body.Reason != target.Reason {
+				body.Reason != target.Reason ||
+				body.TargetID == nil || *body.TargetID != fmt.Sprint(admin.ID) {
 				t.Fatalf("unexpected report: %+v", body)
 			}
 			if body.Author == nil || body.Author.ID != fmt.Sprint(user.ID) {
