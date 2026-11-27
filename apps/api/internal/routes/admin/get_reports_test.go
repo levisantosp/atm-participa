@@ -22,10 +22,12 @@ func TestGetReports(t *testing.T) {
 	user := tests.CreateUser(t)
 	admin := tests.CreateAdminUser(t)
 	adminSession := tests.CreateAdminSession(admin, t)
+
 	issue, err := tests.CreateIssue(t, user)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	first := tests.CreateReport(t, admin, report.EntityIssue, issue.ID, "Spam")
 	middle := tests.CreateReport(
 		t,
@@ -41,6 +43,7 @@ func TestGetReports(t *testing.T) {
 		issue.ID,
 		"Conteúdo ofensivo",
 	)
+
 	if err := db.Client.Issue.DeleteOne(issue).Exec(t.Context()); err != nil {
 		t.Fatal(err)
 	}
@@ -50,18 +53,22 @@ func TestGetReports(t *testing.T) {
 		if res.Code != http.StatusOK {
 			t.Fatalf("expected status %d got %d", http.StatusOK, res.Code)
 		}
+
 		var body utils.CursorPaginatedResponse[dtos.Report]
 		if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
 			t.Fatal(err)
 		}
+
 		if len(body.Items) != 3 || body.NextCursor != nil {
 			t.Fatalf("unexpected page: %+v", body)
 		}
+
 		for i, id := range []int64{last.ID, middle.ID, first.ID} {
 			if body.Items[i].ID != fmt.Sprint(id) {
 				t.Fatalf("expected report %d got %s", id, body.Items[i].ID)
 			}
 		}
+
 		if body.Items[1].Reason != middle.Reason {
 			t.Fatalf(
 				"expected reason %q got %q",
@@ -69,9 +76,49 @@ func TestGetReports(t *testing.T) {
 				body.Items[1].Reason,
 			)
 		}
+
 		author := body.Items[1].Author
 		if author == nil || author.ID != fmt.Sprint(admin.ID) {
 			t.Fatalf("expected report author %d, got %v", admin.ID, author)
+		}
+	})
+
+	t.Run("should close, filter and reopen a report", func(t *testing.T) {
+		path := fmt.Sprintf("/admin/reports/%d", first.ID)
+		cookie := tests.GetCookie(adminSession.ID)
+
+		for _, status := range []report.Status{report.StatusClosed, report.StatusOpen} {
+			res := api.Patch(path, cookie, map[string]any{"status": status})
+			if res.Code != http.StatusOK {
+				t.Fatalf("expected status %d got %d", http.StatusOK, res.Code)
+			}
+
+			var updated dtos.Report
+			if err := json.NewDecoder(res.Body).Decode(&updated); err != nil {
+				t.Fatal(err)
+			}
+
+			if updated.ID != fmt.Sprint(first.ID) || updated.Status != status {
+				t.Fatalf("unexpected report: %+v", updated)
+			}
+
+			res = api.Get("/admin/reports?entity=issue&status=closed", cookie)
+			if res.Code != http.StatusOK {
+				t.Fatalf("expected status %d got %d", http.StatusOK, res.Code)
+			}
+
+			var page utils.CursorPaginatedResponse[dtos.Report]
+			if err := json.NewDecoder(res.Body).Decode(&page); err != nil {
+				t.Fatal(err)
+			}
+
+			if status == report.StatusClosed {
+				if len(page.Items) != 1 || page.Items[0].ID != updated.ID {
+					t.Fatalf("unexpected closed reports: %+v", page.Items)
+				}
+			} else if len(page.Items) != 0 {
+				t.Fatalf("expected no closed reports, got %+v", page.Items)
+			}
 		}
 	})
 
@@ -79,6 +126,7 @@ func TestGetReports(t *testing.T) {
 		"should paginate filtered reports after target deletion",
 		func(t *testing.T) {
 			path := "/admin/reports?entity=issue&limit=1"
+
 			for i, id := range []int64{last.ID, first.ID} {
 				res := api.Get(path, tests.GetCookie(adminSession.ID))
 				if res.Code != http.StatusOK {
@@ -88,22 +136,27 @@ func TestGetReports(t *testing.T) {
 						res.Code,
 					)
 				}
+
 				var body utils.CursorPaginatedResponse[dtos.Report]
 				if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
 					t.Fatal(err)
 				}
+
 				if len(body.Items) != 1 {
 					t.Fatalf("expected one report got %d", len(body.Items))
 				}
+
 				item := body.Items[0]
 				if item.ID != fmt.Sprint(id) ||
 					item.Entity != report.EntityIssue || item.TargetID != nil {
 					t.Fatalf("unexpected report: %+v", item)
 				}
+
 				if i == 0 {
 					if body.NextCursor == nil || *body.NextCursor != id {
 						t.Fatalf("expected cursor %d", id)
 					}
+
 					path += fmt.Sprintf("&cursor=%d", *body.NextCursor)
 				} else if body.NextCursor != nil {
 					t.Fatal("expected no next page")
