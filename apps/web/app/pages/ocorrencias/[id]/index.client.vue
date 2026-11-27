@@ -4,6 +4,9 @@ import {
   CheckCircle2Icon,
   CircleDotIcon,
   Clock3Icon,
+  EllipsisVertical,
+  Share,
+  SquareExclamationPoint,
   ThumbsUp
 } from '@lucide/vue'
 import {
@@ -23,9 +26,15 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
   Spinner
 } from 'ui'
 import { toast } from 'vue-sonner'
+import ReportDialog from '~/components/report-dialog.vue'
 import { auth } from '~/lib/auth'
 import { queryClient } from '~/lib/query-client'
 
@@ -34,6 +43,7 @@ definePageMeta({
 })
 
 const route = useRoute('ocorrencias-id')
+const reportIssueId = ref<Issue['id'] | null>(null)
 const router = useRouter()
 const config = useRuntimeConfig()
 const { data: session } = auth.useSession()
@@ -143,6 +153,12 @@ function upvote() {
     })
   }
 }
+async function copy(id: string) {
+  await navigator.clipboard.writeText(
+    `${window.location.origin}/ocorrencias/${id}`
+  )
+  toast.success('Link copiado para área de transferência')
+}
 </script>
 
 <template>
@@ -166,14 +182,41 @@ function upvote() {
               >@{{ issue.author.username }}</span
             >
           </div>
-          <span
-            v-if="statusInfo"
-            class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset"
-            :class="statusInfo.class"
-          >
-            <component :is="statusInfo.icon" :size="13" />
-            {{ statusInfo.label }}
-          </span>
+          <div class="ml-auto flex items-center gap-2">
+            <span
+              v-if="statusInfo"
+              class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset"
+              :class="statusInfo.class"
+            >
+              <component :is="statusInfo.icon" :size="13" />
+              {{ statusInfo.label }}
+            </span>
+            <Menubar class="border-none">
+              <MenubarMenu>
+                <MenubarTrigger
+                  aria-label="Ações da ocorrência"
+                  class="cursor-pointer"
+                >
+                  <EllipsisVertical />
+                </MenubarTrigger>
+
+                <MenubarContent>
+                  <MenubarItem class="cursor-pointer" @select="copy(issue.id)">
+                    <Share />
+                    Copiar link
+                  </MenubarItem>
+
+                  <MenubarItem
+                    class="cursor-pointer text-destructive hover:bg-destructive!"
+                    @select="reportIssueId = issue.id"
+                  >
+                    <SquareExclamationPoint />
+                    Reportar
+                  </MenubarItem>
+                </MenubarContent>
+              </MenubarMenu>
+            </Menubar>
+          </div>
         </div>
         <CardTitle>{{ issue.title }}</CardTitle>
         <CardDescription class="whitespace-pre-wrap">{{
@@ -220,5 +263,7 @@ function upvote() {
         </div>
       </CardContent>
     </Card>
+
+    <ReportDialog v-model:issue-id="reportIssueId" />
   </div>
 </template>

@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { ThumbsUp } from '@lucide/vue'
+import {
+  EllipsisVertical,
+  Share,
+  SquareExclamationPoint,
+  ThumbsUp
+} from '@lucide/vue'
 import type { InfiniteData } from '@tanstack/vue-query'
 import {
   getIssues,
@@ -17,13 +22,21 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
   Spinner
 } from 'ui'
+import { toast } from 'vue-sonner'
+import ReportDialog from '~/components/report-dialog.vue'
 import { auth } from '~/lib/auth'
 import { queryClient } from '~/lib/query-client'
 import { isDark } from '~/lib/theme'
 
 const route = useRoute()
+const reportIssueId = ref<Issue['id'] | null>(null)
 
 const {
   isPending,
@@ -154,10 +167,17 @@ function onUpvote(issue: Issue & { hasUpvoted: boolean }) {
     })
   }
 }
+
+async function copy(id: string) {
+  await navigator.clipboard.writeText(
+    `${window.location.origin}/ocorrencias/${id}`
+  )
+  toast.success('Link copiado para área de transferência')
+}
 </script>
 
 <template>
-  <Spinner v-if="isPending || !data" class="self-center" />
+  <Spinner v-if="isPending" class="self-center" />
 
   <span v-else-if="error" class="text-red-400">
     Ocorreu um erro inesperado...
@@ -166,11 +186,36 @@ function onUpvote(issue: Issue & { hasUpvoted: boolean }) {
   <div v-else v-for="issue in issuesWithVotes" :key="issue.id">
     <Card class="w-full">
       <CardHeader>
-        <div class="flex flex-wrap gap-1" v-if="issue.author">
-          <span>{{ issue.author.displayName }}</span>
-          <span class="text-muted-foreground">
-            @{{ issue.author.username }}
-          </span>
+        <div class="flex items-center justify-between" v-if="issue.author">
+          <div class="flex flex-wrap gap-1">
+            <span>{{ issue.author.displayName }}</span>
+            <span class="text-muted-foreground">
+              @{{ issue.author.username }}
+            </span>
+          </div>
+
+          <Menubar class="border-none">
+            <MenubarMenu>
+              <MenubarTrigger class="cursor-pointer">
+                <EllipsisVertical />
+              </MenubarTrigger>
+
+              <MenubarContent>
+                <MenubarItem class="cursor-pointer" @click="copy(issue.id)">
+                  <Share />
+                  Copiar link
+                </MenubarItem>
+
+                <MenubarItem
+                  class="cursor-pointer text-destructive hover:bg-destructive!"
+                  @select="reportIssueId = issue.id"
+                >
+                  <SquareExclamationPoint />
+                  Reportar
+                </MenubarItem>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
         </div>
 
         <NuxtLink :href="`/ocorrencias/${issue.id}`">
@@ -228,6 +273,8 @@ function onUpvote(issue: Issue & { hasUpvoted: boolean }) {
       </CardContent>
     </Card>
   </div>
+
+  <ReportDialog v-model:issue-id="reportIssueId" />
 
   <Button
     v-if="!isPending"
