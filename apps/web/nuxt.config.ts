@@ -27,5 +27,15 @@ export default defineNuxtConfig({
   },
   experimental: {
     typedPages: true
+  },
+  typescript: {
+    tsConfig: {
+      compilerOptions: {
+        paths: {
+          ui: ['../../../pkg/ui/src/index.ts'],
+          'ui/*': ['../../../pkg/ui/src/*']
+        }
+      }
+    }
   }
 })
