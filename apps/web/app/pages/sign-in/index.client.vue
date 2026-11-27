@@ -124,9 +124,6 @@ const signIn = handleSubmit(async (data) => {
           <Spinner v-if="isSubmitting" />
           <span v-else>Entrar</span>
         </Button>
-        <Button variant="outline" class="w-full" disabled>
-          Entrar com Google
-        </Button>
       </CardFooter>
     </Card>
   </div>
