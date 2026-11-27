@@ -176,12 +176,16 @@ async function copy(id: string) {
     <Card v-else-if="issue" class="w-full">
       <CardHeader>
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <div v-if="issue.author" class="flex flex-wrap gap-1">
+          <NuxtLink
+            v-if="issue.author"
+            :href="`/${issue.author.username}`"
+            class="flex flex-wrap gap-1 hover:text-blue-400 transition duration-200"
+          >
             <span>{{ issue.author.displayName }}</span>
             <span class="text-muted-foreground"
               >@{{ issue.author.username }}</span
             >
-          </div>
+          </NuxtLink>
           <div class="ml-auto flex items-center gap-2">
             <span
               v-if="statusInfo"

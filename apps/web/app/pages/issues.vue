@@ -187,12 +187,15 @@ async function copy(id: string) {
     <Card class="w-full">
       <CardHeader>
         <div class="flex items-center justify-between" v-if="issue.author">
-          <div class="flex flex-wrap gap-1">
+          <NuxtLink
+            :href="`/${issue.author.username}`"
+            class="flex flex-wrap gap-1 hover:text-blue-400 transition duration-200"
+          >
             <span>{{ issue.author.displayName }}</span>
             <span class="text-muted-foreground">
               @{{ issue.author.username }}
             </span>
-          </div>
+          </NuxtLink>
 
           <Menubar class="border-none">
             <MenubarMenu>
