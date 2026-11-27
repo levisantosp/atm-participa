@@ -231,6 +231,7 @@ func ByIssueFiles(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newIssueFilesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -238,6 +239,7 @@ func newUserStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }
+
 func newIssueUpvotesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -245,6 +247,7 @@ func newIssueUpvotesStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, true, IssueUpvotesTable, IssueUpvotesColumn),
 	)
 }
+
 func newIssueFilesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),

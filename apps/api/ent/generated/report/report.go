@@ -186,6 +186,7 @@ func ByTargetIssueField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTargetIssueStep(), sql.OrderByField(field, opts...))
 	}
 }
+
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -193,6 +194,7 @@ func newUserStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }
+
 func newTargetUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -200,6 +202,7 @@ func newTargetUserStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, TargetUserTable, TargetUserColumn),
 	)
 }
+
 func newTargetIssueStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),

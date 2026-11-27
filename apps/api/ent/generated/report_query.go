@@ -518,6 +518,7 @@ func (_q *ReportQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*
 	}
 	return nil
 }
+
 func (_q *ReportQuery) loadTargetUser(ctx context.Context, query *UserQuery, nodes []*Report, init func(*Report), assign func(*Report, *User)) error {
 	ids := make([]int64, 0, len(nodes))
 	nodeids := make(map[int64][]*Report)
@@ -550,6 +551,7 @@ func (_q *ReportQuery) loadTargetUser(ctx context.Context, query *UserQuery, nod
 	}
 	return nil
 }
+
 func (_q *ReportQuery) loadTargetIssue(ctx context.Context, query *IssueQuery, nodes []*Report, init func(*Report), assign func(*Report, *Issue)) error {
 	ids := make([]int64, 0, len(nodes))
 	nodeids := make(map[int64][]*Report)
