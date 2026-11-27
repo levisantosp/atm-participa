@@ -19,6 +19,7 @@ func GetIssue(
 	issue, err := db.Client.Issue.Query().
 		Where(issue.IDEQ(input.ID)).
 		WithIssueFiles().
+		WithUser().
 		First(ctx)
 	if err != nil {
 		if generated.IsNotFound(err) {
