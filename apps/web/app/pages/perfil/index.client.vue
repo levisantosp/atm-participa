@@ -6,8 +6,23 @@ import {
   UserRoundIcon
 } from '@lucide/vue'
 import { toTypedSchema } from '@vee-validate/zod'
-import { getAuthMeQueryKey, usePutUsersMe } from 'api-client'
-import { Button, Card, CardContent, Input, Label, Spinner } from 'ui'
+import { getAuthMeQueryKey, useDeleteUsers, usePutUsersMe } from 'api-client'
+import {
+  Button,
+  Card,
+  CardContent,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  Input,
+  Label,
+  Spinner
+} from 'ui'
 import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
@@ -20,6 +35,17 @@ definePageMeta({
 
 const session = auth.useSession()
 const isEditing = ref(false)
+const isDeleteDialogOpen = ref(false)
+
+const { mutate: deleteAccount, isPending: isDeleting } = useDeleteUsers({
+  mutation: {
+    onSuccess() {
+      isDeleteDialogOpen.value = false
+      queryClient.setQueryData(getAuthMeQueryKey(), null)
+      toast.success('Conta excluída com sucesso')
+    }
+  }
+})
 
 const { mutate: updateProfile, isPending: isUpdatingProfile } = usePutUsersMe({
   mutation: {
@@ -221,6 +247,38 @@ const cancelEditing = () => {
             </Button>
           </div>
         </form>
+
+        <Dialog v-if="!isEditing" v-model:open="isDeleteDialogOpen">
+          <DialogTrigger as-child>
+            <Button type="button" variant="destructive" class="mt-2 w-full">
+              Excluir conta
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Excluir sua conta?</DialogTitle>
+              <DialogDescription>A exclusão é permanente.</DialogDescription>
+            </DialogHeader>
+
+            <DialogFooter>
+              <DialogClose as-child>
+                <Button type="button" variant="outline" :disabled="isDeleting">
+                  Cancelar
+                </Button>
+              </DialogClose>
+              <Button
+                type="button"
+                variant="destructive"
+                :disabled="isDeleting"
+                @click="deleteAccount(undefined)"
+              >
+                <Spinner v-if="isDeleting" />
+                Excluir conta
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
 
