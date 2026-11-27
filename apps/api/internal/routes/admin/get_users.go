@@ -17,7 +17,7 @@ func GetUsers(
 	input *struct {
 		Limit  int    `query:"limit" minimum:"1" maximum:"100" default:"10"`
 		Cursor int64  `query:"cursor" minimum:"1"`
-		Search string `query:"search" minLength:"2" maxLength:"100"`
+		Search string `query:"search" minLength:"1" maxLength:"100"`
 	},
 ) (*Output[utils.CursorPaginatedResponse[dtos.User]], error) {
 	query := db.Client.User.Query().
