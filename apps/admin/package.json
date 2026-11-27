@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pn -F api-client build && vite",
+    "dev": "pn -F api-client -F ui build && vite",
     "build": "oxlint && vite build",
     "preview": "vite preview",
     "lint": "oxlint",
