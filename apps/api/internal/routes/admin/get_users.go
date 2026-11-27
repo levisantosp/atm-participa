@@ -2,8 +2,10 @@ package admin
 
 import (
 	"context"
+	"strconv"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/levisantosp/atm-participa/apps/api/ent/generated/predicate"
 	"github.com/levisantosp/atm-participa/apps/api/ent/generated/user"
 	"github.com/levisantosp/atm-participa/apps/api/internal/db"
 	"github.com/levisantosp/atm-participa/apps/api/internal/dtos"
@@ -27,12 +29,16 @@ func GetUsers(
 	}
 
 	if input.Search != "" {
-		query = query.Where(
-			user.Or(
-				user.UsernameContainsFold(input.Search),
-				user.EmailContainsFold(input.Search),
-			),
-		)
+		predicates := []predicate.User{
+			user.UsernameContainsFold(input.Search),
+			user.EmailContainsFold(input.Search),
+		}
+
+		if id, err := strconv.ParseInt(input.Search, 10, 64); err == nil {
+			predicates = append(predicates, user.IDEQ(id))
+		}
+
+		query = query.Where(user.Or(predicates...))
 	}
 
 	users, err := query.All(ctx)
