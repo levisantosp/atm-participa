@@ -18,6 +18,7 @@ func Routes(api huma.API) {
 	group.UseMiddleware(middlewares.Auth(api, false))
 	group.UseMiddleware(middlewares.Cache(api, 10*time.Second))
 
+	huma.Get(group, "/{username}", GetUser)
 	huma.Get(group, "/{userId}/issues", GetIssues)
 	huma.Get(group, "/{userId}/upvotes", GetUpvotes)
 	huma.Register(group, huma.Operation{
