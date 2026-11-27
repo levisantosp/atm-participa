@@ -129,6 +129,7 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true},
 		{Name: "entity", Type: field.TypeEnum, Enums: []string{"user", "issue"}},
 		{Name: "reason", Type: field.TypeString, Size: 2147483647},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"open", "closed"}, Default: "open"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "target_user_id", Type: field.TypeInt64, Nullable: true},
@@ -143,19 +144,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "reports_users_target_user",
-				Columns:    []*schema.Column{ReportsColumns[5]},
+				Columns:    []*schema.Column{ReportsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "reports_issues_target_issue",
-				Columns:    []*schema.Column{ReportsColumns[6]},
+				Columns:    []*schema.Column{ReportsColumns[7]},
 				RefColumns: []*schema.Column{IssuesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "reports_users_reports",
-				Columns:    []*schema.Column{ReportsColumns[7]},
+				Columns:    []*schema.Column{ReportsColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

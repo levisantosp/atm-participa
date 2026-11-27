@@ -26,4 +26,5 @@ func Routes(api huma.API) {
 	huma.Post(group, "/users/{id}/unban", UnbanUser)
 	huma.Get(group, "/reports", GetReports)
 	huma.Get(group, "/reports/{id}", GetReport)
+	huma.Patch(group, "/reports/{id}", UpdateReportStatus)
 }

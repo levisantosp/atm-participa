@@ -15,6 +15,7 @@ func GetReports(
 	input *struct {
 		Limit  int           `query:"limit" minimum:"1" maximum:"100" default:"10"`
 		Cursor int64         `query:"cursor" minimum:"1"`
+		Status report.Status `query:"status" enum:"open,closed"`
 		Entity report.Entity `query:"entity" enum:"user,issue"`
 	},
 ) (*Output[utils.CursorPaginatedResponse[dtos.Report]], error) {
@@ -29,6 +30,10 @@ func GetReports(
 
 	if input.Entity != "" {
 		query = query.Where(report.EntityEQ(input.Entity))
+	}
+
+	if input.Status != "" {
+		query = query.Where(report.StatusEQ(input.Status))
 	}
 
 	reports, err := query.All(ctx)
