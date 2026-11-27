@@ -32,6 +32,10 @@ func DeleteIssue(
 			return nil, err
 		}
 
+		if err := tx.Issue.DeleteOneID(issue.ID).Exec(ctx); err != nil {
+			return nil, err
+		}
+
 		client := r2.Client
 
 		objects := make(
@@ -62,10 +66,6 @@ func DeleteIssue(
 			if err != nil {
 				return nil, err
 			}
-		}
-
-		if err := tx.Issue.DeleteOneID(issue.ID).Exec(ctx); err != nil {
-			return nil, err
 		}
 
 		return nil, nil
